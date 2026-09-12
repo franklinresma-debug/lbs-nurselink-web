@@ -33,3 +33,7 @@
 .ndi-card .ndi-photo,.ndi-card .ndi-qr{background:#fff}.ndi-card .ndi-meta{margin-top:.8cqw}.ndi-card .ndi-signature img{height:6.5cqw}
 
 .ndi-card .ndi-signature img{transform-origin:left center;object-position:left center}
+
+/* Digital ID topbar: member photo and no duplicate brand. */
+#nurselink-universal-topbar .nlub-standard-brand{display:none!important}
+#nurselink-universal-topbar .nlub-avatar img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
