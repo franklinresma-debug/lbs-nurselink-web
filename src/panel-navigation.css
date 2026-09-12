@@ -31,3 +31,5 @@ html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority)>.main-area{height:100dvh!important;min-height:0!important;overflow-y:auto!important;position:relative!important}
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority)>.main-area>.topbar{position:sticky!important;top:0!important;z-index:100!important;flex-shrink:0!important}
 }
+
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > .nl-member-nav-group{color:#f7931e!important}
