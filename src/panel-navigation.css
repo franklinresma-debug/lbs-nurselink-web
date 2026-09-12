@@ -8,3 +8,9 @@ html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing
 /* Let the shared sidebar color show through behind branding and controls. */
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar :is(.nurselink-sidebar-brand-copy,.sidebar-bottom){background:transparent!important;background-image:none!important;box-shadow:none!important;border:0!important}
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar-bottom > a{white-space:nowrap!important;flex-direction:row!important;line-height:20px!important;min-height:42px!important;align-items:center!important;justify-content:center!important}
+
+/* Reserve space for branding and account controls; scroll only navigation. */
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar{display:flex!important;flex-direction:column!important;height:100dvh!important;max-height:100dvh!important;box-sizing:border-box!important;overflow:hidden!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .logo{flex:0 0 auto!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav{flex:1 1 0%!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:16px!important;scroll-padding-bottom:16px;overscroll-behavior:contain;scrollbar-width:thin}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom{position:static!important;flex:0 0 auto!important;inset:auto!important;margin-top:8px!important;padding-bottom:env(safe-area-inset-bottom,0px)!important}
