@@ -50,3 +50,6 @@ body #operationsSidebar .nl530-sidebar-footer :is(a,button){min-height:28px!impo
 
 /* LBS orange admin category headings. */
 body #operationsMenu.nl530-menu>:not(a){color:#f7931e!important}
+
+/* Only the admin workspace scrolls; header and navigation stay visible. */
+@media(min-width:951px){body .nl530-shell{height:100dvh!important;min-height:0!important;overflow:hidden!important}body .nl530-main{height:100dvh!important;min-height:0!important;overflow-y:auto!important;position:relative!important}body .nl530-main>.nl530-topbar{position:sticky!important;top:-20px!important;z-index:100!important;background:var(--nlr-surface,#f4f6f9)!important;padding:12px 0!important}}
