@@ -27,6 +27,9 @@
 <link rel="stylesheet" href="/nurselink-temporary-encoder-admin.css?v=593">
 <link rel="stylesheet" href="/nurselink-password-visibility-v4.css?v=4">
 <script src="/nurselink-password-visibility-v3.js?v=5" defer></script>
+<link rel="stylesheet" href="/admin/appearance-editor.css?v=7100">
+<script src="/admin/appearance-editor.js?v=7100" defer></script>
+<script src="/global-appearance.js?v=7101" defer></script>
 </head>
 <body class="nl-admin-body nl-admin-session-pending" data-dashboard-release="20260912">
 <div id="adminSessionGate" class="nl541-session-gate" role="status" aria-live="polite">
@@ -836,19 +839,20 @@
         <div class="nl530-card-head">
           <div>
             <span>BRAND IDENTITY</span>
-            <h2>Logo Placement</h2>
-            <p>Upload and publish independent logos for the member login, Administration panel and member sidebar.</p>
+            <h2>Global Appearance & Branding</h2>
+            <p>Set shared colors, logos and the browser icon for the admin and member portals.</p>
           </div>
           <span id="adminBrandingVersion" class="nl640-version">Loading…</span>
         </div>
         <div id="adminBrandingNotice" class="nl-admin-notice" hidden></div>
+        <div id="adminGlobalAppearance"></div>
         <div id="adminBrandingControls" class="nl640-logo-grid">
           <div class="nl-admin-loading">Loading logo settings…</div>
         </div>
         <div class="nl640-branding-actions">
           <p>Changes remain private until you publish the saved draft.</p>
-          <button id="adminBrandingSave" type="button" disabled>Save logo draft</button>
-          <button id="adminBrandingPublish" type="button" class="nl640-primary" disabled>Publish logos</button>
+          <button id="adminBrandingSave" type="button" disabled>Save appearance draft</button>
+          <button id="adminBrandingPublish" type="button" class="nl640-primary" disabled>Publish appearance</button>
         </div>
       </section>
 
@@ -895,7 +899,7 @@
 <script src="./portal-config.js?nlv=631"></script>
 <script src="./dashboard.js?nlv=20260912" defer></script>
 <script src="./admin-modern.js?nlv=690" defer></script>
-<script src="./branding.js?nlv=6400" defer></script>
+<script src="./branding.js?nlv=7100" defer></script>
 
 <!-- v5.2.0 historical panel markers retained for cumulative regression validation:
 data-panel="membership"

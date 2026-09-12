@@ -5,7 +5,8 @@
   const placements = [
     ['login', 'Member Login', 'Above the welcome message on the member sign-in page.'],
     ['admin', 'Admin Panel', 'Inside the Administration Operations Center brand area.'],
-    ['sidebar', 'Member Sidebar', 'Above the NurseLink name in the member navigation.']
+    ['sidebar', 'Member Sidebar', 'Above the NurseLink name in the member navigation.'],
+    ['favicon', 'Browser Icon (Favicon)', 'Use a square PNG, ideally 64 × 64 px, for browser tabs.']
   ];
   const controls = document.getElementById('adminBrandingControls');
   const saveButton = document.getElementById('adminBrandingSave');
@@ -150,6 +151,7 @@
 
   function setBusy(value) {
     busy = value;
+    document.getElementById("adminGlobalAppearance")?.querySelectorAll("input,button").forEach(el => { el.disabled=value; });
     if (saveButton) saveButton.disabled = value || !config;
     if (publishButton) publishButton.disabled = value || !draftVersion;
     controls?.querySelectorAll('input').forEach(element => { element.disabled = value; });
@@ -195,13 +197,23 @@
     controls.querySelectorAll('[data-logo-file]').forEach(input => input.addEventListener('change', () => upload(input.dataset.logoFile, input.files?.[0])));
     controls.querySelectorAll('[data-logo-remove]').forEach(button => button.addEventListener('click', () => {
       const logo = config.branding.logos[button.dataset.logoRemove];
+      markDirty();
       logo.source = '';
       logo.enabled = false;
       if (button.dataset.logoRemove === 'admin') applyAdminLogo(config.branding);
       render();
     }));
+    window.NLAppearanceEditor?.(document.getElementById('adminGlobalAppearance'),config,markDirty);
     setBusy(busy);
   }
+
+  function markDirty() {
+    draftVersion=null;
+    updateVersion();
+    setBusy(busy);
+  }
+  controls?.addEventListener('input',markDirty);
+  controls?.addEventListener('change',markDirty);
 
   async function upload(placement, file) {
     if (!file) return;
@@ -214,6 +226,7 @@
       const result = await request(`/api/nurselink/admin/operations-center/appearance-settings/logos/${placement}`, {method: 'POST', body});
       config.branding.logos[placement].source = result?.data?.source || '';
       config.branding.logos[placement].enabled = true;
+      markDirty();
       if (placement === 'admin') applyAdminLogo(config.branding);
       showNotice('Logo uploaded. Save the draft, then publish it when ready.', 'success');
       render();
@@ -244,7 +257,7 @@
       publishedVersion = published?.version || null;
       updateVersion();
       render();
-      showNotice('Choose a placement and upload a logo. Existing published pages are unchanged until you publish.', '');
+      showNotice('Edit global colors, logos and the browser icon. Save a draft before publishing.', '');
     } catch (error) {
       controls.innerHTML = '<div class="nl530-empty">Logo controls are available after an Administrator session is verified.</div>';
       showNotice(error.message, 'error');
@@ -255,14 +268,14 @@
 
   saveButton?.addEventListener('click', async () => {
     setBusy(true);
-    showNotice('Saving logo draft…');
+    showNotice('Saving appearance draft…');
     try {
       const body = await request('/api/nurselink/admin/operations-center/appearance-settings/draft', {
         method: 'POST', body: JSON.stringify({payload: config})
       });
       draftVersion = body?.data?.version || null;
       updateVersion();
-      showNotice('Logo draft saved. Publish it to update the live pages.', 'success');
+      showNotice('Appearance draft saved. Publish it to update the live pages.', 'success');
     } catch (error) {
       showNotice(error.message, 'error');
     } finally {
@@ -273,14 +286,15 @@
   publishButton?.addEventListener('click', async () => {
     if (!draftVersion) return;
     setBusy(true);
-    showNotice('Publishing logos…');
+    showNotice('Publishing appearance…');
     try {
       await request(`/api/nurselink/admin/operations-center/appearance-settings/${draftVersion}/publish`, {method: 'POST', body: '{}'});
       publishedVersion = draftVersion;
       draftVersion = null;
       updateVersion();
       applyAdminLogo(config.branding);
-      showNotice('Logos published to the login, admin panel and member sidebar.', 'success');
+      window.NLGlobalAppearance?.apply(config);
+      showNotice('Appearance published. Other open pages receive it when refreshed.', 'success');
     } catch (error) {
       showNotice(error.message, 'error');
     } finally {
