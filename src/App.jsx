@@ -1,3 +1,4 @@
+import './panel-navigation.css'
 import CvMakerWorkspace from './pages/CvMakerWorkspace'
 import MemberDashboard from './pages/MemberDashboard'
 import './nurselink-dark-sidebar-buttons-v5200.css'
@@ -115,7 +116,7 @@ import {
   useLocation,
 } from 'react-router-dom'
 
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 
 import './App.css'
 
@@ -172,22 +173,22 @@ const menu = [
   ['My Profile', '/profile', 'profile'],
   ['Smart Registration', '/smart-registration', 'scan'],
   ['Application Status', '/application-status', 'status'],
-  ['Portfolio', '/portfolio', 'portfolio'],
-  ['CV Maker', '/cv-maker', 'portfolio'],
   ['Jobs', '/jobs', 'jobs'],
   ['Applications', '/applications', 'applications'],
-  ['Mentoring', '/mentoring', 'mentoring'],
-  ['Engagement Hub', '/engagement', 'engagement'],
-  ['Learning', '/learning', 'learning'],
+  ['Documents', '/documents', 'documents'],
   ['Credentials', '/credentials', 'credentials'],
   ['Qualifications', '/qualifications', 'qualifications'],
-  ['Documents', '/documents', 'documents'],
-  ['Digital Member ID', '/digital-member-id', 'member-id'],
-  ['Messages', '/messages', 'messages'],
+  ['Portfolio', '/portfolio', 'portfolio'],
+  ['CV Maker', '/cv-maker', 'portfolio'],
+  ['Learning', '/learning', 'learning'],
+  ['Mentoring', '/mentoring', 'mentoring'],
+  ['Engagement Hub', '/engagement', 'engagement'],
   ['Events', '/events', 'events'],
   ['Programs & Initiatives', '/initiatives', 'programs'],
-  ['Policies & Advocacy', '/policies', 'advocacy'],
+  ['Messages', '/messages', 'messages'],
+  ['Digital Member ID', '/digital-member-id', 'member-id'],
   ['Welfare & Crisis', '/welfare', 'welfare'],
+  ['Policies & Advocacy', '/policies', 'advocacy'],
   ['Policy & Privacy', '/policy-center', 'privacy'],
 ]
 
@@ -1986,6 +1987,8 @@ function AppLayout() {
                 !isMember
 
               return (
+                <Fragment key={path}>
+                {({'/dashboard':'My NurseLink','/portfolio':'Grow & Connect','/messages':'Support & Account'})[path] && <div className="nl-member-nav-group">{({'/dashboard':'My NurseLink','/portfolio':'Grow & Connect','/messages':'Support & Account'})[path]}</div>}
                 <NavLink
                   onClick={() => setMemberMobileNavOpen(false)}
                   key={path}
@@ -2018,6 +2021,7 @@ function AppLayout() {
                     </small>
                   )}
                 </NavLink>
+                </Fragment>
               )
             }
           )}
