@@ -1,0 +1,49 @@
+/* NurseLink Bulk Nurse Import embedded Administrator workspace */
+.nl-bulk-import-panel{
+  min-width:0;
+  padding:0;
+}
+
+.nl-bulk-import-frame-shell{
+  min-height:720px;
+  overflow:hidden;
+  border:1px solid var(--nl-border,#d9e4ee);
+  border-radius:18px;
+  background:var(--nl-card,#fff);
+  box-shadow:0 18px 42px rgba(15,42,68,.08);
+}
+
+.nl-bulk-import-frame{
+  display:block;
+  width:100%;
+  min-height:720px;
+  border:0;
+  background:transparent;
+}
+
+.nl-bulk-import-loading{
+  display:grid;
+  min-height:720px;
+  place-items:center;
+  padding:32px;
+  color:#65788d;
+  text-align:center;
+}
+
+html[data-nl-theme="dark"] .nl-bulk-import-frame-shell{
+  border-color:#2a4058;
+  background:#101b28;
+  box-shadow:0 18px 42px rgba(0,0,0,.28);
+}
+
+@media(max-width:950px){
+  .nl-bulk-import-frame-shell,
+  .nl-bulk-import-frame,
+  .nl-bulk-import-loading{
+    min-height:640px;
+  }
+
+  .nl-bulk-import-frame-shell{
+    border-radius:14px;
+  }
+}
