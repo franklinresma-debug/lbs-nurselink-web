@@ -34,3 +34,16 @@ html[data-theme="dark"] body[data-dashboard-release],body[data-dashboard-release
 
 /* Keep admin navigation and its background inside the viewport. */
 @media(min-width:951px){body .nl530-sidebar.nl-admin-sidebar{position:sticky!important;top:0!important;height:100dvh!important;max-height:100dvh!important;min-height:0!important;overflow-y:auto!important;align-self:start!important}}
+
+/* Compact desktop admin navigation, keeping every category accessible. */
+@media(min-width:951px){
+body #operationsSidebar.nl530-sidebar{display:flex!important;flex-direction:column!important;padding:12px 14px!important;overflow:hidden!important}
+body #operationsSidebar .nl530-brand{flex:0 0 auto!important;padding:0 6px 9px!important;margin:0 0 5px!important;gap:10px!important}
+body #operationsSidebar .nl530-brand small{font-size:11px!important;line-height:1.25!important}
+body #operationsMenu.nl530-menu{display:flex!important;flex-direction:column!important;flex:1 1 0!important;min-height:0!important;gap:1px!important;margin:0!important;overflow:visible!important}
+body #operationsMenu.nl530-menu>a{flex:1 1 0!important;min-height:0!important;height:auto!important;margin:0!important;padding:2px 8px!important;font-size:12px!important;line-height:15px!important;gap:6px!important;grid-template-columns:20px 1fr!important}
+body #operationsMenu.nl530-menu>a b{width:18px!important;height:18px!important;font-size:11px!important}
+body #operationsMenu.nl530-menu>:not(a){flex:0 0 auto!important;height:auto!important;min-height:0!important;margin:3px 0 1px!important;padding:2px 8px!important;font-size:10px!important;line-height:12px!important}
+body #operationsSidebar .nl530-sidebar-footer{flex:0 0 auto!important;margin:5px 0 0!important;padding:5px 0 0!important}
+body #operationsSidebar .nl530-sidebar-footer :is(a,button){min-height:28px!important;height:28px!important;margin:4px 0 0!important;font-size:12px!important;padding:3px 8px!important}
+}
