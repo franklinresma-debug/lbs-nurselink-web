@@ -1564,7 +1564,8 @@ import {
   }
 
   function applyProfilePhotoToAvatar(url) {
-    document.querySelectorAll('.topbar .avatar').forEach(avatar => {
+    if (url) document.querySelectorAll('[data-account-photo] .account-header-photo').forEach(image => { if (image.src !== url) image.src = url; });
+    document.querySelectorAll('.topbar .avatar:not([data-account-photo])').forEach(avatar => {
       if (!avatar.dataset.nurselinkInitial) {
         avatar.dataset.nurselinkInitial =
           (avatar.textContent || '').trim() || profileInitial();

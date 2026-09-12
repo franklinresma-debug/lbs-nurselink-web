@@ -4097,11 +4097,16 @@
         return;
       }
 
-      identityEl.innerHTML = `
+      identityEl.innerHTML = `<div class="nl-admin-account-photo">${esc((user.name || "A").charAt(0).toUpperCase())}<img alt="Your profile photo" src="/backend/api/profile-photo/image"></div>
         <span>${esc(access.label || label(access.role) || 'Administrator')}</span>
         <strong>${esc(user.name || user.email || 'NurseLink Staff')}</strong>
         <small>${esc(user.email || '')}</small>
       `;
+
+      const accountPhoto = identityEl.querySelector(".nl-admin-account-photo img");
+      accountPhoto?.addEventListener("load", () => { accountPhoto.style.opacity="1"; });
+      accountPhoto?.addEventListener("error", () => { accountPhoto.style.opacity="0"; });
+      if (accountPhoto?.complete && accountPhoto.naturalWidth) accountPhoto.style.opacity="1";
 
       bindFilters();
       bindGlobalSearch();

@@ -33,3 +33,5 @@ html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing
 }
 
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > .nl-member-nav-group{color:#f7931e!important}
+
+html body .topbar .avatar[data-account-photo]{position:relative!important;overflow:hidden!important}html body .topbar .avatar[data-account-photo]>.account-header-photo{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important;opacity:0}

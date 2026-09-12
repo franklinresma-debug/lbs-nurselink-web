@@ -2127,7 +2127,8 @@ function AppLayout() {
           </div>
 
           <div className="user-chip">
-            <div className="avatar">
+            <div className="avatar" data-account-photo="true">
+              <img className="account-header-photo" src="/backend/api/profile-photo/image" alt="Your profile photo" onLoad={event => { event.currentTarget.style.opacity = '1' }} onError={event => { event.currentTarget.style.opacity = '0' }} />
               {user?.name
                 ?.charAt(0)
                 ?.toUpperCase() ||
