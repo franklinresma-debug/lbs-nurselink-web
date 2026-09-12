@@ -125,6 +125,23 @@
     return allowed.has(tab) ? tab : 'dashboard';
   }
 
+  // Reuse a server-confirmed administrator session when returning from the member portal.
+  async function resumeAdministratorSession() {
+    try {
+      const response = await fetch(`${API}/api/nurselink/admin/session`, {
+        credentials: 'include',
+        headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) return;
+      const result = await response.json();
+      if (result?.data?.user && result?.data?.access && Number(result.data.expires_at) > Date.now() / 1000) {
+        window.location.replace(`${CFG?.entryPoints?.adminPortal || '/admin/'}#${requestedTab()}`);
+      }
+    } catch (_) { /* Normal sign-in remains available when a session cannot be confirmed. */ }
+  }
+  resumeAdministratorSession();
+
   form?.addEventListener('submit', async event => {
     event.preventDefault();
 
