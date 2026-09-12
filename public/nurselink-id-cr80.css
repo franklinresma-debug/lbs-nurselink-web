@@ -21,3 +21,13 @@
 .ndi-card .ndi-signature img{transform:scale(1.5);transform-origin:right center}.ndi-card .ndi-meta #memberValidUntil{font-size:2cqw;white-space:nowrap}
 
 .ndi-card .ndi-birth{display:flex;align-items:baseline;gap:1cqw;margin-top:1cqw;white-space:nowrap}.ndi-card .ndi-birth small{font-size:1.6cqw}.ndi-card .ndi-birth b{font-size:2cqw}.ndi-card .ndi-meta{margin-top:1cqw}.ndi-card .ndi-details h2{margin-bottom:1cqw}.ndi-card .ndi-card-foot>span{font-size:2.1cqw;letter-spacing:.02em}
+
+/* Consistent type hierarchy with low-contrast decorative geometry. */
+.ndi-card,.ndi-card *{font-family:Arial,Helvetica,sans-serif!important}
+.ndi-card .ndi-details small,.ndi-card .ndi-birth small{font-size:1.8cqw!important;font-weight:700;letter-spacing:0!important;line-height:1.2}
+.ndi-card .ndi-details h2,.ndi-card .ndi-details>strong,.ndi-card .ndi-meta b,.ndi-card .ndi-birth b,.ndi-card .ndi-meta #memberValidUntil{font-size:2.65cqw!important;font-weight:700;line-height:1.2;letter-spacing:0!important}
+.ndi-card #memberStanding{text-transform:uppercase}
+.ndi-card .ndi-birth{display:block;margin-top:1cqw;white-space:normal}.ndi-card .ndi-birth b{display:block;margin-top:.3cqw}
+.ndi-card .ndi-card-body{position:relative;isolation:isolate;overflow:hidden;padding-block:2cqw;background:linear-gradient(125deg,transparent 0 62%,#e5e7eb55 62% 72%,transparent 72%),linear-gradient(35deg,transparent 0 35%,#d1d5db33 35% 45%,transparent 45%),repeating-linear-gradient(155deg,transparent 0 14px,#9ca3af12 14px 15px,transparent 15px 28px)}
+.ndi-card .ndi-card-body:before{content:"";position:absolute;z-index:-1;right:21%;top:5%;width:25%;aspect-ratio:1;border:1.5cqw solid #9ca3af16;transform:rotate(25deg);pointer-events:none}
+.ndi-card .ndi-photo,.ndi-card .ndi-qr{background:#fff}.ndi-card .ndi-meta{margin-top:.8cqw}.ndi-card .ndi-signature img{height:6.5cqw}
