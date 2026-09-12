@@ -13,3 +13,197 @@ window.NLAppearanceEditor = function(host,config,onChange) {
  host.querySelector('#nlThemeReset').addEventListener('click',()=>{theme.colors={...api.defaults};host.querySelectorAll('[data-color]').forEach(input=>input.value=theme.colors[input.dataset.color]);preview();onChange();});
  preview();
 };
+
+/*
+ * Keep the controlled Bulk Nurse Import workflow inside the canonical
+ * NurseLink Administration Operations Center. The legacy HTML remains a
+ * compatibility document and is rendered only as a same-origin module frame.
+ */
+(() => {
+  'use strict';
+
+  const TAB = 'bulk-import';
+  const LEGACY_URL = '/nurselink-bulk-nurse-import-admin.html?embedded=1';
+  const FRAME_ID = 'nurselinkBulkImportFrame';
+
+  function currentTab() {
+    return String(location.hash || '')
+      .replace(/^#\/?/, '')
+      .trim();
+  }
+
+  function installStylesheet() {
+    if (document.querySelector('link[data-nl-bulk-import-embedded]')) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/admin/bulk-import-embedded.css?v=20260913';
+    link.dataset.nlBulkImportEmbedded = '1';
+    document.head.appendChild(link);
+  }
+
+  function prepareNavigation() {
+    const menu = document.getElementById('operationsMenu');
+    if (!menu) return;
+
+    const link = menu.querySelector(
+      'a[href="/nurselink-bulk-nurse-import-admin.html"], a[href*="nurselink-bulk-nurse-import-admin"]'
+    );
+
+    if (!link) return;
+
+    link.href = '#bulk-import';
+    link.dataset.tab = TAB;
+    link.dataset.adminModule = 'bulk-import';
+    link.setAttribute('aria-label', 'Open Bulk Nurse Import inside NurseLink Administration');
+  }
+
+  function installFrameContent(frame) {
+    let doc;
+
+    try {
+      doc = frame.contentDocument;
+    } catch (_) {
+      return;
+    }
+
+    if (!doc?.documentElement || !doc.body) return;
+
+    doc.documentElement.classList.add('nl-admin-embedded-frame');
+    doc.body.classList.add('nl-admin-embedded-frame-body');
+
+    if (!doc.getElementById('nlBulkImportEmbeddedOverrides')) {
+      const style = doc.createElement('style');
+      style.id = 'nlBulkImportEmbeddedOverrides';
+      style.textContent = `
+        html.nl-admin-embedded-frame,
+        html.nl-admin-embedded-frame body{
+          min-height:0 !important;
+          background:transparent !important;
+        }
+        body.nl-admin-embedded-frame-body{
+          overflow:hidden !important;
+        }
+        .nl-admin-shell{
+          display:block !important;
+          min-height:0 !important;
+          background:transparent !important;
+        }
+        .nl-admin-sidebar,
+        .nl-admin-header{
+          display:none !important;
+        }
+        .nl-admin-main.bnai-main{
+          width:100% !important;
+          max-width:none !important;
+          min-height:0 !important;
+          margin:0 !important;
+          padding:24px !important;
+          background:transparent !important;
+        }
+        @media(max-width:700px){
+          .nl-admin-main.bnai-main{padding:16px !important;}
+        }
+      `;
+      doc.head.appendChild(style);
+    }
+
+    const resize = () => {
+      const height = Math.max(
+        doc.documentElement.scrollHeight || 0,
+        doc.body.scrollHeight || 0,
+        720
+      );
+      frame.style.height = `${height}px`;
+      frame.setAttribute('aria-busy', 'false');
+    };
+
+    resize();
+
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(resize);
+      observer.observe(doc.documentElement);
+      observer.observe(doc.body);
+      frame._nlBulkImportResizeObserver?.disconnect?.();
+      frame._nlBulkImportResizeObserver = observer;
+    } else {
+      window.setInterval(resize, 800);
+    }
+  }
+
+  function createPanel() {
+    if (document.querySelector(`[data-panel="${TAB}"]`)) return;
+
+    const main = document.querySelector('.nl-admin-main.nl530-main');
+    if (!main) return;
+
+    const panel = document.createElement('section');
+    panel.className = 'nl530-panel nl-bulk-import-panel';
+    panel.dataset.panel = TAB;
+    panel.hidden = true;
+    panel.innerHTML = `
+      <div class="nl-bulk-import-frame-shell">
+        <iframe
+          id="${FRAME_ID}"
+          class="nl-bulk-import-frame"
+          title="NurseLink Bulk Nurse Import Queue"
+          aria-busy="true"
+          loading="eager"
+          referrerpolicy="same-origin"
+        ></iframe>
+      </div>
+    `;
+
+    main.appendChild(panel);
+
+    const frame = panel.querySelector(`#${FRAME_ID}`);
+    frame?.addEventListener('load', () => installFrameContent(frame));
+  }
+
+  function ensureFrameLoaded() {
+    if (currentTab() !== TAB) return;
+
+    const frame = document.getElementById(FRAME_ID);
+    if (!frame || frame.dataset.loaded === '1') return;
+
+    frame.dataset.loaded = '1';
+    frame.src = LEGACY_URL;
+  }
+
+  function syncHeader() {
+    if (currentTab() !== TAB) return;
+
+    window.setTimeout(() => {
+      const title = document.getElementById('operationsTitle');
+      const subtitle = document.getElementById('operationsSubtitle');
+      const mobileTitle = document.getElementById('adminMobileTitle');
+
+      if (title) title.textContent = 'Bulk Nurse Import';
+      if (mobileTitle) mobileTitle.textContent = 'Bulk Nurse Import';
+      if (subtitle) {
+        subtitle.textContent =
+          'Review encoder-completed nurse records and create controlled unverified applicant accounts.';
+      }
+    }, 0);
+  }
+
+  function syncModule() {
+    ensureFrameLoaded();
+    syncHeader();
+  }
+
+  function init() {
+    installStylesheet();
+    prepareNavigation();
+    createPanel();
+    syncModule();
+
+    window.addEventListener('hashchange', syncModule);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, {once: true});
+  } else {
+    init();
+  }
+})();

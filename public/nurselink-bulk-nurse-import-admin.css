@@ -265,8 +265,45 @@
   font-size:.84rem;
 }
 
+/* Canonical Administrator portal embedding. */
+html[data-nurselink-admin-embedded="bulk-import"],
+html[data-nurselink-admin-embedded="bulk-import"] body{
+  min-height:0 !important;
+  background:transparent !important;
+}
+
+html[data-nurselink-admin-embedded="bulk-import"] body{
+  overflow:hidden !important;
+}
+
+html[data-nurselink-admin-embedded="bulk-import"] .nl-admin-shell{
+  display:block !important;
+  min-height:0 !important;
+  background:transparent !important;
+}
+
+html[data-nurselink-admin-embedded="bulk-import"] .nl-admin-sidebar,
+html[data-nurselink-admin-embedded="bulk-import"] .nl-admin-header{
+  display:none !important;
+}
+
+html[data-nurselink-admin-embedded="bulk-import"] .nl-admin-main.bnai-main{
+  width:100% !important;
+  max-width:none !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:24px !important;
+  background:transparent !important;
+}
+
 @media(max-width:1000px){
   .bnai-layout{
     grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:700px){
+  html[data-nurselink-admin-embedded="bulk-import"] .nl-admin-main.bnai-main{
+    padding:16px !important;
   }
 }
