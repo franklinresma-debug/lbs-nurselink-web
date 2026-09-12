@@ -13,10 +13,11 @@ body { margin: 0; }
 .nl-admin-brand-logo { width: min(420px,78%); height: clamp(64px,9vw,108px); margin-top: clamp(18px,4vh,44px); display: flex; align-items: center; }
 .nl-admin-brand-logo img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 3px 12px rgba(2,20,33,.24)); }
 .nl-admin-brand-logo[hidden] { display: none; }
-.nl-admin-hero-message { margin-top: 32px; }
+.nl-admin-hero-message { margin-top: clamp(22px,4vh,42px); }
+.nl-admin-hero-description { margin-top: 32px; }
 .nl-admin-access-pill { display: inline-flex; align-items: center; padding: 6px 16px; border-radius: 999px; background: #84B728; color: #fff; font-size: 12px; font-weight: 800; line-height: 1.55; letter-spacing: .12em; text-transform: uppercase; }
 .nl-admin-hero-message h1 { margin: 14px 0 0; max-width: 560px; font-size: clamp(44px,3.4vw,60px); line-height: 1.04; letter-spacing: -.038em; text-shadow: 0 2px 22px rgba(2,20,33,.24); }
-.nl-admin-hero-message p { max-width: 470px; margin: 18px 0 0; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,.91); text-shadow: 0 1px 2px #011934,0 4px 14px rgba(1,30,63,.82); }
+.nl-admin-hero-description p { max-width: 470px; margin: 0; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,.91); text-shadow: 0 1px 2px #011934,0 4px 14px rgba(1,30,63,.82); }
 .nl-admin-security-note { max-width: 470px; margin-top: 48px; padding: 16px 18px; border: 1px solid rgba(255,255,255,.18); border-radius: 15px; background: rgba(5,34,52,.68); box-shadow: 0 12px 34px rgba(2,20,33,.16); }
 .nl-admin-security-note strong,.nl-admin-security-note small { display: block; }
 .nl-admin-security-note strong { font-size: 14px; }
@@ -47,13 +48,13 @@ body { margin: 0; }
 @media (max-width:780px) {
   .nl-admin-auth-shell { display: block; }
   .nl-admin-auth-brand { container-type: normal; }
-  .nl-admin-hero-media { inset: 0 0 auto; height: 320px; aspect-ratio: auto; }
+  .nl-admin-hero-media { inset: 0 0 auto; height: 420px; aspect-ratio: auto; }
   .nl-admin-hero-media img { object-position: var(--hero-mobile-x,50%) var(--hero-mobile-y,26%); }
   .nl-admin-hero-content { min-height: 360px; padding: 26px 22px 62px; }
-  .nl-admin-hero-intro { min-height: 294px; }
+  .nl-admin-hero-intro { min-height: 394px; }
   .nl-admin-brand-logo { width: min(320px,82%); height: 72px; margin-top: 12px; }
   .nl-admin-hero-message h1 { font-size: clamp(36px,10vw,48px); }
-  .nl-admin-hero-message p { font-size: 15px; }
+  .nl-admin-hero-description p { font-size: 15px; }
   .nl-admin-security-note { margin-top: 48px; }
   .nl-admin-auth-panel { min-height: auto; padding: 0 16px 34px; border-left: 0; }
   .nl-admin-login-card { margin-top: -36px; padding: 28px 22px; }
