@@ -45,6 +45,11 @@ function unwrapInbox(payload) {
   return [];
 }
 
+function MemberConversationWorkspace() {
+  const host = useRef(null);
+  useEffect(() => window.NLConversations?.mount(host.current, false), []);
+  return <div ref={host} />;
+}
 export function Phase3MessagesPage() {
   const [payload,setPayload]=useState(null);
   const [loading,setLoading]=useState(true);
@@ -129,6 +134,7 @@ export function Phase3MessagesPage() {
       <div className="nl410-count"><strong>{unread}</strong><span>Unread</span></div>
     </header>
 
+    <MemberConversationWorkspace />
     <div className="nl410-grid">
       <section className="nl410-panel">
         <div className="nl410-panel-head"><div><span>INBOX</span><h2>Member messages</h2></div><button type="button" className="secondary-button" onClick={load}>Refresh</button></div>
