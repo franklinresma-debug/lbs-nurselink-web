@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { request } from '../lib/api'
+const initialDocuments = ['ID Picture (2×2, white background)', 'LBS Application Form', 'LBS CV Format Template', 'My Resume', 'Certificate of Employment', 'Reference Letter', 'College Diploma', 'High School Diploma', 'Transcript of Record / RLE', 'PRC License Card (Front & Back)', 'PRC Board Rating']
 
 const API = () => window.NurseLinkPhase2Final || {}
 
@@ -37,14 +39,16 @@ function useLoad(loader) {
 
 export function Phase2JobsPage(){
   const {data,loading,error,reload}=useLoad(()=>API().JobApi.opportunities())
-  const jobs=unwrap(data)
+  const [search,setSearch]=useState('')
+  const jobs=unwrap(data).filter(job=>[job.title,job.employer_name,job.country,job.specialty].filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase()))
   const [busy,setBusy]=useState(null),[notice,setNotice]=useState('')
   async function apply(job){ setBusy(job.id); setNotice(''); try { await API().JobApi.apply({job_opportunity_id:job.id}); setNotice('Application submitted.'); } catch(e){ setNotice(e?.message||'Unable to apply.'); } finally { setBusy(null) } }
-  return <PageShell eyebrow="Career & Jobs" title="Job Opportunities" description="Explore verified NurseLink opportunities and apply from your member account.">
+  return <PageShell eyebrow="Career & Jobs" title="LBS Vacancies" description="Explore verified NurseLink opportunities and apply from your member account.">
+    <label>Search vacancies<input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Position, company, country or specialty" /></label><p>Jobs are ordered by NurseLink’s existing matching service. Review the requirements before applying.</p>
     {notice && <div className="nl-phase2-note">{notice}</div>}
     <State loading={loading} error={error} empty={!jobs.length}><div className="nl-live-list">{jobs.map(job=><article className="nl-phase2-panel" key={job.id}>
       <div className="nl-live-card-head"><div><h2>{job.title||'Opportunity'}</h2><p>{job.employer_name||job.partner_organization?.name||'NurseLink partner'}{job.country?` · ${job.country}`:''}</p></div><span className="badge">{job.status||'open'}</span></div>
-      {job.description && <p>{job.description}</p>}
+      {job.description && <p>{job.description}</p>}<p><strong>Salary: </strong>{job.salary_min != null ? `${job.salary_currency || ""} ${job.salary_min.toLocaleString()}${job.salary_max != null ? ` to ${job.salary_max.toLocaleString()}` : " minimum"}` : "Not disclosed"}</p>
       <div className="nl-live-meta"><span>{job.employment_type||'Employment'}</span><span>{job.work_setting||'Work setting not specified'}</span>{job.minimum_experience_years!=null&&<span>{job.minimum_experience_years}+ yrs experience</span>}</div>
       <div className="nl-phase2-actions"><button type="button" className="primary-button" disabled={busy===job.id} onClick={()=>apply(job)}>{busy===job.id?'Applying…':'Apply'}</button>{job.apply_url&&<a className="secondary-button" href={job.apply_url} target="_blank" rel="noreferrer">External details</a>}</div>
     </article>)}</div></State>
@@ -72,7 +76,7 @@ export function Phase2ApplicationsPage(){
 
   return <PageShell
     eyebrow="Career & Jobs"
-    title="My Applications"
+    title="My Applied Jobs"
     description="Track applications, review status changes and manage active submissions."
   >
     {notice&&<div className="nl-phase2-note">{notice}</div>}
@@ -82,13 +86,15 @@ export function Phase2ApplicationsPage(){
           {apps.map(app=><article className="nl-phase2-panel" key={app.id}>
             <div className="nl-live-card-head">
               <div>
-                <h2>{app.job_opportunity?.title||app.job?.title||`Application #${app.id}`}</h2>
-                <p>{app.job_opportunity?.employer_name||app.job?.employer_name||'NurseLink opportunity'}</p>
+                <h2>{app.title||app.job_opportunity?.title||app.job?.title||`Application #${app.id}`}</h2>
+                <p>{app.employer_name||app.job_opportunity?.employer_name||app.job?.employer_name||'NurseLink opportunity'}</p>
               </div>
               <span className="badge">{app.status||'submitted'}</span>
             </div>
+            <details><summary>View application details</summary><p><strong>Position:</strong> {app.title}</p><p><strong>Company:</strong> {app.employer_name}</p><p><strong>Salary:</strong> {app.salary_min != null ? `${app.salary_currency || ''} ${app.salary_min.toLocaleString()}${app.salary_max != null ? ` – ${app.salary_max.toLocaleString()}` : ' minimum'}` : 'Not disclosed'}</p>{app.cover_note && <p>{app.cover_note}</p>}</details>
             <div className="nl-live-meta">
-              {app.submitted_at&&<span>Submitted {new Date(app.submitted_at).toLocaleDateString()}</span>}
+              {app.country&&<span>{app.country}</span>}
+              {app.submitted_at&&<span>Date applied {new Date(app.submitted_at).toLocaleDateString()}</span>}
               {app.reviewed_at&&<span>Reviewed {new Date(app.reviewed_at).toLocaleDateString()}</span>}
             </div>
             {!['withdrawn','rejected','hired','closed'].includes(String(app.status||'').toLowerCase())&&
@@ -100,7 +106,7 @@ export function Phase2ApplicationsPage(){
             }
           </article>)}
         </div>
-      ) : null}
+      ) : <p>No online job applications are recorded in NurseLink yet.</p>}
     </State>
   </PageShell>
 }
@@ -128,12 +134,15 @@ function collectDocuments(obj, out=[], seen=new Set()) {
 }
 
 export function Phase2DocumentsPage(){
+  const [documentTab,setDocumentTab]=useState('initial')
   const [data,setData]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState('')
-  useEffect(()=>{(async()=>{try{const [cred,app]=await Promise.allSettled([API().CredentialApi.dashboard(),API().ApplicationApi.get()]);setData({cred:cred.status==='fulfilled'?cred.value:null,app:app.status==='fulfilled'?app.value:null})}catch(e){setError(e?.message||'Request failed')}finally{setLoading(false)}})()},[])
+  useEffect(()=>{(async()=>{try{const [cred,app]=await Promise.allSettled([API().CredentialApi.dashboard(),request('/api/smart-registration')]);if(cred.status==='rejected'&&app.status==='rejected')throw new Error('Unable to load your documents. Please try again.');setData({cred:cred.status==='fulfilled'?cred.value:null,app:app.status==='fulfilled'?app.value:null})}catch(e){setError(e?.message||'Request failed')}finally{setLoading(false)}})()},[])
   const docs=useMemo(()=>collectDocuments(data||[]).filter((d,i,a)=>a.findIndex(x=>String(x.id??x.path??x.storage_path)===String(d.id??d.path??d.storage_path))===i),[data])
   return <PageShell eyebrow="Professional Records" title="Documents" description="View evidence associated with your application and credentials.">
-    <State loading={loading} error={error} empty={!docs.length}><div className="nl-live-list">{docs.map((d,i)=><article className="nl-phase2-panel" key={d.id||d.path||i}><div className="nl-live-card-head"><div><h2>{d.title||d.original_name||d.document_type||'Document'}</h2><p>{d.document_type||d.category||d.mime_type||'Evidence'}</p></div><span className="badge">{d.security_status||d.upload_status||d.verification_status||'recorded'}</span></div>{d.expires_on&&<p>Expires: {d.expires_on}</p>}</article>)}</div></State>
-    {!loading&&!error&&!docs.length&&<div className="nl-phase2-note">No document collection was exposed by the verified member-facing API responses. Upload and manage application evidence in Smart Registration and credential evidence in Credentials.</div>}
+    <div className="nl-phase2-actions" role="group" aria-label="Document stages"><button type="button" aria-pressed={documentTab==='initial'} onClick={()=>setDocumentTab('initial')}>Initial Documents</button><button type="button" aria-pressed={documentTab==='processing'} onClick={()=>setDocumentTab('processing')}>Processing Documents</button></div>
+    <section className="nl-phase2-panel">{documentTab==='initial'?<><h2>Initial document checklist</h2><p>Use this list to prepare your applicant file. Submit only documents requested by the LBS team.</p><ul>{initialDocuments.map(name=><li key={name}>{name}</li>)}</ul><a className="primary-button" href="/smart-registration">Upload application documents</a></>:<><h2>Processing documents</h2><p>Follow the specific requirements provided by your recruiter for your job application. Check Messages for requests and manage professional evidence in Credentials.</p><a className="secondary-button" href="/messages">Open messages</a> <a className="secondary-button" href="/credentials">Manage credential evidence</a></>}</section>
+    <h2>Your recorded documents</h2><State loading={loading} error={error} empty={!docs.length}><div className="nl-live-list">{docs.map((d,i)=><article className="nl-phase2-panel" key={d.id||d.path||i}><div className="nl-live-card-head"><div><h2>{d.title||d.original_name||d.document_type||'Document'}</h2><p>{d.document_type||d.category||d.mime_type||'Evidence'}</p></div><span className="badge">{d.security_status||d.upload_status||d.verification_status||'recorded'}</span></div>{d.expires_on&&<p>Expires: {d.expires_on}</p>}</article>)}</div></State>
+    {!loading&&!error&&!docs.length&&<div className="nl-phase2-note">No supporting documents were returned for this account. Upload and manage application evidence in Smart Registration and credential evidence in Credentials.</div>}
   </PageShell>
 }
 
