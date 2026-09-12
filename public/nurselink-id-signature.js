@@ -5,6 +5,14 @@
       const response = await fetch('/backend/api/cv-maker', { credentials: 'include', headers: { Accept: 'application/json' } });
       if (!response.ok) return;
       const { data } = await response.json();
+      const birth = data?.member?.profile?.date_of_birth;
+      if (birth) {
+        const match = String(birth).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+          document.getElementById('memberBirthDate').textContent = date.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+      }
       if (!data?.signature?.has_signature || !data.signature.signature_url) return;
       const url = new URL(data.signature.signature_url, location.origin);
       if (url.origin !== location.origin) return;
