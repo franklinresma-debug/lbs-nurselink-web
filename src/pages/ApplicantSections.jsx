@@ -8,7 +8,7 @@ const cvSections = [
 ]
 
 export default function ApplicantSections({ applications, applicationState, user, photoUrl }) {
-  const linedUp = applications.filter(a => ['shortlisted', 'interview', 'offered'].includes(a.status))
+  const linedUp = applications.filter(a => ['shortlisted', 'interview', 'offer'].includes(a.status))
   return <section className="nld-card nld-arms" aria-labelledby="arms-applicant-title">
     <div className="nld-card-head"><h2 id="arms-applicant-title">LBS applicant workspace</h2><a href="/nurselink-cv-maker.html">Open CV maker →</a></div>
     <p className="nld-muted">Your recruitment records and NurseLink professional services, together.</p>
