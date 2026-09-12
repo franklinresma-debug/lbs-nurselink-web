@@ -2073,7 +2073,7 @@ function AppLayout() {
           />
 
           <div className="topbar-member-actions">
-            {memberShellLocation.pathname === '/dashboard' && <NavLink to="/notifications" className="nld-notification-link" aria-label="Open notifications"><span aria-hidden="true">✉</span></NavLink>}
+            {memberShellLocation.pathname === '/dashboard' && <NavLink to="/notifications" className="nld-notification-link" aria-label="Open notifications"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></NavLink>}
             <button
               type="button"
               className="navigation-help-button"
