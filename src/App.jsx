@@ -1,3 +1,4 @@
+import CvMakerWorkspace from './pages/CvMakerWorkspace'
 import MemberDashboard from './pages/MemberDashboard'
 import './nurselink-dark-sidebar-buttons-v5200.css'
 import './nurselink-dark-mode-contrast-v5200.css'
@@ -172,7 +173,7 @@ const menu = [
   ['Smart Registration', '/smart-registration', 'scan'],
   ['Application Status', '/application-status', 'status'],
   ['Portfolio', '/portfolio', 'portfolio'],
-  ['CV Maker', '/nurselink-cv-maker.html', 'portfolio'],
+  ['CV Maker', '/cv-maker', 'portfolio'],
   ['Jobs', '/jobs', 'jobs'],
   ['Applications', '/applications', 'applications'],
   ['Mentoring', '/mentoring', 'mentoring'],
@@ -2181,6 +2182,7 @@ function AppLayout() {
         />
 
         <Routes>
+          <Route path="/cv-maker" element={<CvMakerWorkspace />} />
           <Route
             path="/dashboard"
             element={<MemberDashboard />}
