@@ -47,3 +47,6 @@ body #operationsMenu.nl530-menu>:not(a){flex:0 0 auto!important;height:auto!impo
 body #operationsSidebar .nl530-sidebar-footer{flex:0 0 auto!important;margin:5px 0 0!important;padding:5px 0 0!important}
 body #operationsSidebar .nl530-sidebar-footer :is(a,button){min-height:28px!important;height:28px!important;margin:4px 0 0!important;font-size:12px!important;padding:3px 8px!important}
 }
+
+/* LBS orange admin category headings. */
+body #operationsMenu.nl530-menu>:not(a){color:#f7931e!important}
