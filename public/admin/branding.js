@@ -165,6 +165,7 @@
     if (!controls || !config) return;
     controls.innerHTML = placements.map(([key, title, description]) => {
       const logo = config.branding.logos[key];
+      if (key === "favicon") return renderFavicon(logo);
       const source = assetSource(logo.source);
       return `
         <article class="nl640-logo-card" data-logo-card="${key}">
@@ -199,9 +200,14 @@
       const logo = config.branding.logos[button.dataset.logoRemove];
       markDirty();
       logo.source = '';
-      logo.enabled = false;
+      logo.enabled = button.dataset.logoRemove === 'favicon' && !!logo.icons?.length;
       if (button.dataset.logoRemove === 'admin') applyAdminLogo(config.branding);
       render();
+    }));
+    controls.querySelector('[data-favicon-files]')?.addEventListener('change', e => uploadFaviconSet(Array.from(e.target.files || [])));
+    controls.querySelectorAll('[data-favicon-remove]').forEach(button => button.addEventListener('click', () => {
+      config.branding.logos.favicon.icons.splice(Number(button.dataset.faviconRemove),1);
+      markDirty(); render();
     }));
     window.NLAppearanceEditor?.(document.getElementById('adminGlobalAppearance'),config,markDirty);
     setBusy(busy);
@@ -214,6 +220,41 @@
   }
   controls?.addEventListener('input',markDirty);
   controls?.addEventListener('change',markDirty);
+
+  function renderFavicon(logo) {
+    const icons = Array.isArray(logo.icons) ? logo.icons : [];
+    return `<article class="nl640-logo-card nl-favicon-set"><div class="nl640-logo-card-head"><div><h3>Favicon set</h3><p>Upload your different sizes together. PNG sizes are detected automatically; ICO can contain several sizes.</p></div><label><input type="checkbox" data-logo-enabled="favicon" ${logo.enabled?'checked':''}> Show</label></div>
+      <label><span>Select PNG and ICO files · up to 20 files, 2 MB each</span><input type="file" data-favicon-files multiple accept=".png,.ico,image/png,image/x-icon,image/vnd.microsoft.icon"></label>
+      <p>Typical set: 16 × 16, 32 × 32, 48 × 48, 180 × 180, 192 × 192 and 512 × 512. A 180 × 180 PNG is also used as the Apple touch icon.</p>
+      <div class="nl-favicon-list">${icons.map((icon,i)=>`<div class="nl-favicon-row"><img src="${esc(assetSource(icon.source))}" alt=""><div><strong>${esc(icon.name)}</strong><small>${esc(icon.sizes)} · ${icon.type==='image/png'?'PNG':'ICO'}</small></div><button type="button" data-favicon-remove="${i}" aria-label="Remove ${esc(icon.name)}">Remove</button></div>`).join('') || '<p>No favicon set uploaded yet.</p>'}</div>
+      ${logo.source?`<p>The previous single favicon remains as a fallback.</p><img width="32" height="32" src="${esc(assetSource(logo.source))}" alt="Previous favicon"><button type="button" data-logo-remove="favicon">Remove previous favicon</button>`:''}
+      <p>Save the appearance draft, then publish to apply the set to both portals. Select individual files from your set; ZIP archives and manifest files are not uploaded here.</p></article>`;
+  }
+
+  async function uploadFaviconSet(files) {
+    if (!files.length) return;
+    const logo=config.branding.logos.favicon;
+    logo.icons=Array.isArray(logo.icons)?logo.icons:[];
+    if (files.length+logo.icons.length>20) return showNotice('A favicon set can contain up to 20 files. Remove old entries first.','error');
+    setBusy(true);
+    const errors=[];let uploaded=0;
+    try {
+      for (const file of files) {
+        showNotice(`Uploading favicon ${uploaded+errors.length+1} of ${files.length}…`);
+        if(file.size>2*1024*1024 || !/\.(png|ico)$/i.test(file.name)){errors.push(`${file.name}: use PNG or ICO, up to 2 MB.`);continue;}
+        try {
+          const body=new FormData();body.append('logo',file);
+          const response=await request('/api/nurselink/admin/operations-center/appearance-settings/logos/favicon',{method:'POST',body});
+          const icon=response.data;
+          const existing=logo.icons.findIndex(item=>item.sizes===icon.sizes&&item.type===icon.type);
+          if(existing>=0)logo.icons[existing]=icon;else logo.icons.push(icon);
+          logo.enabled=true;uploaded++;markDirty();
+        }catch(error){errors.push(`${file.name}: ${error.message}`);}
+      }
+      render();
+      showNotice(`${uploaded} favicon file(s) uploaded. ${errors.join(' ')} ${uploaded?'Save the draft, then publish when ready.':''}`,errors.length?'error':'success');
+    } finally {setBusy(false);}
+  }
 
   async function upload(placement, file) {
     if (!file) return;

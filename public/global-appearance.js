@@ -29,10 +29,22 @@ let style;let originalIcons;
 function apply(data){
 const theme=data?.globalDesign?.theme;
 if(theme?.enabled===true){for(const[key,value]of Object.entries(colors(theme)))document.documentElement.style.setProperty(`--nlg-${key}`,value);if(!style){style=document.createElement('style');style.id='nl-global-appearance';document.head.append(style);}style.textContent=styles;document.documentElement.setAttribute('data-nl-global-theme','');}else{document.documentElement.removeAttribute('data-nl-global-theme');}
-if(!originalIcons)originalIcons=Array.from(document.querySelectorAll('link[rel~="icon"]')).map(el=>el.cloneNode(true));
-const icon=data?.branding?.logos?.favicon;
+if(!originalIcons)originalIcons=Array.from(document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]')).map(el=>el.cloneNode(true));
 document.querySelectorAll('link[data-nl-favicon]').forEach(el=>el.remove());
-if(icon?.enabled&&icon.source){try{const url=new URL(icon.source.startsWith('/api/')?'/backend'+icon.source:icon.source,location.origin);if(!['https:','http:'].includes(url.protocol))return;document.querySelectorAll('link[rel~="icon"]').forEach(el=>el.remove());const link=document.createElement('link');link.rel='icon';link.href=url.href;link.dataset.nlFavicon='true';document.head.append(link);}catch(_){}}else if(!document.querySelector('link[rel~="icon"]'))originalIcons.forEach(el=>document.head.append(el.cloneNode(true)));
+const icon=data?.branding?.logos?.favicon;
+const icons=Array.isArray(icon?.icons)&&icon.icons.length?icon.icons:icon?.source?[{source:icon.source}]:[];
+const usable=icons.flatMap(item=>{try{const url=new URL(item.source.startsWith('/api/')?'/backend'+item.source:item.source,location.origin);return ['https:','http:'].includes(url.protocol)?[{...item,url:url.href}]:[];}catch(_){return [];}});
+if(icon?.enabled&&usable.length){
+ document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]').forEach(el=>el.remove());
+ for(const item of usable){
+  const link=document.createElement('link');link.rel='icon';link.href=item.url;link.dataset.nlFavicon='true';
+  if(item.sizes&&/^\d+x\d+( \d+x\d+)*$/.test(item.sizes))link.sizes=item.sizes;
+  if(['image/png','image/x-icon'].includes(item.type))link.type=item.type;
+  document.head.append(link);
+  if(item.type==='image/png'&&item.sizes==='180x180'){const apple=link.cloneNode(true);apple.rel='apple-touch-icon';document.head.append(apple);}
+ }
+}else if(!document.querySelector('link[rel~="icon"]'))originalIcons.forEach(el=>document.head.append(el.cloneNode(true)));
+
 }
 async function refresh(){try{const r=await fetch('/backend/api/nurselink/appearance-settings',{cache:'no-store',headers:{Accept:'application/json'}});if(r.ok)apply((await r.json()).data);}catch(_){}}
 window.NLGlobalAppearance={fields,defaults,colors,apply,refresh};refresh();

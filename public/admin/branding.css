@@ -34,3 +34,5 @@ html[data-nl-theme="dark"] .nl640-logo-card{background:var(--nl631-surface2,#122
 html[data-nl-theme="dark"] .nl640-logo-preview{background:#fff}
 @media(max-width:1100px){.nl640-logo-grid{grid-template-columns:1fr}}
 @media(max-width:720px){.nl640-branding-actions{align-items:stretch;flex-direction:column}.nl640-branding-actions p{margin:0}.nl640-branding-actions button{width:100%}}
+
+.nl-favicon-set{grid-column:1/-1}.nl-favicon-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.nl-favicon-row{display:flex;gap:12px;align-items:center;border:1px solid #d5e2f0;border-radius:8px;padding:12px}.nl-favicon-row img{width:40px;height:40px;object-fit:contain}.nl-favicon-row div{min-width:0;flex:1}.nl-favicon-row strong{overflow-wrap:anywhere}.nl-favicon-row small{display:block;margin-top:5px}.nl-favicon-set>p{font-size:12px;line-height:1.5}
