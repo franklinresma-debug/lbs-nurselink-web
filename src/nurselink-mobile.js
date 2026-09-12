@@ -10246,13 +10246,14 @@ import {
   }
 
   function smartLockedApplication(data) {
-    const status = String(data?.membership?.status || '').replace(/_/g, ' ');
+    const isUpdate = data?.membership?.status === 'approved';
+    const status = String((isUpdate ? data?.membership?.profile_update_status : data?.membership?.status) || '').replace(/_/g, ' ');
     return `
       <section class="nurselink-smart557-card nurselink-smart557-locked">
         <div class="nurselink-smart557-card-heading centered">
           <span class="nurselink-smart557-icon" aria-hidden="true">🔒</span>
-          <h1>Your submitted application is locked</h1>
-          <p>Your current status is <strong>${smartEsc(status || 'under review')}</strong>. Information cannot be changed while NurseLink is reviewing it.</p>
+          <h1>${isUpdate ? 'Your credential update is under review' : 'Your submitted application is locked'}</h1>
+          <p>Your current status is <strong>${smartEsc(status || 'under review')}</strong>. Information cannot be changed while NurseLink is reviewing it.${isUpdate ? ' Your existing membership remains approved.' : ''}</p>
         </div>
         <div class="nurselink-smart557-complete-callout">
           If a reviewer needs corrections, your status will change to <strong>Needs Information</strong>. You can then return here, save the requested details, and resubmit.
@@ -10529,7 +10530,7 @@ import {
       <section class="nurselink-smart557-card">
         <div class="nurselink-smart557-card-heading">
           <span class="nurselink-smart557-eyebrow">STEP 4 OF 4</span>
-          <h1>Review & Submit Your Application</h1>
+          <h1>${approved ? 'Review & Submit Your Updates' : 'Review & Submit Your Application'}</h1>
           <p>Confirm the information below. You remain responsible for correcting any value that was extracted incorrectly.</p>
         </div>
 
@@ -10860,7 +10861,8 @@ import {
 
     const completion = Number(data.completion || 0);
     const membershipStatus = String(data?.membership?.status || 'draft');
-    const editable = ['draft', 'needs_information'].includes(membershipStatus);
+    const updatePending = ['submitted', 'under_review', 'ready_for_approval'].includes(String(data?.membership?.profile_update_status || ''));
+    const editable = ['draft', 'needs_information'].includes(membershipStatus) || (membershipStatus === 'approved' && !updatePending);
     const body = !editable
       ? smartLockedApplication(data)
       : step === 1
@@ -10871,7 +10873,7 @@ import {
             ? smartProfessionalStep(data)
             : smartReviewStep(data);
 
-    root.innerHTML = `${smartStepHeader(step, completion, Boolean(data?.membership))}${smartNoticeHtml()}${body}`;
+    root.innerHTML = `${smartStepHeader(step, completion, Boolean(data?.membership))}${smartNoticeHtml()}${membershipStatus === 'approved' && editable ? '<div class="nurselink-smart557-complete-callout"><strong>Update your credentials</strong><p>Upload renewed documents and update your details, then choose Submit Updates for Review in step 4. Your membership remains approved while the changes are reviewed.</p></div>' : ''}${body}`;
     bindSmartRegistration557(root);
 
     const extractionPending = (Array.isArray(data.documents) ? data.documents : [])
