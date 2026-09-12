@@ -1,0 +1,31 @@
+body[data-dashboard-release]{--nlr-surface:#fff;--nlr-ink:#19324c;--nlr-muted:#61768b;--nlr-line:#dce6f0;--nlr-blue:#155b97;--nlr-pale:#edf4fb}
+body[data-dashboard-release] .nl530-sidebar{background:#144e80!important;color:#e4f0fb!important;border-right:0!important}
+body[data-dashboard-release] .nl530-brand strong{color:#fff!important}body[data-dashboard-release] .nl530-brand small{color:#c5dbee!important}
+body[data-dashboard-release] .nl530-menu a{color:#dcebf7!important;border-radius:8px}body[data-dashboard-release] .nl530-menu a b{background:transparent!important;color:#dcebf7!important}
+body[data-dashboard-release] .nl530-menu a.active{background:#ffffff20!important;color:#fff!important;box-shadow:inset 3px 0 #84b728!important}
+body[data-dashboard-release] .nl530-menu a:hover{background:#ffffff16!important;color:#fff!important}
+body[data-dashboard-release] .nl530-menu :is(.nl695-nav-group-label,.nl695-sidebar-group-title){color:#bdd4e8!important}
+body[data-dashboard-release] [data-panel="dashboard"] :is(.nl530-card,.nl530-metric,.nl540-progress-card){border-radius:13px;border-color:var(--nlr-line);box-shadow:0 4px 18px #19324c04}
+body[data-dashboard-release] [data-panel="dashboard"] .nl530-card-head h2{font-size:17px;color:var(--nlr-ink)}
+body[data-dashboard-release] [data-panel="dashboard"] .nl530-row{border-radius:8px;padding:14px 12px;margin-bottom:5px}
+body[data-dashboard-release] [data-panel="dashboard"] .nl530-row:hover{background:var(--nlr-pale)}
+body[data-dashboard-release] .nlr-live-summary{border:1px solid var(--nlr-line);background:var(--nlr-surface);padding:22px;border-radius:13px;margin:20px 0;color:var(--nlr-ink)}
+body[data-dashboard-release] .nlr-live-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
+body[data-dashboard-release] .nlr-live-heading span{font-size:10px;font-weight:750;letter-spacing:1.2px;color:var(--nlr-blue)}
+body[data-dashboard-release] .nlr-live-heading h2{font-size:21px;letter-spacing:-.4px;margin:7px 0;color:var(--nlr-ink)}
+body[data-dashboard-release] .nlr-live-heading p{font-size:12px;color:var(--nlr-muted);margin:0}
+body[data-dashboard-release] .nlr-live-heading>a{background:#84b728;border-radius:8px;padding:11px 15px;color:#173100;font-size:12px;font-weight:700;text-decoration:none}
+body[data-dashboard-release] .nlr-live-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+body[data-dashboard-release] .nlr-live-metrics>a{display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--nlr-line);color:var(--nlr-ink);text-decoration:none}
+body[data-dashboard-release] .nlr-live-metrics>a:last-child{border:0}
+body[data-dashboard-release] .nlr-live-metrics span{font-size:12px;color:var(--nlr-muted)}
+body[data-dashboard-release] .nlr-live-metrics strong{font-size:32px;line-height:1.2;font-weight:700;letter-spacing:-.6px}
+body[data-dashboard-release] .nlr-live-metrics small{font-size:11px;color:var(--nlr-muted)}
+body[data-dashboard-release] .nlr-quick-links{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+body[data-dashboard-release] .nlr-quick-links a{display:flex;flex-direction:column;gap:6px;padding:17px 0;border-bottom:1px solid var(--nlr-line);text-decoration:none;color:var(--nlr-blue)}
+body[data-dashboard-release] .nlr-quick-links strong{font-size:13px}
+body[data-dashboard-release] .nlr-quick-links span{font-size:12px;color:var(--nlr-muted)}
+body[data-dashboard-release] :is(.nlr-quick-links a,.nlr-live-metrics a,.nlr-live-heading a):focus-visible{outline:3px solid #84b728;outline-offset:4px}
+html[data-theme="dark"] body[data-dashboard-release],body[data-dashboard-release][data-theme="dark"]{--nlr-surface:#172a3d;--nlr-ink:#edf4fc;--nlr-muted:#b1c4d6;--nlr-line:#344b62;--nlr-blue:#95caff;--nlr-pale:#203c55}
+@media(prefers-color-scheme:dark){html[data-theme="system"] body[data-dashboard-release]{--nlr-surface:#172a3d;--nlr-ink:#edf4fc;--nlr-muted:#b1c4d6;--nlr-line:#344b62;--nlr-blue:#95caff;--nlr-pale:#203c55}}
+@media(max-width:700px){body[data-dashboard-release] .nlr-live-heading{align-items:flex-start;flex-direction:column}body[data-dashboard-release] .nlr-live-summary{padding:17px}body[data-dashboard-release] .nlr-live-metrics{grid-template-columns:1fr;gap:14px}body[data-dashboard-release] .nlr-live-metrics>a{border-right:0;border-bottom:1px solid var(--nlr-line);padding-bottom:14px}body[data-dashboard-release] .nlr-quick-links{grid-template-columns:1fr}}

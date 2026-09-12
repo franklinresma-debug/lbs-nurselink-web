@@ -44,7 +44,7 @@
   let applicationActiveQuickView = 'all';
 
   const subtitles = {
-    dashboard: 'Operational workflows across membership, workforce, programs and platform health.',
+    dashboard: 'Your team’s next actions across membership, recruitment and member support.',
     members: 'Manage approved NurseLink members through governed membership lifecycle workflows.',
     applications: 'Review membership applications without working directly against raw membership records.',
     verification: 'Review professional credential records through the NurseLink verification workflow.',
@@ -624,6 +624,13 @@
 
       summary = operationsPayload?.data || {};
       const m = summary.metrics || {};
+      if ($('recruitmentDashboardMetrics')) {
+        $('recruitmentDashboardMetrics').innerHTML = [
+          ['Active opportunities', m.active_opportunities, '#employment', 'Current job listings'],
+          ['Job applications', m.job_applications, '#employment', 'Applications across job listings'],
+          ['Organizations awaiting review', m.pending_organizations, '#organizations', 'Partner verification queue']
+        ].map(([name, value, href, note]) => `<a href="${href}"><span>${esc(name)}</span><strong>${value == null ? '—' : esc(value)}</strong><small>${esc(note)}</small></a>`).join('');
+      }
       const membership = membershipPayload?.data || {};
       const counts = membership.counts || {};
       const standing = membership.standing || {};
@@ -719,6 +726,10 @@
 
       $('dashboardMetrics').innerHTML =
         `<div class="nl530-empty">${esc(error.message)}</div>`;
+      if ($('recruitmentDashboardMetrics')) {
+        $('recruitmentDashboardMetrics').innerHTML = '<p role="status">Workforce summary is temporarily unavailable. Use Refresh to try again.</p>';
+      }
+
 
       if ($('membershipProgress')) {
         $('membershipProgress').innerHTML =

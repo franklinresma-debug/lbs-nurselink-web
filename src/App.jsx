@@ -1,3 +1,4 @@
+import MemberDashboard from './pages/MemberDashboard'
 import './nurselink-dark-sidebar-buttons-v5200.css'
 import './nurselink-dark-mode-contrast-v5200.css'
 /* NurseLink Phase 2 Final Cumulative Full-Stack v3.0.0 */
@@ -171,6 +172,7 @@ const menu = [
   ['Smart Registration', '/smart-registration', 'scan'],
   ['Application Status', '/application-status', 'status'],
   ['Portfolio', '/portfolio', 'portfolio'],
+  ['CV Maker', '/nurselink-cv-maker.html', 'portfolio'],
   ['Jobs', '/jobs', 'jobs'],
   ['Applications', '/applications', 'applications'],
   ['Mentoring', '/mentoring', 'mentoring'],
@@ -1553,216 +1555,6 @@ function MemberLocked({
   )
 }
 
-function Dashboard() {
-  const { user } =
-    useAuth()
-
-  const progress =
-    user?.application
-      ?.progress_percent ?? 0
-
-  const applicationStatus =
-    user?.application?.status ||
-    'not_started'
-
-  const applicationLabel =
-    statusLabels[
-      applicationStatus
-    ] ||
-    'Not Started'
-
-  const isMember =
-    user?.roles?.includes('member') ||
-    Boolean(user?.member)
-
-  return (
-    <div className="page">
-      <div className="page-header">
-        <div>
-          <div className="eyebrow">
-            {isMember
-              ? 'Member Dashboard'
-              : 'Applicant Dashboard'}
-          </div>
-
-          <h1>
-            Welcome,{' '}
-            {user?.name || 'Member'}
-          </h1>
-
-          <p>
-            Your professional, membership
-            and organization portal.
-          </p>
-        </div>
-
-        {!isMember && (
-          <NavLink
-            to="/application-status"
-            className="primary-button"
-          >
-            Application Status
-          </NavLink>
-        )}
-      </div>
-
-      {!isMember && (
-        <>
-          <div className="stats-grid">
-        <div className="stat-card">
-          <span>
-            Application Progress
-          </span>
-
-          <strong>
-            {progress}%
-          </strong>
-
-          <small>
-            Membership registration
-          </small>
-        </div>
-
-        <div className="stat-card">
-          <span>
-            Application Status
-          </span>
-
-          <strong className="status-word">
-            {applicationLabel}
-          </strong>
-
-          <small>
-            Current application stage
-          </small>
-        </div>
-
-        <div className="stat-card">
-          <span>
-            Member Number
-          </span>
-
-          <strong className="status-word">
-            {user?.member?.member_no ||
-              'Pending'}
-          </strong>
-
-          <small>
-            Issued after approval
-          </small>
-        </div>
-
-        <div className="stat-card">
-          <span>Role</span>
-
-          <strong className="status-word">
-            {user?.roles?.[0] ||
-              'Applicant'}
-          </strong>
-
-          <small>
-            Current access level
-          </small>
-        </div>
-      </div>
-
-      <div className="content-grid">
-        <div className="panel">
-          <div className="panel-title">
-            <h2>
-              Membership Application
-            </h2>
-
-            <span className="badge">
-              {applicationLabel}
-            </span>
-          </div>
-
-          <div className="progress">
-            <div
-              className="progress-bar"
-              style={{
-                width: `${progress}%`,
-              }}
-            />
-          </div>
-
-          <div className="checklist">
-            <div>
-              ✓ NurseLink account created
-            </div>
-
-            <div>
-              {progress >= 60
-                ? '✓'
-                : '○'}{' '}
-              Personal information
-            </div>
-
-            <div>
-              {progress >= 90
-                ? '✓'
-                : '○'}{' '}
-              Smart registration
-            </div>
-
-            <div>
-              {[
-                'submitted',
-                'under_review',
-                'resubmitted',
-                'approved',
-              ].includes(
-                applicationStatus
-              )
-                ? '✓'
-                : '○'}{' '}
-              Application submitted
-            </div>
-
-            <div>
-              {isMember
-                ? '✓'
-                : '○'}{' '}
-              Membership approved
-            </div>
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panel-title">
-            <h2>
-              Quick Actions
-            </h2>
-          </div>
-
-          <div className="quick-actions">
-            <NavLink to="/profile">
-              Update Profile
-            </NavLink>
-
-            <NavLink to="/smart-registration">
-              Smart Registration
-            </NavLink>
-
-            <NavLink to="/application-status">
-              Application Status
-            </NavLink>
-
-            {isMember && (
-              <NavLink to="/credentials">
-                Add Credential
-              </NavLink>
-            )}
-          </div>
-        </div>
-      </div>
-        </>
-      )}
-    </div>
-  )
-}
-
 function NavigationTour({
   open,
   isMember,
@@ -2180,6 +1972,12 @@ function AppLayout() {
         <nav>
           {menu.map(
             ([label, path, icon]) => {
+              if (path.endsWith('.html')) return (
+                <a key={path} href={path} onClick={() => setMemberMobileNavOpen(false)}>
+                  <MemberNavIcon name={icon} />
+                  <span className="member-admin-nav-label">{label}</span>
+                </a>
+              )
               const locked =
                 memberOnlyPaths.includes(
                   path
@@ -2225,6 +2023,9 @@ function AppLayout() {
         </nav>
 
         <div className="sidebar-bottom">
+          {memberShellLocation.pathname === '/dashboard' && user?.roles?.includes('super_administrator') && (
+            <a className="nurselink-admin-center-link" href="/nurselink-super-admin-test-center.html">Test Center</a>
+          )}
           {isAdministrator && (
             <a
               className="nurselink-admin-center-link nurselink-super-admin-center-link"
@@ -2267,6 +2068,7 @@ function AppLayout() {
           />
 
           <div className="topbar-member-actions">
+            {memberShellLocation.pathname === '/dashboard' && <NavLink to="/notifications" className="nld-notification-link" aria-label="Open notifications"><span aria-hidden="true">✉</span></NavLink>}
             <button
               type="button"
               className="navigation-help-button"
@@ -2381,7 +2183,7 @@ function AppLayout() {
         <Routes>
           <Route
             path="/dashboard"
-            element={<Dashboard />}
+            element={<MemberDashboard />}
           />
 
           <Route
