@@ -14,3 +14,12 @@ html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .logo{flex:0 0 auto!important}
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav{flex:1 1 0%!important;min-height:0!important;max-height:none!important;height:auto!important;overflow-y:auto!important;overflow-x:hidden!important;padding-bottom:16px!important;scroll-padding-bottom:16px;overscroll-behavior:contain;scrollbar-width:thin}
 html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom{position:static!important;flex:0 0 auto!important;inset:auto!important;margin-top:8px!important;padding-bottom:env(safe-area-inset-bottom,0px)!important}
+
+/* Compact navigation fits the available sidebar height without a scroll rail. */
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav{gap:0!important;overflow-y:hidden!important;padding-bottom:0!important;scrollbar-width:none!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > a{flex:1 1 0!important;min-height:0!important;padding:1px 12px 1px 24px!important;line-height:18px!important;font-size:13px!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > a .member-admin-nav-label{line-height:18px!important;font-size:13px!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > .nl-member-nav-group{flex:0 0 auto!important;min-height:0!important;height:23px!important;margin:3px 0 0!important;padding:4px 12px 2px!important;line-height:14px!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > .nl-member-nav-group:first-child{margin-top:0!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom{gap:6px!important;margin-top:6px!important}
+html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom > a,html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom > button{margin:0!important;min-height:32px!important;height:32px!important;padding:4px 10px!important}
