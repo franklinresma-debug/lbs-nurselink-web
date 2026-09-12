@@ -17,3 +17,5 @@
 .ndi-card .ndi-meta .ndi-signature{min-width:0;align-self:end}.ndi-card .ndi-signature[hidden]{display:none!important}.ndi-card .ndi-signature img{display:block;width:100%;height:5.7cqw;object-fit:contain;object-position:left bottom}.ndi-card .ndi-signature small{font-size:1.2cqw;margin-top:.3cqw;white-space:nowrap}
 
 .ndi-card .ndi-signature img{width:100%;height:8cqw;object-fit:contain;object-position:left center;transform:scale(1.2);transform-origin:left center}
+
+.ndi-card .ndi-signature img{transform:scale(1.5);transform-origin:right center}.ndi-card .ndi-meta #memberValidUntil{font-size:2cqw;white-space:nowrap}
