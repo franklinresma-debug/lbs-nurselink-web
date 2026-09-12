@@ -31,3 +31,5 @@
 .ndi-card .ndi-card-body{position:relative;isolation:isolate;overflow:hidden;padding-block:2cqw;background:linear-gradient(125deg,transparent 0 62%,#e5e7eb55 62% 72%,transparent 72%),linear-gradient(35deg,transparent 0 35%,#d1d5db33 35% 45%,transparent 45%),repeating-linear-gradient(155deg,transparent 0 14px,#9ca3af12 14px 15px,transparent 15px 28px)}
 .ndi-card .ndi-card-body:before{content:"";position:absolute;z-index:-1;right:21%;top:5%;width:25%;aspect-ratio:1;border:1.5cqw solid #9ca3af16;transform:rotate(25deg);pointer-events:none}
 .ndi-card .ndi-photo,.ndi-card .ndi-qr{background:#fff}.ndi-card .ndi-meta{margin-top:.8cqw}.ndi-card .ndi-signature img{height:6.5cqw}
+
+.ndi-card .ndi-signature img{transform-origin:left center;object-position:left center}
