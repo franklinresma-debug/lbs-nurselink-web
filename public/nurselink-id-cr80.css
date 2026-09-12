@@ -13,3 +13,5 @@
 
 /* Match the logo/photo column and align member details with the brand heading. */
 .ndi-card .ndi-card-head{padding-inline:4cqw;gap:3cqw}.ndi-card .ndi-mark{width:23cqw;height:14cqw;overflow:visible;flex-shrink:0}.ndi-card .ndi-mark img{width:118%;max-width:none;height:118%;object-fit:contain}.ndi-card .ndi-card-body{grid-template-columns:23cqw minmax(0,1fr) 20cqw;gap:3cqw;padding-inline:4cqw}.ndi-card .ndi-photo{width:23cqw;height:29cqw;box-shadow:0 4px 12px #123c621a}.ndi-card .ndi-details h2{font-size:3.6cqw}.ndi-card .ndi-details>strong{font-size:2.8cqw}
+
+.ndi-card .ndi-meta .ndi-signature{min-width:0;align-self:end}.ndi-card .ndi-signature[hidden]{display:none!important}.ndi-card .ndi-signature img{display:block;width:100%;height:5.7cqw;object-fit:contain;object-position:left bottom}.ndi-card .ndi-signature small{font-size:1.2cqw;margin-top:.3cqw;white-space:nowrap}
