@@ -10591,7 +10591,7 @@ import {
             : canSubmit
               ? `<button type="button" class="primary-button" data-smart-submit>${approved ? 'Submit Updates for Review →' : 'Submit Application →'}</button>`
             : approved
-              ? '<a class="primary-button" href="/dashboard">Membership Approved · Open Dashboard →</a>'
+              ? '<button type="button" class="primary-button" data-smart-submit disabled>Submit Updates for Review →</button>'
               : status === 'declined'
                 ? '<a class="primary-button" href="/application-status">Decision Completed · View Status →</a>'
                 : `<button type="button" class="primary-button" data-smart-submit ${canSubmit ? '' : 'disabled'}>${status === 'needs_information' ? 'Resubmit Application →' : 'Submit Application →'}</button>`
