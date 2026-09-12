@@ -1,0 +1,23 @@
+/* Use the available desktop workspace on member pages while preserving small-screen layouts. */
+@media (min-width:1100px){
+  .member-react-safe-shell-v108 .main-area,
+  .member-react-safe-shell-v108 .main-area .page{
+    width:100% !important;
+    max-width:none !important;
+    min-width:0 !important;
+    box-sizing:border-box !important;
+  }
+  .member-react-safe-shell-v108 .main-area .page > *{
+    max-width:none !important;
+    min-width:0 !important;
+  }
+  .member-react-safe-shell-v108 .main-area .page > .nl410-page{
+    width:100% !important;
+    max-width:none !important;
+  }
+  .nl-compliance-main,
+  .cr-shell{
+    width:100% !important;
+    max-width:none !important;
+  }
+}

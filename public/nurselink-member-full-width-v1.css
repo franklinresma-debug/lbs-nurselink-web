@@ -1,0 +1,21 @@
+/* Shared desktop workspace alignment: member cards follow the page heading width. */
+@media (min-width: 1100px) {
+  .member-react-safe-shell-v108.member-shell-v636 .page,
+  .member-react-safe-shell-v108.member-shell-v636 .page > .nurselink-member-hub,
+  .member-react-safe-shell-v108.member-shell-v636 .page > section,
+  .member-react-safe-shell-v108.member-shell-v636 .page > .panel,
+  .member-react-safe-shell-v108.member-shell-v636 .page > .page-card,
+  .member-react-safe-shell-v108.member-shell-v636 .page > .content-grid,
+  .member-react-safe-shell-v108.member-shell-v636 .nurselink-member-hub,
+  .member-react-safe-shell-v108.member-shell-v636 .nurselink-member-portal-membership-v520 {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .member-react-safe-shell-v108.member-shell-v636 .nurselink-member-hub > *,
+  .member-react-safe-shell-v108.member-shell-v636 .content-grid > * {
+    max-width: none !important;
+  }
+}

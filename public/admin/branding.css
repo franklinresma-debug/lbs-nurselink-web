@@ -1,0 +1,36 @@
+.nl640-branding-card{margin-bottom:18px!important}
+[data-nurselink-logo-placement="admin"].nl640-has-logo{overflow:hidden;padding:3px;background:#fff!important;color:transparent!important}
+[data-nurselink-logo-placement="admin"].nl640-has-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.nl-admin-sidebar-brand .nl-admin-brand-mark.nl640-has-logo{width:82px!important;max-width:42%;height:50px!important;flex:0 0 auto}
+.nl555-mobile-brand>b.nl640-has-logo{width:52px!important;height:36px!important}
+.nl541-session-gate-brand.nl640-has-logo{width:96px!important;height:58px!important;border-radius:12px!important}
+.nl640-version{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid var(--nl631-border,#d4e0ec);border-radius:999px;background:var(--nl631-surface2,#f6f9fc);color:var(--nl631-text2,#60748a);font-size:11px;font-weight:800;white-space:nowrap}
+.nl640-logo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.nl640-logo-card{min-width:0;padding:15px;border:1px solid var(--nl631-border,#d4e0ec);border-radius:14px;background:var(--nl631-surface2,#f7fafe)}
+.nl640-logo-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.nl640-logo-card-head h3{margin:0 0 4px;color:var(--nl631-text,#173253);font-size:16px}
+.nl640-logo-card-head p{min-height:38px;margin:0;color:var(--nl631-text2,#698096);font-size:11px;line-height:1.45}
+.nl640-logo-enabled{display:flex;align-items:center;gap:6px;color:var(--nl631-text,#173253);font-size:11px;font-weight:800;white-space:nowrap}
+.nl640-logo-enabled input{width:16px;height:16px;accent-color:#1677e8}
+.nl640-logo-preview{height:112px;margin:13px 0;display:grid;place-items:center;overflow:hidden;padding:12px;border:1px dashed var(--nl631-border,#cbd9e7);border-radius:11px;background:#fff;color:#718397;font-size:11px}
+.nl640-logo-preview img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.nl640-logo-card label:not(.nl640-logo-enabled){display:block;margin-top:10px}
+.nl640-logo-card label:not(.nl640-logo-enabled)>span{display:block;margin-bottom:5px;color:var(--nl631-text,#173253);font-size:11px;font-weight:800}
+.nl640-logo-card input[type=url],.nl640-logo-card input[type=text],.nl640-logo-card input[type=file]{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--nl631-border,#cbd9e7);border-radius:9px;background:var(--nl631-surface,#fff);color:var(--nl631-text,#173253);font:inherit;font-size:12px}
+.nl640-logo-card input[type=file]{padding:7px}
+.nl640-logo-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px}
+.nl640-logo-status{color:var(--nl631-text2,#698096);font-size:10px}
+.nl640-logo-remove{min-height:34px!important;padding:0 10px!important;color:#b42318!important}
+.nl640-branding-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--nl631-border,#d4e0ec)}
+.nl640-branding-actions p{margin:0 auto 0 0;color:var(--nl631-text2,#698096);font-size:11px}
+.nl640-branding-actions button{min-height:40px;padding:0 14px;border:1px solid var(--nl631-border,#cbd9e7);border-radius:9px;background:var(--nl631-surface,#fff);color:var(--nl631-text,#173253);font:inherit;font-size:12px;font-weight:850;cursor:pointer}
+.nl640-branding-actions .nl640-primary{border-color:#1677e8;background:#1677e8;color:#fff}
+.nl640-branding-actions button:disabled{opacity:.5;cursor:not-allowed}
+[data-nurselink-logo-placement="admin"] img{display:block;width:auto;max-width:100%;height:auto;max-height:100%;object-fit:contain}
+.nl-admin-brand-mark[data-nurselink-logo-placement="admin"]:has(img){width:72px;padding:4px;background:#fff!important}
+.nl555-mobile-brand>b[data-nurselink-logo-placement="admin"]:has(img){padding:3px;background:#fff!important}
+.nl541-session-gate-brand[data-nurselink-logo-placement="admin"]:has(img){padding:5px;background:#fff!important}
+html[data-nl-theme="dark"] .nl640-logo-card{background:var(--nl631-surface2,#122239)}
+html[data-nl-theme="dark"] .nl640-logo-preview{background:#fff}
+@media(max-width:1100px){.nl640-logo-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.nl640-branding-actions{align-items:stretch;flex-direction:column}.nl640-branding-actions p{margin:0}.nl640-branding-actions button{width:100%}}
