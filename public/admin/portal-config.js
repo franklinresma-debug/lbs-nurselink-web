@@ -1,5 +1,5 @@
 window.NurseLinkPortalConfig = Object.freeze({
-  version: '5.5.8',
+  version: '5.5.9',
   entryPoints: Object.freeze({
     memberLogin: '/login',
     memberPortal: '/dashboard',
@@ -10,6 +10,7 @@ window.NurseLinkPortalConfig = Object.freeze({
     ['dashboard', 'Dashboard'],
     ['members', 'Members'],
     ['applications', 'Applications'],
+    ['bulk-import', 'Bulk Nurse Import'],
     ['verification', 'Verification'],
     ['organizations', 'Organizations'],
     ['programs', 'Programs'],
@@ -27,6 +28,7 @@ window.NurseLinkPortalConfig = Object.freeze({
     '/nurselink-membership-administration.html': '/admin/#applications',
     '/nurselink-membership-onboarding-admin.html': '/admin/#members',
     '/nurselink-member-registry.html': '/admin/#members',
+    '/nurselink-bulk-nurse-import-admin.html': '/admin/#bulk-import',
     '/nurselink-membership-welcome.html': '/dashboard#membership'
   }),
   managedModules: Object.freeze({
