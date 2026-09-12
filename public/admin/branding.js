@@ -4,8 +4,7 @@
   const API = 'https://lbs.amsertech.com/backend';
   const placements = [
     ['login', 'Member Login', 'Above the welcome message on the member sign-in page.'],
-    ['admin', 'Admin Panel', 'Inside the Administration Operations Center brand area.'],
-    ['sidebar', 'Member Sidebar', 'Above the NurseLink name in the member navigation.'],
+    ['sidebar', 'Shared Sidebar Logo', 'One image for both the member portal and admin panel.'],
     ['favicon', 'Browser Icon (Favicon)', 'Use a square PNG, ideally 64 × 64 px, for browser tabs.']
   ];
   const controls = document.getElementById('adminBrandingControls');
@@ -115,7 +114,7 @@
   }
 
   function applyAdminLogo(branding) {
-    const logo = branding?.logos?.admin || {};
+    const logo = branding?.logos?.sidebar ?? branding?.logos?.admin ?? {};
     const source = assetSource(logo.source);
     const visible = logo.enabled !== false && !!source;
     document.querySelectorAll('[data-nurselink-logo-placement="admin"]').forEach(node => {
@@ -183,13 +182,13 @@
 
     controls.querySelectorAll('[data-logo-enabled]').forEach(input => input.addEventListener('change', () => {
       config.branding.logos[input.dataset.logoEnabled].enabled = input.checked;
-      if (input.dataset.logoEnabled === 'admin') applyAdminLogo(config.branding);
+      if (input.dataset.logoEnabled === 'sidebar') applyAdminLogo(config.branding);
     }));
     controls.querySelectorAll('[data-logo-source]').forEach(input => input.addEventListener('change', () => {
       const logo = config.branding.logos[input.dataset.logoSource];
       logo.source = input.value.trim();
       if (logo.source) logo.enabled = true;
-      if (input.dataset.logoSource === 'admin') applyAdminLogo(config.branding);
+      if (input.dataset.logoSource === 'sidebar') applyAdminLogo(config.branding);
       render();
     }));
     controls.querySelectorAll('[data-logo-alt]').forEach(input => input.addEventListener('input', () => {
@@ -201,7 +200,7 @@
       markDirty();
       logo.source = '';
       logo.enabled = button.dataset.logoRemove === 'favicon' && !!logo.icons?.length;
-      if (button.dataset.logoRemove === 'admin') applyAdminLogo(config.branding);
+      if (button.dataset.logoRemove === 'sidebar') applyAdminLogo(config.branding);
       render();
     }));
     controls.querySelector('[data-favicon-files]')?.addEventListener('change', e => uploadFaviconSet(Array.from(e.target.files || [])));
@@ -268,7 +267,7 @@
       config.branding.logos[placement].source = result?.data?.source || '';
       config.branding.logos[placement].enabled = true;
       markDirty();
-      if (placement === 'admin') applyAdminLogo(config.branding);
+      if (placement === 'sidebar') applyAdminLogo(config.branding);
       showNotice('Logo uploaded. Save the draft, then publish it when ready.', 'success');
       render();
     } catch (error) {

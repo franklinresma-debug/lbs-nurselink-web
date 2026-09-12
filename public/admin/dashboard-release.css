@@ -60,3 +60,6 @@ body #operationsSidebar .nl530-brand .nl-admin-brand-mark{width:200px!important;
 body #operationsSidebar .nl530-brand .nl-admin-brand-mark img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:0!important}
 body #operationsSidebar .nl530-brand strong{display:block!important;font-size:20px!important;line-height:24px!important;color:#fff!important}
 body #operationsSidebar .nl530-brand small{display:block!important;max-width:none!important;font-size:15px!important;line-height:20px!important;margin-top:3px!important;color:#fff!important}
+
+/* Shared sidebar asset: match the member logo without extra inner padding. */
+body #operationsSidebar .nl530-brand .nl-admin-brand-mark{padding:0!important;height:66px!important;min-height:66px!important}
