@@ -53,3 +53,10 @@ body #operationsMenu.nl530-menu>:not(a){color:#f7931e!important}
 
 /* Only the admin workspace scrolls; header and navigation stay visible. */
 @media(min-width:951px){body .nl530-shell{height:100dvh!important;min-height:0!important;overflow:hidden!important}body .nl530-main{height:100dvh!important;min-height:0!important;overflow-y:auto!important;position:relative!important}body .nl530-main>.nl530-topbar{position:sticky!important;top:0!important;z-index:100!important;background:var(--nlr-surface,#f4f6f9)!important;padding:12px 0!important}}
+
+/* Match member portal's stacked LBS brand. */
+body #operationsSidebar .nl530-brand{display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;padding:8px 0 12px!important;gap:12px!important}
+body #operationsSidebar .nl530-brand .nl-admin-brand-mark{width:200px!important;max-width:100%!important;height:66px!important;min-height:66px!important;border-radius:8px!important;background:#fff!important;padding:6px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+body #operationsSidebar .nl530-brand .nl-admin-brand-mark img{width:100%!important;height:100%!important;object-fit:contain!important;border-radius:0!important}
+body #operationsSidebar .nl530-brand strong{display:block!important;font-size:20px!important;line-height:24px!important;color:#fff!important}
+body #operationsSidebar .nl530-brand small{display:block!important;max-width:none!important;font-size:15px!important;line-height:20px!important;margin-top:3px!important;color:#fff!important}
