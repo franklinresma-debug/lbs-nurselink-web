@@ -1,0 +1,57 @@
+/* LBS all-page document review: scoped to Smart Registration. */
+.nl-document-records { margin: 24px 0; min-width: 0; }
+.nl-document-records > p { line-height: 1.6; }
+.nl-document-record-group { margin: 16px 0; border: 1px solid #92a5bd; border-radius: 10px; padding: 14px; min-width: 0; }
+.nl-document-record-group > summary { cursor: pointer; font-weight: 700; line-height: 1.5; }
+.nl-document-record-group > summary span { font-weight: 400; margin-left: 8px; }
+.nl-document-record { border: 1px solid #b0bdce; border-radius: 8px; padding: 16px; margin: 16px 0; min-width: 0; }
+.nl-document-record legend { padding: 0 6px; font-weight: 700; }
+.nl-record-source { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.nl-record-include, .nl-record-confirm { display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; padding: 8px 0; }
+.nl-record-include input, .nl-record-confirm input, .nl-record-check input { width: 20px !important; height: 20px !important; min-height: 20px !important; flex: 0 0 20px; margin-top: 3px; }
+.nl-record-confirm { border-top: 1px solid #92a5bd; margin-top: 20px; padding-top: 14px; }
+.nl-document-record textarea { width: 100%; min-height: 88px; resize: vertical; box-sizing: border-box; font: inherit; padding: 10px; border: 1px solid #92a5bd; border-radius: 6px; background: inherit; color: inherit; }
+.nl-document-record input { min-width: 0; box-sizing: border-box; }
+.nl-record-evidence { margin-top: 12px; }
+.nl-record-evidence summary { cursor: pointer; }
+.nl-record-evidence pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 14px; line-height: 1.6; }
+.nurselink-smart557 .nurselink-smart557-document { grid-template-columns: 30px minmax(0,1fr) auto; }
+.nurselink-smart557 .nurselink-smart558-document-actions { flex-wrap: wrap; gap: 6px; width: auto; padding-left: 0; }
+.nurselink-smart557 .nurselink-smart558-document-actions .replace { white-space: nowrap; word-break: normal; overflow-wrap: normal; flex-shrink: 0; }
+.nurselink-smart557 .nurselink-smart557-document .copy { min-width: 0; overflow-wrap: anywhere; }
+.nurselink-smart557 .nl-ocr-progress { display: grid; gap: 5px; margin-top: 10px; font-size: 13px; line-height: 1.5; text-transform: none; }
+.nurselink-smart557 .nl-ocr-scanner { display: grid; grid-template-columns: 120px minmax(0,1fr); gap: 8px 12px; align-items: center; margin-top: 12px; }
+.nurselink-smart557 .nl-ocr-scanner-frame { position: relative; display: block; width: 120px; aspect-ratio: 3 / 4; overflow: hidden; border: 1px solid #b8c7d8; border-radius: 8px; background: #eef4fa; }
+.nurselink-smart557 .nl-ocr-scanner-frame img { width: 100%; height: 100%; object-fit: contain; display: block; background: #fff; }
+.nurselink-smart557 .nl-ocr-scanner-frame.is-preview-error::after { content: "Preview loading"; position: absolute; inset: 0; display: grid; place-items: center; padding: 8px; text-align: center; color: #61758a; background: #eef4fa; font-size: 12px; line-height: 1.3; }
+.nurselink-smart557 .nl-ocr-scanner-frame i { position: absolute; left: 0; right: 0; top: -20%; height: 28%; background: linear-gradient(180deg, rgba(21,118,185,0), rgba(21,118,185,.30), rgba(132,183,40,.20), rgba(21,118,185,0)); animation: nlOcrScan 1.7s linear infinite; }
+.nurselink-smart557 .nl-ocr-scanner-caption { font-weight: 700; }
+.nurselink-smart557 .nl-ocr-page-dots { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.nurselink-smart557 .nl-ocr-page-dots span { width: 8px; height: 8px; border-radius: 999px; background: #c7d3df; }
+.nurselink-smart557 .nl-ocr-page-dots span[data-status="done"] { background: #84b728; }
+.nurselink-smart557 .nl-ocr-page-dots span[data-status="active"] { background: #1576b9; box-shadow: 0 0 0 3px rgba(21,118,185,.18); }
+.nurselink-smart557 .nl-ocr-page-dots em { font-style: normal; font-size: 12px; color: #61758a; }
+.nurselink-smart557 .nl-ocr-aggregate { display: grid; gap: 6px; margin: 12px 0 16px; padding: 12px; border: 1px solid #b8c7d8; border-radius: 8px; background: #f7fbff; font-size: 13px; line-height: 1.5; }
+.nurselink-smart557 .nl-ocr-progress-label, .nurselink-smart557 .nl-ocr-confidence { font-weight: 700; }
+.nurselink-smart557 .nl-ocr-progress progress, .nurselink-smart557 .nl-ocr-progress meter, .nurselink-smart557 .nl-ocr-aggregate progress { width: 100%; height: 12px; accent-color: #1576b9; }
+.nurselink-smart557 .nl-ocr-review-needed { color: #92540c; }
+.nurselink-smart557 .nurselink-smart557-test-reset { display: grid; gap: 8px; margin: 18px 0; padding: 12px; border: 1px dashed #d28a8a; border-radius: 8px; background: #fff8f8; font-size: 13px; line-height: 1.45; }
+.nurselink-smart557 .nurselink-smart557-test-reset strong { color: #8b1f1f; }
+.nurselink-smart557 .nurselink-smart557-test-reset button { justify-self: start; }
+@media (max-width: 600px) {
+  .nurselink-smart557 .nurselink-smart557-document { grid-template-columns: 30px minmax(0,1fr); }
+  .nurselink-smart557 .nurselink-smart558-document-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .nurselink-smart557 .nl-ocr-scanner { grid-template-columns: 92px minmax(0,1fr); }
+  .nurselink-smart557 .nl-ocr-scanner-frame { width: 92px; }
+  .nl-document-record-group { padding: 10px; }
+  .nl-document-record { padding: 10px; }
+  .nl-document-record .nurselink-smart557-grid { grid-template-columns: minmax(0,1fr) !important; }
+  .nl-document-record-group > summary span { display: block; margin-left: 0; }
+}
+
+@keyframes nlOcrScan {
+  from { transform: translateY(-20%); }
+  to { transform: translateY(430%); }
+}
+
+.nl-registration-sync-actions{display:flex;gap:10px;flex-wrap:wrap}.nl-registration-sync-actions button{white-space:normal}[data-offline-error]{color:#a32d2d}[data-registration-sync] select{max-width:100%;padding:10px;margin:8px 10px 8px 0}[data-registration-sync] p{font-size:15px;line-height:1.5}

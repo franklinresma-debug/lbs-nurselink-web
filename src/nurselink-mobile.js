@@ -1,5 +1,7 @@
+import {offlineRequest,setOfflineTransport,saveOfflineDraft,retainOfflineDraft,offlineState,offlineQueueDetails,flushOffline,discardOfflineQueue,downloadOfflineDraft,cachedRegistration} from './lib/applicantOffline.js';
 /* NurseLink Members Test Mode Function Guard v1.0.17 */
 import './nurselink-mobile.css';
+import {ocrAggregateProgress, ocrProgress} from './lib/ocrProgress.js';
 import {
   NURSELINK_HERO_SLIDES,
   applyHeroSlideCssVariables,
@@ -15,6 +17,18 @@ import {
  */
 (() => {
   'use strict';
+
+  // Keep the invitation through registration, email verification and sign-in.
+  try {
+    const incoming = new URLSearchParams(location.search);
+    const destination = incoming.get('return') || '';
+    const token = incoming.get('admin_invite') ||
+      (destination.startsWith('/dashboard?')
+        ? new URLSearchParams(destination.split('?')[1]).get('admin_invite') : '');
+    if (/^[A-Za-z0-9]{80}$/.test(token || '')) {
+      sessionStorage.setItem('lbs_pending_admin_invite', token);
+    }
+  } catch (_) {}
 
   const BREAKPOINT = 780;
   const ROOT_SELECTOR = '.app-shell';
@@ -126,6 +140,12 @@ import {
     ).toUpperCase();
 
     const normalizedUrl = requestUrl.replace(/\/+$/, '');
+
+    if (method === 'POST' && normalizedUrl === `${NURSELINK_API_ORIGIN}/api/nurselink/register`) {
+      const response = await NURSELINK_NATIVE_FETCH(input, init);
+      if (response.ok) nurselinkSessionLoginCompleted = true;
+      return response;
+    }
 
     if (
       method === 'POST' &&
@@ -394,7 +414,8 @@ import {
   async function enhanceAdministratorInvitationAcceptance() {
     if (location.pathname.replace(/\/+$/, '') !== '/dashboard') return;
 
-    const token = new URLSearchParams(location.search).get('admin_invite') || '';
+    let token = new URLSearchParams(location.search).get('admin_invite') || '';
+    try { token = token || sessionStorage.getItem('lbs_pending_admin_invite') || ''; } catch (_) {}
     if (token.length < 32 || document.documentElement.dataset.nlAdminInviteHandled === '1') return;
 
     document.documentElement.dataset.nlAdminInviteHandled = '1';
@@ -434,6 +455,7 @@ import {
       const clean = new URL(location.href);
       clean.searchParams.delete('admin_invite');
       history.replaceState(null, '', clean.pathname + (clean.search || '') + (clean.hash || ''));
+      try { sessionStorage.removeItem('lbs_pending_admin_invite'); } catch (_) {}
 
       renderInviteBanner(
         'Administrator access activated',
@@ -521,7 +543,7 @@ import {
     return [
       'create account',
       'create your nurselink account',
-      'member registration',
+      "applicant registration",
       'continue registration',
       'confirm password'
     ].some(s => text.includes(s));
@@ -588,7 +610,7 @@ import {
         </div>
 
         <div class="nurselink-auth-copy">
-          <span class="nurselink-auth-kicker">${type === 'login' ? 'MEMBER ACCESS' : 'MEMBER REGISTRATION'}</span>
+          <span class="nurselink-auth-kicker">${type === 'login' ? "APPLICANT ACCESS" : "APPLICANT REGISTRATION"}</span>
           <h1 role="presentation" aria-hidden="true">${type === 'login' ? 'Welcome back to NurseLink' : 'Join NurseLink'}</h1>
           <p>${type === 'login'
             ? 'Access your profile, credentials, learning, opportunities, and professional network.'
@@ -642,8 +664,8 @@ import {
 
       if (
         text.includes('join nurselink') ||
-        text.includes('create your account and begin your membership') ||
-        text.includes('member registration')
+        text.includes("create your account and begin your applicant registration") ||
+        text.includes("applicant registration")
       ) {
         node.classList.add('nurselink-auth-suppressed');
       }
@@ -696,7 +718,7 @@ import {
         const subtitle = document.createElement('p');
         subtitle.className = 'nurselink-auth-form-subtitle';
         subtitle.textContent = type === 'register'
-          ? 'Create your secure account first. Then upload your documents and NurseLink will pre-fill as much of your membership application as possible.'
+          ? "Create your secure account first. Then upload your documents and NurseLink will pre-fill as much of your applicant registration application as possible."
           : 'Sign in to continue to your NurseLink account.';
         title.insertAdjacentElement('afterend', subtitle);
       }
@@ -707,8 +729,8 @@ import {
       if (el.children.length) return;
       const value = (el.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
       if (
-        value === 'member registration' ||
-        value === 'member access'
+        value === "applicant registration" ||
+        value === "applicant access"
       ) {
         el.classList.add('nurselink-auth-form-kicker');
       }
@@ -838,6 +860,30 @@ import {
 
       let currentSlide = 0;
       let timer = null;
+      let manuallyPaused = false;
+      let pauseControl;
+      if (type === 'register') {
+        const controls = document.createElement('nav');
+        controls.className = 'lbs-registration-slider-controls';
+        controls.setAttribute('aria-label', 'LBS NurseLink hero image controls');
+        const button = (label, text, action) => {
+          const node = document.createElement('button');
+          node.type = 'button'; node.setAttribute('aria-label', label);
+          node.textContent = text; node.addEventListener('click', action);
+          return node;
+        };
+        controls.appendChild(button('Previous hero image', '←', () => { showSlide(currentSlide - 1); startSlider(); }));
+        controls.appendChild(dots);
+        controls.appendChild(button('Next hero image', '→', () => { showSlide(currentSlide + 1); startSlider(); }));
+        pauseControl = button('Pause hero slideshow', 'Pause', () => {
+          manuallyPaused = !manuallyPaused;
+          pauseControl.textContent = manuallyPaused ? 'Play' : 'Pause';
+          pauseControl.setAttribute('aria-label', manuallyPaused ? 'Play hero slideshow' : 'Pause hero slideshow');
+          startSlider();
+        });
+        controls.appendChild(pauseControl);
+        hero.appendChild(controls);
+      }
       const reduceMotion =
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -854,14 +900,15 @@ import {
           el.classList.toggle('is-active', i === currentSlide)
         );
 
-        heroDots.forEach((el, i) =>
-          el.classList.toggle('is-active', i === currentSlide)
-        );
+        heroDots.forEach((el, i) => {
+          el.classList.toggle('is-active', i === currentSlide);
+          el.setAttribute('aria-current', i === currentSlide ? 'true' : 'false');
+        });
       };
 
       const startSlider = () => {
-        if (reduceMotion) return;
         clearInterval(timer);
+        if (reduceMotion || manuallyPaused || !slider.isConnected) return;
         timer = setInterval(() => {
           showSlide(currentSlide + 1);
         }, 6000);
@@ -899,6 +946,10 @@ import {
         startSlider();
       }, { passive: true });
 
+      if (reduceMotion && pauseControl) {
+        pauseControl.hidden = true;
+      }
+      showSlide(0);
       startSlider();
     }
 
@@ -1000,7 +1051,7 @@ import {
 
     const userChip = document.querySelector('.user-chip');
     const chipText = (userChip?.textContent || '').toLowerCase();
-    return chipText.includes('membership pending');
+    return chipText.includes("applicant registration pending");
   }
 
   function applicationStepFromLocation() {
@@ -1065,12 +1116,12 @@ import {
     const section = document.createElement('section');
     section.className = 'nurselink-application-journey';
     section.dataset.nurselinkJourney = '1';
-    section.setAttribute('aria-label', 'NurseLink membership application steps');
+    section.setAttribute('aria-label', "NurseLink applicant registration application steps");
 
     section.innerHTML = `
       <div class="nurselink-journey-heading">
         <div>
-          <span class="nurselink-journey-eyebrow">MEMBERSHIP APPLICATION</span>
+          <span class="nurselink-journey-eyebrow">APPLICANT REGISTRATION APPLICATION</span>
           <strong>Complete your application</strong>
           <p>Save your information as you go. You can return to any available step before submission.</p>
         </div>
@@ -1324,7 +1375,7 @@ import {
     card.innerHTML = `
       <div class="nurselink-command-main">
         <span class="nurselink-command-eyebrow">APPLICANT JOURNEY</span>
-        <h2>Complete your NurseLink membership application</h2>
+        <h2>Complete your NurseLink applicant registration application</h2>
         <p>Build your application in clear stages, save your information as you go, and review everything before submission.</p>
 
         <div class="nurselink-command-actions">
@@ -1386,7 +1437,7 @@ import {
     if (heading) heading.textContent = 'Almost there';
     if (description) {
       description.textContent =
-        'Verify your email address to secure your account and continue your NurseLink membership application.';
+        "Verify your email address to secure your account and continue your NurseLink applicant registration application.";
     }
 
     const panel = document.createElement('div');
@@ -2803,7 +2854,7 @@ import {
       international_license: 'International Nursing License',
       specialty_certification: 'Specialty Certification',
       training_certificate: 'Training Certificate',
-      professional_membership: 'Professional Membership',
+      professional_membership: "Professional Applicant registration",
       language_certificate: 'Language Certificate',
       other: 'Other Credential'
     };
@@ -2861,7 +2912,7 @@ import {
             <option value="international_license">International Nursing License</option>
             <option value="specialty_certification">Specialty Certification</option>
             <option value="training_certificate">Training Certificate</option>
-            <option value="professional_membership">Professional Membership</option>
+            <option value="professional_membership">Professional Applicant registration</option>
             <option value="language_certificate">Language Certificate</option>
             <option value="other">Other Credential</option>
           </select>
@@ -3201,6 +3252,7 @@ import {
   };
 
   function isApprovedMemberPortal() {
+    if (membershipState.data?.applicant_portal_access) return true;
     if (
       document.documentElement.classList.contains(
         'nurselink-super-admin-test-mode'
@@ -3573,6 +3625,7 @@ import {
   }
 
   async function memberOnboardingComplete520() {
+    if (membershipState.data?.applicant_portal_access) return true;
     try {
       const data = await loadMemberPortalOnboarding520();
       return data?.onboarding?.status === 'completed';
@@ -3608,13 +3661,13 @@ import {
         href: '/credentials',
         icon: '◆',
         title: 'Credentials',
-        text: 'Manage your approved member credentials and verification records.'
+        text: "Manage your approved applicant credentials and verification records."
       },
       {
         href: '/documents',
         icon: '▤',
         title: 'Documents',
-        text: 'Access professional evidence and important member documents.'
+        text: "Access professional evidence and important applicant documents."
       },
       {
         href: '/portfolio',
@@ -3683,10 +3736,10 @@ import {
 
     if (!root) {
       root = document.createElement('section');
-      root.className = 'nurselink-member-hub nurselink-member-hub-loading';
+      root.className = "nurselink-applicant-hub nurselink-applicant-hub-loading";
       root.innerHTML = `
         <div class="nurselink-member-hub-loader"></div>
-        <strong>Preparing your NurseLink member dashboard…</strong>
+        <strong>Preparing your NurseLink applicant dashboard…</strong>
       `;
 
       const header = page.querySelector('.page-header');
@@ -3714,7 +3767,7 @@ import {
     root.innerHTML = `
       <div class="nurselink-member-welcome">
         <div>
-          <span>APPROVED MEMBER</span>
+          <span>APPROVED APPLICANT</span>
           <h2>Your NurseLink Professional Hub</h2>
           <p>
             Manage your professional profile, qualifications, credentials,
@@ -3766,7 +3819,7 @@ import {
       <div class="nurselink-member-section-head">
         <div>
           <span>YOUR NURSELINK</span>
-          <strong>Professional tools and member services</strong>
+          <strong>Professional tools and applicant services</strong>
         </div>
         <a href="/qualifications">View readiness →</a>
       </div>
@@ -3775,7 +3828,7 @@ import {
         ${modules.map(module => `
           <a
             href="${module.href}"
-            class="nurselink-member-module-card${module.locked ? ' nurselink-member-module-locked' : ''}"
+            class="nurselink-applicant-module-card${module.locked ? " nurselink-applicant-module-locked" : ''}"
             ${module.locked ? 'data-onboarding-locked="1" aria-label="' + nlV200Escape(module.title) + ' — complete onboarding to unlock"' : ''}
           >
             <span class="nurselink-member-module-icon">${module.icon}</span>
@@ -3893,7 +3946,7 @@ import {
   function portfolioVisibilityLabel(value) {
     return ({
       private: 'Private',
-      members: 'NurseLink Members',
+      members: "NurseLink Applicants",
       public: 'Public'
     })[value] || value;
   }
@@ -3951,7 +4004,7 @@ import {
         <label>
           <span>Visibility</span>
           <select name="visibility">
-            <option value="members">NurseLink Members</option>
+            <option value="members">NurseLink Applicants</option>
             <option value="private">Private</option>
             <option value="public">Public</option>
           </select>
@@ -4207,7 +4260,7 @@ import {
               <span>PROFESSIONAL PORTFOLIO</span>
               <h2>Complete onboarding to unlock</h2>
               <p>
-                Finish your NurseLink member onboarding before using
+                Finish your NurseLink applicant onboarding before using
                 the Professional Portfolio.
               </p>
             </div>
@@ -4295,7 +4348,7 @@ import {
         <div>
           <span>PROFESSIONAL PORTFOLIO</span>
           <strong>🔒 Complete onboarding to unlock</strong>
-          <small>Finish member onboarding before building your professional portfolio.</small>
+          <small>Finish applicant onboarding before building your professional portfolio.</small>
         </div>
         <a href="#membership">Complete Onboarding →</a>
       `;
@@ -4605,7 +4658,7 @@ import {
           <div class="nurselink-v200-heading">
             <span>CAREER MATCHING</span>
             <h2>🔒 Complete onboarding to unlock Career Matching</h2>
-            <p>Finish your NurseLink member onboarding before setting career preferences and receiving opportunity matches.</p>
+            <p>Finish your NurseLink applicant onboarding before setting career preferences and receiving opportunity matches.</p>
           </div>
           <div class="nurselink-v200-actions">
             <a href="/dashboard#membership">Complete Onboarding →</a>
@@ -4855,7 +4908,7 @@ import {
 
     const careerCard = onboardingComplete
       ? `<a href="/jobs"><span>CAREER MATCHING</span><strong>${c.score}% ready</strong><small>${c.label}</small></a>`
-      : `<a href="#membership" class="nurselink-onboarding-feature-locked"><span>CAREER MATCHING</span><strong>🔒 Complete onboarding to unlock</strong><small>Set career preferences after completing member onboarding.</small></a>`;
+      : `<a href="#membership" class="nurselink-onboarding-feature-locked"><span>CAREER MATCHING</span><strong>🔒 Complete onboarding to unlock</strong><small>Set career preferences after completing applicant onboarding.</small></a>`;
 
     strip.innerHTML = `${careerCard}<a href="/learning"><span>PROFESSIONAL LEARNING</span><strong>${l.completed} completed</strong><small>${l.hours.toFixed(1)} hours · ${l.units.toFixed(1)} self-reported CPD</small></a>`;
   }
@@ -5557,10 +5610,10 @@ import {
 
           locked.innerHTML = `
             <div>
-              <span>MEMBER ONBOARDING</span>
+              <span>APPLICANT ONBOARDING</span>
               <strong>🔒 Complete onboarding to unlock Career & Jobs</strong>
               <small>
-                Finish your NurseLink member onboarding before accessing
+                Finish your NurseLink applicant onboarding before accessing
                 opportunity matching and application tools.
               </small>
             </div>
@@ -6132,7 +6185,7 @@ import {
 
         ${record.cover_note ? `
           <div class="nurselink-review-member-note">
-            <span>MEMBER NOTE</span>
+            <span>APPLICANT NOTE</span>
             <p>${nlV200Escape(record.cover_note)}</p>
           </div>
         ` : ''}
@@ -6298,7 +6351,7 @@ import {
 
       <div class="nurselink-review-security-note">
         Reviewer controls are enforced by the API, not only by this screen.
-        Ordinary members cannot use these endpoints. Opportunity creation/editing
+        Ordinary applicants cannot use these endpoints. Opportunity creation/editing
         requires administrator access.
       </div>
     `;
@@ -6486,6 +6539,7 @@ import {
   }
 
   function membershipHasActiveStanding(data) {
+    if (data?.applicant_portal_access && data?.active_access) return true;
     if (!data || data.status !== 'approved') return false;
 
     const standing = String(data.standing || 'active')
@@ -6550,7 +6604,7 @@ import {
       const url = URL.createObjectURL(blob);
       const img = document.createElement('img');
 
-      img.alt = 'NurseLink member profile photo';
+      img.alt = "NurseLink applicant profile photo";
       img.src = url;
 
       img.addEventListener('load', () => {
@@ -6611,7 +6665,7 @@ import {
 
     card.dataset.membershipStanding = standing;
 
-    const safeName = nlV200Escape(data.member_name || 'NurseLink Member');
+    const safeName = nlV200Escape(data.member_name || "NurseLink Applicant");
     const safeNumber = nlV200Escape(data.member_number || '');
     const safeDate = nlV200Escape(
       data.approved_at ? String(data.approved_at).slice(0, 10) : '—'
@@ -6626,9 +6680,9 @@ import {
       <div class="nurselink-member-id-band">
         <div>
           <span>NurseLink</span>
-          <small>Professional Membership Network</small>
+          <small>Professional Applicant registration Network</small>
         </div>
-        <em>DIGITAL MEMBER ID</em>
+        <em>DIGITAL APPLICANT ID</em>
       </div>
 
       <div class="nurselink-member-id-main">
@@ -6638,23 +6692,23 @@ import {
           </div>
 
           <div class="nurselink-member-id-copy">
-            <span>APPROVED MEMBER</span>
+            <span>APPROVED APPLICANT</span>
             <strong>${safeName}</strong>
             <small>${safeNumber}</small>
 
-            <div class="nurselink-member-id-status"
+            <div class="nurselink-applicant-id-status"
               data-standing="${nlV200Escape(standing)}">
               <span>${standingActive ? '✓' : '!'}</span>
               <strong class="nurselink-active-membership-title">
                 ${standingActive
-                  ? 'Active NurseLink Membership'
-                  : `${nlV200Escape(standingLabel)} Membership Standing`}
+                  ? "Active NurseLink Applicant registration"
+                  : `${nlV200Escape(standingLabel)} Applicant registration Standing`}
               </strong>
             </div>
 
             ${!standingActive ? `
               <div class="nurselink-member-id-standing-notice">
-                Member-only services are unavailable while this membership is
+                Applicant-only services are unavailable while this applicant registration is
                 ${nlV200Escape(standingLabel)}.
               </div>
             ` : ''}
@@ -6662,20 +6716,20 @@ import {
         </div>
 
         <div class="nurselink-member-id-qr">
-          <div class="nurselink-member-id-qr-code" aria-label="Membership verification QR code"></div>
+          <div class="nurselink-member-id-qr-code" aria-label="Applicant registration verification QR code"></div>
           <strong>SCAN TO VERIFY</strong>
-          <small>NurseLink membership</small>
+          <small>NurseLink applicant registration</small>
         </div>
       </div>
 
       <div class="nurselink-member-id-footer">
         <div>
-          <span>Member Since</span>
+          <span>Applicant Since</span>
           <strong>${safeDate}</strong>
         </div>
 
         <div>
-          <span>Member Number</span>
+          <span>Applicant Number</span>
           <strong>${safeNumber || '—'}</strong>
         </div>
 
@@ -6685,7 +6739,7 @@ import {
         </div>
 
         <div>
-          <span>Membership Standing</span>
+          <span>Applicant registration Standing</span>
           <strong>${nlV200Escape(standingLabel)}</strong>
         </div>
 
@@ -6703,7 +6757,7 @@ import {
       </div>
 
       <div class="nurselink-member-id-note">
-        This digital card confirms NurseLink membership and current NurseLink
+        This digital card confirms NurseLink applicant registration and current NurseLink
         professional standing only. It is not a PRC license, government ID,
         immigration document or employer credential.
       </div>
@@ -6766,20 +6820,20 @@ import {
 
       status.innerHTML = `
         <div>
-          <span>MEMBERSHIP REVIEW</span>
+          <span>APPLICANT REGISTRATION REVIEW</span>
           <strong>${membershipStatusLabel(membership.status)}</strong>
           <p>
             ${membership.reviewer_notes
               ? membership.reviewer_notes
               : membership.status === 'approved'
-                ? 'Your NurseLink membership has been approved.'
-                : 'Your application is in the NurseLink membership review workflow.'}
+                ? "Your NurseLink applicant registration has been approved."
+                : "Your application is in the NurseLink applicant registration review workflow."}
           </p>
         </div>
 
         ${membership.member_number ? `
           <div class="nurselink-membership-number">
-            <span>Member Number</span>
+            <span>Applicant Number</span>
             <strong>${membership.member_number}</strong>
             ${membership.status === 'approved' ? `
               <span>Professional Standing</span>
@@ -6797,7 +6851,7 @@ import {
         ` : ''}
 
         ${Array.isArray(membership.status_history) && membership.status_history.length ? `
-          <div class="nurselink-membership-timeline" aria-label="Membership application timeline">
+          <div class="nurselink-membership-timeline" aria-label="Applicant registration application timeline">
             <div class="nurselink-membership-timeline-head">
               <span>APPLICATION TIMELINE</span>
               <strong>${membership.status_history.length} update${membership.status_history.length === 1 ? '' : 's'}</strong>
@@ -6844,7 +6898,7 @@ import {
 
       lifecycleAlert.innerHTML = `
         <div>
-          <span>MEMBERSHIP STANDING</span>
+          <span>APPLICANT REGISTRATION STANDING</span>
           <strong>
             ${nlV200Escape(
               membershipStandingLabel(
@@ -6855,17 +6909,17 @@ import {
           <p>
             ${nlV200Escape(
               membership.standing_reason
-                || 'Member-only services are unavailable until this membership returns to Active standing.'
+                || "Applicant-only services are unavailable until this applicant registration returns to Active standing."
             )}
           </p>
         </div>
         <a href="/application-status">
-          View Membership Status
+          View Applicant registration Status
         </a>
       `;
     }
 
-    if (membership.status === 'approved' && ['dashboard', 'profile'].includes(route)) {
+    if ((membership.applicant_portal_access || membership.status === 'approved') && ['dashboard', 'profile'].includes(route)) {
       let existing = page.querySelector('.nurselink-digital-member-card');
 
       if (!existing) {
@@ -7167,7 +7221,7 @@ import {
       list.innerHTML = `
         <div class="nurselink-notification-empty">
           <strong>No notifications yet</strong>
-          <small>Membership, credential and application updates will appear here.</small>
+          <small>Applicant registration, credential and application updates will appear here.</small>
         </div>
       `;
       return;
@@ -7304,7 +7358,7 @@ import {
           primaryGrid.className = 'nurselink-dashboard-primary-grid';
           primaryGrid.setAttribute(
             'aria-label',
-            'Membership identity and notification center'
+            "Applicant registration identity and notification center"
           );
           memberId.insertAdjacentElement('beforebegin', primaryGrid);
         }
@@ -7337,7 +7391,7 @@ import {
     const message = card.querySelector('.nurselink-review-card-status');
     const button = card.querySelector('[data-action="save-membership"]');
 
-    message.textContent = 'Saving membership review…';
+    message.textContent = "Saving applicant registration review…";
     message.dataset.tone = 'loading';
     button.disabled = true;
 
@@ -7373,13 +7427,15 @@ import {
     const profile = data?.profile || null;
     const documents = Array.isArray(data?.documents) ? data.documents : [];
     const quality = data?.extraction_summary || {};
+    const workflow=data?.workflow_review;
+    const workflowHtml=workflow ? `<p><strong>${workflow.open_count} document review issues</strong> · <a href="/ocr-review?applicant registration=${Number(data.membership_id)}">Review and resolve issues</a></p>` : '';
     const value = item => nlV200Escape(item || 'Not provided');
     const fullName = profile
       ? [profile.first_name, profile.middle_name, profile.last_name].filter(Boolean).join(' ')
       : '';
 
     return `
-      <div class="nurselink-membership-evidence-summary">
+      <div class="nurselink-membership-evidence-summary">${workflowHtml}
         <div class="nurselink-smart561-quality" data-review-required="${quality.review_required ? 'true' : 'false'}">
           <div>
             <strong>${quality.review_required ? 'Extraction needs reviewer attention' : 'No extraction conflicts detected'}</strong>
@@ -7466,8 +7522,8 @@ import {
     container.innerHTML = `
       <div class="nurselink-review-queue-head">
         <div>
-          <strong>Membership Applications Queue</strong>
-          <small>${rows.length} membership record${rows.length === 1 ? '' : 's'}</small>
+          <strong>Applicant registration Applications Queue</strong>
+          <small>${rows.length} applicant registration record${rows.length === 1 ? '' : 's'}</small>
         </div>
       </div>
 
@@ -7478,15 +7534,15 @@ import {
 
     rows.forEach(record => {
       const card = document.createElement('article');
-      card.className = 'nurselink-review-card nurselink-membership-review-card';
+      card.className = "nurselink-review-card nurselink-applicant registration-review-card";
       card.dataset.status = record.status;
 
       card.innerHTML = `
         <div class="nurselink-review-card-head">
           <div>
-            <span>MEMBERSHIP APPLICATION</span>
+            <span>APPLICANT REGISTRATION APPLICATION</span>
             <strong>${record.member}</strong>
-            <small>${nlV200Escape(record.member_number || 'Membership number pending')}</small>
+            <small>${nlV200Escape(record.member_number || "Applicant registration number pending")}</small>
           </div>
 
           <em>${membershipStatusLabel(record.status)}</em>
@@ -7499,14 +7555,12 @@ import {
 
         <div class="nurselink-review-card-fields">
           <label>
-            <span>Membership Status</span>
+            <span>Applicant registration Status</span>
             <select name="status">
               <option value="submitted">Submitted</option>
               <option value="under_review">Under Review</option>
               <option value="needs_information">Needs Information</option>
-              <option value="ready_for_approval">Ready for Approval</option>
-              ${isAdmin ? '<option value="approved">Approved</option>' : ''}
-              <option value="declined">Declined</option>
+
             </select>
           </label>
 
@@ -7523,7 +7577,7 @@ import {
         <div class="nurselink-review-card-actions">
           <button type="button" class="secondary-button" data-action="inspect-evidence">Inspect Evidence</button>
           <button type="button" class="primary-button" data-action="save-membership">
-            Save Membership Review
+            Save Applicant registration Review
           </button>
         </div>
       `;
@@ -7533,7 +7587,7 @@ import {
       if (Array.from(select.options).some(option => option.value === record.status)) {
         select.value = record.status;
       } else {
-        select.value = 'ready_for_approval';
+        select.value = 'under_review';
       }
 
       if (record.status === 'approved') {
@@ -7564,9 +7618,9 @@ import {
     if (!rows.length) {
       list.innerHTML = `
         <div class="nurselink-review-empty">
-          <strong>No membership records are in the queue yet.</strong>
+          <strong>No applicant registration records are in the queue yet.</strong>
           <small>
-            Membership records are created automatically when authenticated users
+            Applicant registration records are created automatically when authenticated users
             access NurseLink after v5.5.3 is installed.
           </small>
         </div>
@@ -7696,7 +7750,7 @@ import {
           <div class="nurselink-public-profile-checks">
             ${[
               ['show_photo', 'Profile Photo'],
-              ['show_member_number', 'NurseLink Member Number'],
+              ['show_member_number', "NurseLink Applicant Number"],
               ['show_credentials', 'Credentials'],
               ['show_employment', 'Employment History'],
               ['show_portfolio', 'Public Portfolio'],
@@ -7856,7 +7910,7 @@ import {
       return;
     }
 
-    if (!membership || membership.status !== 'approved') return;
+    if (!membership || (!membership.applicant_portal_access && membership.status !== 'approved')) return;
 
     let root = page.querySelector('.nurselink-public-profile-settings');
 
@@ -8562,11 +8616,11 @@ import {
 
     card.innerHTML = `
       <div>
-        <span>MEMBER BENEFITS & RESOURCES</span>
-        <strong>Explore Member Support</strong>
+        <span>APPLICANT BENEFITS & RESOURCES</span>
+        <strong>Explore Applicant Support</strong>
         <small>
           Browse NurseLink resources, professional support offers
-          and member opportunities subject to listed terms.
+          and applicant opportunities subject to listed terms.
         </small>
       </div>
       <a href="/nurselink-benefits.html">
@@ -8605,7 +8659,7 @@ import {
 
     card.innerHTML = `
       <div>
-        <span>MEMBER ENGAGEMENT HUB</span>
+        <span>APPLICANT ENGAGEMENT HUB</span>
         <strong>Your NurseLink Community</strong>
         <small>
           One place for chapters, events, mentoring
@@ -8651,7 +8705,7 @@ import {
     card.innerHTML = `
       <div>
         <span>MENTORING & PEER SUPPORT</span>
-        <strong>Connect with NurseLink Members</strong>
+        <strong>Connect with NurseLink Applicants</strong>
         <small>
           Create an opt-in mentoring profile, discover mentors
           and manage professional mentoring requests.
@@ -8744,7 +8798,7 @@ import {
         <strong>Connect, Learn & Participate</strong>
         <small>
           Discover NurseLink webinars, workshops, orientations,
-          networking activities and member programs.
+          networking activities and applicant programs.
         </small>
       </div>
       <a href="/nurselink-events.html">
@@ -8861,7 +8915,7 @@ import {
 
     const underlyingPortalLabel = isApplicantPortal()
       ? 'Applicant Portal'
-      : 'Member Portal';
+      : "Applicant Portal";
 
     const topbar = shell?.querySelector('.topbar');
 
@@ -8930,8 +8984,8 @@ import {
         .replace(/\s+/g, ' ')
         .trim();
 
-      if (current !== 'Super Administrator Portal') {
-        node.textContent = 'Super Administrator Portal';
+      if (current !== 'Applicant Portal') {
+        node.textContent = 'Applicant Portal';
         changed = true;
       }
 
@@ -9137,12 +9191,12 @@ import {
       <div>
         <strong>SUPER ADMINISTRATOR TEST MODE ACTIVE</strong>
         <small>
-          Member-only access is temporarily enabled for functional testing.
-          Your real membership status is unchanged.
+          Applicant-only access is temporarily enabled for functional testing.
+          Your real applicant registration status is unchanged.
         </small>
       </div>
       <div>
-        <span>Membership: ${
+        <span>Applicant registration: ${
           nlV200Escape(
             membershipStatusLabel(
               data.membership_status || 'pending'
@@ -9255,12 +9309,13 @@ import {
     if (!membership) return 'Applicant';
 
     return membership.status === 'approved'
-      ? 'Member'
+      ? "Applicant"
       : 'Applicant';
   }
 
   function membershipRoleLabel(membership) {
     if (!membership) return 'Pending';
+    if (membership.applicant_portal_access) return 'Applicant access active';
 
     if (membership.status === 'approved') return 'Approved';
 
@@ -9293,7 +9348,7 @@ import {
     );
 
     if (roleLabel) {
-      roleLabel.textContent = 'Membership Role';
+      roleLabel.textContent = "Applicant registration Role";
     }
 
     const roleValue = roleCard.querySelector('strong');
@@ -9309,7 +9364,7 @@ import {
     );
 
     if (accessCopy) {
-      accessCopy.textContent = 'Membership standing';
+      accessCopy.textContent = "Applicant registration standing";
     }
 
     roleCard.setAttribute(
@@ -9352,8 +9407,8 @@ import {
     summary.innerHTML = `
       <div class="nurselink-access-membership-summary-head">
         <div>
-          <span>ACCESS & MEMBERSHIP</span>
-          <strong>Your system authority and membership standing are separate.</strong>
+          <span>ACCESS & APPLICANT REGISTRATION</span>
+          <strong>Your system authority and applicant registration standing are separate.</strong>
         </div>
         <em>SERVER-CONFIRMED ACCESS</em>
       </div>
@@ -9366,23 +9421,23 @@ import {
         </div>
 
         <div data-kind="membership-role">
-          <span>Membership Role</span>
+          <span>Applicant registration Role</span>
           <strong>${nlV200Escape(memberRole)}</strong>
-          <small>Professional membership role</small>
+          <small>Professional applicant registration role</small>
         </div>
 
         <div data-kind="membership-status">
-          <span>Membership Status</span>
+          <span>Applicant registration Status</span>
           <strong>${nlV200Escape(standing)}</strong>
           <small>Application: ${nlV200Escape(applicationStatus)}</small>
         </div>
 
         <div data-kind="member-number">
-          <span>Member Number</span>
+          <span>Applicant Number</span>
           <strong>${nlV200Escape(memberNumber)}</strong>
           <small>${membership?.member_number
-            ? 'Permanent NurseLink member number'
-            : 'Issued after membership approval'}</small>
+            ? "Permanent NurseLink applicant number"
+            : "Issued after applicant registration approval"}</small>
         </div>
       </div>
     `;
@@ -9593,6 +9648,7 @@ import {
 
   function markLockedQualification(scope) {
     if (!scope || routeSlug() !== 'qualifications') return;
+    if (membershipState.data?.applicant_portal_access) {document.documentElement.classList.remove('nurselink-member-locked');return;}
 
     if (
       document.documentElement.classList.contains(
@@ -9617,7 +9673,7 @@ import {
         const value = (h.textContent || '').trim().toLowerCase();
         if (
           value === 'qualification framework' ||
-          value === 'available after membership approval'
+          value === "available after applicant registration approval"
         ) {
           h.classList.add('nurselink-ghost-heading');
         }
@@ -9677,7 +9733,7 @@ import {
     url = ''
   ) {
     return `
-      <div class="nurselink-member-portal-action" data-done="${done ? '1' : '0'}">
+      <div class="nurselink-applicant-portal-action" data-done="${done ? '1' : '0'}">
         <span aria-hidden="true">${done ? '✓' : '○'}</span>
         <div>
           <strong>${nlV200Escape(title)}</strong>
@@ -9711,8 +9767,8 @@ import {
 
       card.innerHTML = `
         <div class="nurselink-member-portal-loading">
-          <strong>Membership & Activation</strong>
-          <small>Loading your NurseLink member status…</small>
+          <strong>Applicant registration & Activation</strong>
+          <small>Loading your NurseLink applicant status…</small>
         </div>
       `;
 
@@ -9756,8 +9812,8 @@ import {
       } else {
         card.innerHTML = `
           <div class="nurselink-member-portal-loading">
-            <strong>Membership & Activation</strong>
-            <small>Member activation information is temporarily unavailable.</small>
+            <strong>Applicant registration & Activation</strong>
+            <small>Applicant activation information is temporarily unavailable.</small>
           </div>
         `;
       }
@@ -9817,10 +9873,10 @@ import {
     card.innerHTML = `
       <div class="nurselink-member-portal-head">
         <div>
-          <span>MEMBERSHIP</span>
-          <strong>Membership & Activation</strong>
+          <span>APPLICANT REGISTRATION</span>
+          <strong>Applicant registration & Activation</strong>
           <small>
-            Member ${nlV200Escape(membership.member_number || 'number pending')}
+            Applicant ${nlV200Escape(membership.member_number || 'number pending')}
             · ${nlV200Escape(String(membership.standing || '').replace(/_/g, ' '))}
           </small>
         </div>
@@ -9834,14 +9890,14 @@ import {
         ${memberActivationAction520(
           !!onboarding.welcome_viewed_at,
           'Welcome reviewed',
-          'Your approved NurseLink membership is active.'
+          "Your approved NurseLink applicant registration is active."
         )}
         ${memberActivationAction520(
           !!onboarding.orientation_completed_at,
-          'Member orientation',
+          "Applicant orientation",
           onboarding.orientation_completed_at
-            ? 'Internal NurseLink member orientation completed.'
-            : 'Review the NurseLink member-use and privacy principles.'
+            ? "Internal NurseLink applicant orientation completed."
+            : "Review the NurseLink applicant-use and privacy principles."
         )}
         ${memberActivationAction520(
           !!signals.profile_photo_ready,
@@ -9863,8 +9919,8 @@ import {
         )}
         ${memberActivationAction520(
           !!signals.digital_member_identity_ready,
-          'Digital member identity',
-          'NurseLink membership identity — not a government or PRC ID.',
+          "Digital applicant identity",
+          "NurseLink applicant registration identity — not a government or PRC ID.",
           '/nurselink-digital-id.html'
         )}
       </div>
@@ -10121,7 +10177,8 @@ import {
   }
 
   async function smartRegistrationRequest(path = '', options = {}) {
-    return nurseLinkJsonRequest(SMART_REGISTRATION_API, path, options);
+    setOfflineTransport((p,o)=>nurseLinkJsonRequest(SMART_REGISTRATION_API,p,o));
+    return offlineRequest(path,options);
   }
 
   async function loadSmartRegistration557(force = false) {
@@ -10174,13 +10231,13 @@ import {
       missing: 'Missing'
     };
     const confidence = Math.round(Number(suggestion?.confidence || 0) * 100);
-    const source = suggestion?.source_name || 'uploaded document';
+    const source = (suggestion?.source_name || 'uploaded document') + (suggestion?.source_page ? ` · Page ${suggestion.source_page}` : '');
     const alternatives = Array.isArray(suggestion?.alternatives) ? suggestion.alternatives : [];
 
     return `
       <span class="nurselink-smart561-field-meta" data-status="${smartEsc(status)}">
         <b>${smartEsc(labels[status] || status)}</b>
-        ${suggestion ? `<small>${smartEsc(source)}${confidence ? ` · ${confidence}% confidence` : ''}</small>` : ''}
+        ${suggestion ? `<small>${smartEsc(source)}${confidence ? ` · ${confidence}% heuristic confidence` : ''}</small>` : ''}
       </span>
       ${suggestion?.conflict ? `
         <span class="nurselink-smart561-conflict">
@@ -10207,6 +10264,7 @@ import {
           source: 'document',
           document_id: suggestion.source_document_id,
           document_name: suggestion.source_name || '',
+          source_page: suggestion.source_page || null,
           confidence: Number(suggestion.confidence || 0)
         };
       } else {
@@ -10225,7 +10283,7 @@ import {
       <div class="nurselink-smart557-brandbar">
         <div class="nurselink-smart557-brand">
           <span class="logo">NL</span>
-          <span><strong>NurseLink</strong><small>Smart Membership Registration</small></span>
+          <span><strong>NurseLink</strong><small>Smart Registration</small></span>
         </div>
         ${isSignedInMember ? '' : '<a href="/login">Already have an account? <strong>Sign In</strong></a>'}
       </div>
@@ -10241,6 +10299,11 @@ import {
     `;
   }
 
+
+  function registrationOfflinePanel(){const status=offlineState();return `<section class="nurselink-smart557-card" data-registration-sync><strong>Connection and saved drafts</strong><p data-offline-status>${smartEsc(status.status)}${status.pending?' · '+status.pending+' pending change(s)':''}</p><p data-offline-error>${smartEsc(status.error)}</p><div data-offline-documents></div><div class="nl-registration-sync-actions"><button type="button" class="secondary-button" data-offline-retry>Sync now</button><button type="button" class="secondary-button" data-offline-export>Download saved draft</button><button type="button" class="secondary-button" data-offline-clear>Clear local changes</button></div><p>Drafts and selected documents can be retained on this device for up to 7 days. Sign out clears them. Submission and OCR require an internet connection.</p><label>Need help? <select data-registration-issue><option value="help_requested">Help completing the application</option><option value="connection_problem">Slow or unstable connection</option><option value="upload_problem">Document upload problem</option><option value="ocr_problem">OCR or extraction problem</option><option value="sync_conflict">Draft sync conflict</option></select></label><button type="button" class="secondary-button" data-registration-help>Ask an administrator for help</button></section>`;}
+  window.addEventListener('nurselink-offline-state',async event=>{const panel=document.querySelector('[data-registration-sync]');if(!panel)return;const state=event.detail;const status=panel.querySelector('[data-offline-status]');if(status)status.textContent=state.status+(state.pending?' · '+state.pending+' pending change(s)':'');const error=panel.querySelector('[data-offline-error]');if(error)error.textContent=state.error||'';const docs=panel.querySelector('[data-offline-documents]');if(docs){const rows=await offlineQueueDetails().catch(()=>[]);docs.innerHTML=rows.filter(row=>row.path==='/documents').map(row=>`<p>${smartEsc(row.name)} — saved on this device, waiting to upload</p>`).join('');}if(!state.pending&&state.status==='Changes synced'&&routeSlug()==='smart-registration'&&!document.activeElement?.closest('[data-smart-form]')){loadSmartRegistration557(true).then(()=>renderSmartRegistration557(document.querySelector('.page')||document.querySelector('main'))).catch(()=>{});}});
+  setInterval(()=>{if(document.visibilityState==='visible'&&navigator.onLine)flushOffline().catch(()=>{});},30000);
+
   function smartNoticeHtml() {
     if (!smartRegistration557State.notice) return '';
     return `<div class="nurselink-smart557-notice" role="alert" aria-live="assertive" tabindex="-1" data-tone="${smartEsc(smartRegistration557State.noticeTone)}">${smartEsc(smartRegistration557State.notice)}</div>`;
@@ -10254,7 +10317,7 @@ import {
         <div class="nurselink-smart557-card-heading centered">
           <span class="nurselink-smart557-icon" aria-hidden="true">🔒</span>
           <h1>${isUpdate ? 'Your credential update is under review' : 'Your submitted application is locked'}</h1>
-          <p>Your current status is <strong>${smartEsc(status || 'under review')}</strong>. Information cannot be changed while NurseLink is reviewing it.${isUpdate ? ' Your existing membership remains approved.' : ''}</p>
+          <p>Your current status is <strong>${smartEsc(status || 'under review')}</strong>. Information cannot be changed while NurseLink is reviewing it.${isUpdate ? " Your existing applicant registration remains approved." : ''}</p>
         </div>
         <div class="nurselink-smart557-complete-callout">
           If a reviewer needs corrections, your status will change to <strong>Needs Information</strong>. You can then return here, save the requested details, and resubmit.
@@ -10264,6 +10327,81 @@ import {
         </div>
       </section>
     `;
+  }
+
+  function smartOcrProgressHtml(doc) {
+    const metric=ocrProgress(doc);
+    return `<span class="nl-ocr-progress"><span class="nl-ocr-progress-label">${smartEsc(metric.phase)}${metric.percent===null?'':` · ${metric.percent}%`}</span>
+      <progress max="100" ${metric.percent===null?'':`value="${metric.percent}"`} aria-label="Document processing progress"></progress>
+      ${metric.pages?`<span>${smartEsc(metric.pages)}</span>`:''}
+      <span class="nl-ocr-confidence">OCR text confidence: <b>${metric.confidence===null?'Not available yet':`${metric.confidence}%`}</b></span>
+      ${metric.confidence===null ? '<span>Confidence is shown when the OCR engine supplies a score; direct text extraction may have no OCR score.</span>' : `<meter min="0" max="100" value="${metric.confidence}" aria-label="Estimated OCR text confidence"></meter><span>Average across ${metric.confidencePages} scored OCR page${metric.confidencePages===1?'':'s'}. Estimated recognition confidence, not verified accuracy.</span>`}
+      ${metric.needsReview?`<span class="nl-ocr-review-needed">Review required${metric.unreadable?` · ${metric.unreadable} unreadable page${metric.unreadable===1?'':'s'}`:''}. Processing completion does not mean all information was extracted correctly.</span>`:''}
+    </span>`;
+  }
+
+  function smartOcrPreviewHtml(doc) {
+    const metric = ocrProgress(doc);
+    if (!metric.totalPages) return '';
+    const total = Math.max(1, Number(metric.totalPages) || 1);
+    const processed = Math.max(0, Math.min(Number(metric.processedPages) || 0, total));
+    const active = ['queued', 'processing'].includes(doc.extraction_status);
+    const current = active ? Math.min(Math.max(processed + 1, 1), total) : Math.max(processed, 1);
+    const previewPage = current || 1;
+    const dots = Array.from({length: Math.min(total, 40)}, (_, index) => {
+      const page = index + 1;
+      const status = page <= processed ? 'done' : page === current && active ? 'active' : 'pending';
+      return `<span data-status="${status}" title="Page ${page}"></span>`;
+    }).join('');
+    const previewUrl = `${SMART_REGISTRATION_API}/documents/${smartEsc(doc.id)}/preview/${smartEsc(previewPage)}?v=${smartEsc(doc.updated_at || doc.extraction_status || '')}`;
+    const inlinePreview = typeof doc.preview_image?.image === 'string' && doc.preview_image.image.startsWith('data:image/')
+      ? doc.preview_image.image
+      : '';
+    return `<span class="nl-ocr-scanner" aria-label="Document page preview">
+      <span class="nl-ocr-scanner-frame">
+        <img ${inlinePreview ? `src="${smartEsc(inlinePreview)}"` : `data-smart-preview-src="${previewUrl}"`} alt="Preview of ${smartEsc(doc.name)} page ${smartEsc(previewPage)}" loading="lazy">
+        ${active ? '<i aria-hidden="true"></i>' : ''}
+      </span>
+      <span class="nl-ocr-scanner-caption">${active ? 'Scanning' : 'Preview'} page ${smartEsc(previewPage)} of ${smartEsc(total)}</span>
+      <span class="nl-ocr-page-dots" aria-hidden="true">${dots}${total > 40 ? '<em>+</em>' : ''}</span>
+    </span>`;
+  }
+
+  function hydrateSmartOcrPreviews(root) {
+    root.querySelectorAll('img[data-smart-preview-src]').forEach(img => {
+      if (img.dataset.smartPreviewLoaded === img.dataset.smartPreviewSrc) return;
+      img.dataset.smartPreviewLoaded = img.dataset.smartPreviewSrc;
+      const previousUrl = img.dataset.smartObjectUrl;
+      if (previousUrl) {
+        try { URL.revokeObjectURL(previousUrl); } catch (_) {}
+        delete img.dataset.smartObjectUrl;
+      }
+      nurseLinkJsonRequest(img.dataset.smartPreviewSrc, {
+        headers: {Accept: 'application/json'}
+      })
+        .then(payload => {
+          const image = payload?.data?.image || payload?.image || '';
+          if (!image.startsWith('data:image/')) throw new Error('Preview payload missing image data.');
+          img.src = image;
+          img.closest('.nl-ocr-scanner-frame')?.classList.remove('is-preview-error');
+        })
+        .catch(() => {
+          img.removeAttribute('src');
+          img.closest('.nl-ocr-scanner-frame')?.classList.add('is-preview-error');
+        });
+    });
+  }
+
+  function smartOcrAggregateProgressHtml(documents) {
+    const metric = ocrAggregateProgress(documents);
+    if (!metric) return '';
+    const label = metric.active ? 'Total OCR page processing' : 'Total OCR pages processed';
+    return `<div class="nl-ocr-aggregate" role="group" aria-label="Total document processing progress">
+      <span class="nl-ocr-progress-label">${label} · ${metric.percent}%</span>
+      <progress max="100" value="${metric.percent}" aria-label="${label}"></progress>
+      <span>${smartEsc(metric.processed)} / ${smartEsc(metric.total)} pages processed across all PDFs</span>
+      ${metric.failed ? '<span class="nl-ocr-review-needed">Some documents need review or retry. Completed pages remain counted separately from OCR confidence.</span>' : ''}
+    </div>`;
   }
 
   function smartUploadStep(data) {
@@ -10306,6 +10444,7 @@ import {
               <strong>Uploaded documents</strong>
               <span>${documents.length} file${documents.length === 1 ? '' : 's'}</span>
             </div>
+            ${smartOcrAggregateProgressHtml(documents)}
             ${documents.map(doc => {
               const fields = Object.keys(doc.extracted_fields || {}).length;
               const status = doc.security_status === 'quarantined'
@@ -10326,8 +10465,9 @@ import {
               return `
                 <div class="nurselink-smart557-document">
                   <span class="file">▤</span>
-                  <span class="copy"><strong>${smartEsc(doc.name)}</strong><small>${smartEsc(doc.document_type || 'document')} · v${smartEsc(doc.version || 1)} · ${smartEsc(status)}</small></span>
+                  <span class="copy"><strong>${smartEsc(doc.name)}</strong><small>${smartEsc(doc.document_type || 'document')} · v${smartEsc(doc.version || 1)} · ${smartEsc(status)}</small>${doc.extraction_details?.total_pages ? `<small>${smartEsc(doc.extraction_details.processed_pages)} / ${smartEsc(doc.extraction_details.total_pages)} pages processed</small>` : ''}${doc.extraction_message ? `<small>${smartEsc(doc.extraction_message)}</small>` : ''}${smartOcrPreviewHtml(doc)}${smartOcrProgressHtml(doc)}</span>
                   <span class="nurselink-smart558-document-actions">
+                    <button type="button" class="replace" data-smart-rescan-document="${doc.id}" ${doc.can_reprocess===false || (doc.can_reprocess==null && ['queued','processing'].includes(doc.extraction_status)) ? 'disabled' : ''}>${['queued','processing'].includes(doc.extraction_status) && doc.can_reprocess!==true ? 'Scanning…' : 'Re-scan All Pages'}</button>
                     <button type="button" class="replace" data-smart-replace-document="${doc.id}" aria-label="Replace ${smartEsc(doc.name)}">Replace</button>
                     <button type="button" class="remove" data-smart-remove-document="${doc.id}" aria-label="Remove ${smartEsc(doc.name)}">×</button>
                   </span>
@@ -10336,6 +10476,12 @@ import {
             }).join('')}
           </div>
         ` : ''}
+
+        <div class="nurselink-smart557-test-reset">
+          <strong>Testing reset</strong>
+          <span>Clear this applicant's uploaded documents, OCR suggestions and saved Smart Registration fields.</span>
+          <button type="button" class="secondary-button" data-smart-reset-test>Reset Applicant Test Record</button>
+        </div>
 
         <div class="nurselink-smart557-privacy">
           <span>▣</span>
@@ -10359,6 +10505,84 @@ import {
       </section>
       <p class="nurselink-smart557-terms">By continuing, you agree to NurseLink’s Terms of Service and Privacy Policy.</p>
     `;
+  }
+
+  const SMART_RECORD_GROUPS = {
+    personal_data: ['Additional Personal Data', 'label value'],
+    employment: ['Work Experience', 'position_title employer country city department started_on ended_on is_current responsibilities reason_for_leaving bed_capacity date_text notes'],
+    education: ['Education', 'qualification institution field_of_study country started_on completed_on date_text notes'],
+    credentials: ['Licenses, Certificates & Training', 'title credential_number issuing_authority country issued_on expires_on category credential_type notes'],
+    languages: ['Languages', 'language proficiency speaking reading writing exam score notes'],
+    references: ['Character References', 'name position_title organization relationship phone email notes'],
+    skills: ['Skills', 'name domain proficiency notes']
+  };
+  function smartRecordKey(group, row) {
+    return JSON.stringify(SMART_RECORD_GROUPS[group][1].split(' ').map(key => [key, String(row[key] ?? '').trim().toLowerCase()]));
+  }
+  function smartRecordCard(group, row, saved = false) {
+    const schema = SMART_RECORD_GROUPS[group];
+    const keys = schema[1].split(' ');
+    const defaults = {personal_data: 2, employment: 9, education: 7, credentials: 7, languages: 5, references: 7, skills: 3};
+    const visible = keys.filter((key, index) => index < defaults[group] || row[key] !== undefined);
+    const meta = Object.fromEntries(['source_document_id','source_name','source_record_id','source_page','source_pages','confidence'].filter(key => row[key] !== undefined).map(key => [key, row[key]]));
+    const pages = row.source_pages?.length ? row.source_pages.join(', ') : row.source_page;
+    return `<fieldset class="nl-document-record" data-smart-record="${group}" data-record-meta="${smartEsc(JSON.stringify(meta))}">
+      <legend>${smartEsc(schema[0])}</legend>
+      <label class="nl-record-include"><input type="checkbox" data-record-include checked> Include this record in my profile</label>
+      <p class="nl-record-source">${saved ? 'Previously confirmed' : 'Needs your review'}${row.source_name ? ` · ${smartEsc(row.source_name)}` : ''}${pages ? ` · Page ${smartEsc(pages)}` : ''}${row.confidence ? ` · ${Math.round(row.confidence * 100)}% heuristic confidence` : ''}</p>
+      <div class="nurselink-smart557-grid two">${visible.map(key => {
+        const label = key.replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+        if (key === 'is_current') return `<label class="nurselink-smart557-field nl-record-check"><span>Currently employed here</span><input type="checkbox" data-record-key="${key}" ${row[key] ? 'checked' : ''}></label>`;
+        const long = ['responsibilities','notes','value'].includes(key);
+        const input = long
+          ? `<textarea data-record-key="${key}" rows="3" maxlength="6000">${smartEsc(row[key] || '')}</textarea>`
+          : `<input data-record-key="${key}" type="${key === 'email' ? 'email' : 'text'}" value="${smartEsc(row[key] || '')}" maxlength="6000">`;
+        return `<label class="nurselink-smart557-field"><span>${smartEsc(label)}</span>${input}</label>`;
+      }).join('')}</div>
+      ${row.source_excerpt ? `<details class="nl-record-evidence"><summary>View source text</summary><pre>${smartEsc(row.source_excerpt)}</pre></details>` : ''}
+    </fieldset>`;
+  }
+  function smartStructuredRecords(data, section) {
+    const groups = section === 'personal' ? ['personal_data'] : Object.keys(SMART_RECORD_GROUPS).filter(key => key !== 'personal_data');
+    let hasSuggestions = false;
+    const html = groups.map(group => {
+      const saved = data?.profile?.structured_data?.[group] || [];
+      const seen = new Set(saved.map(row => smartRecordKey(group, row)));
+      const savedSources = new Set(saved.filter(row => row.source_record_id).map(row => `${row.source_document_id}:${row.source_record_id}`));
+      const suggested = (data?.structured_suggestions?.[group] || []).filter(row => {
+        if (row.source_record_id && savedSources.has(`${row.source_document_id}:${row.source_record_id}`)) return false;
+        const key = smartRecordKey(group, row);
+        if (seen.has(key)) return false;
+        seen.add(key); return true;
+      });
+      hasSuggestions ||= suggested.length > 0;
+      return `<details class="nl-document-record-group" ${saved.length || suggested.length ? 'open' : ''}>
+        <summary>${smartEsc(SMART_RECORD_GROUPS[group][0])} <span>${saved.length + suggested.length} records</span></summary>
+        <div data-smart-record-list="${group}">${saved.map(row => smartRecordCard(group, row, true)).join('')}${suggested.map(row => smartRecordCard(group, row)).join('')}</div>
+        <button type="button" class="secondary-button" data-smart-add-record="${group}">Add ${smartEsc(SMART_RECORD_GROUPS[group][0])} Record</button>
+      </details>`;
+    }).join('');
+    return `<section class="nl-document-records" data-record-section="${section}">
+      <h2>Information from all document pages</h2>
+      <p>Review, edit, or uncheck records before saving. Partial dates stay as written; do not invent a missing month or day. References and additional personal details remain private.</p>
+      ${html}
+      ${hasSuggestions ? '<label class="nl-record-confirm"><input type="checkbox" required data-record-confirm> I have reviewed the selected document records and approve saving them to my profile.</label>' : ''}
+    </section>`;
+  }
+  function smartCollectRecords(form, section) {
+    const groups = section === 'personal' ? ['personal_data'] : Object.keys(SMART_RECORD_GROUPS).filter(key => key !== 'personal_data');
+    const result = Object.fromEntries(groups.map(group => [group, []]));
+    form.querySelectorAll('[data-smart-record]').forEach(card => {
+      const group = card.dataset.smartRecord;
+      if (!result[group] || !card.querySelector('[data-record-include]')?.checked) return;
+      const row = JSON.parse(card.dataset.recordMeta || '{}');
+      card.querySelectorAll('[data-record-key]').forEach(input => {
+        if (input.type === 'checkbox') row[input.dataset.recordKey] = input.checked;
+        else if (input.value.trim()) row[input.dataset.recordKey] = input.value.trim();
+      });
+      if (SMART_RECORD_GROUPS[group][1].split(' ').some(key => key !== 'is_current' && String(row[key] ?? '').trim())) result[group].push(row);
+    });
+    return result;
   }
 
   function smartInput(field, label, type, profile, suggestions, fieldStatuses, options = {}) {
@@ -10440,6 +10664,7 @@ import {
             ${smartInput('province', 'Province / State', 'text', profile, suggestions, fieldStatuses, { autocomplete: 'address-level1' })}
           </div>
 
+          ${smartStructuredRecords(data, 'personal')}
           <div class="nurselink-smart557-actions split">
             <button type="button" class="secondary-button" data-smart-next="1">← Documents</button>
             <button type="submit" class="primary-button">Save & Continue →</button>
@@ -10480,6 +10705,14 @@ import {
             ${smartInput('current_position', 'Current / Most Recent Position', 'text', profile, suggestions, fieldStatuses, { placeholder: 'Staff Nurse' })}
             ${smartInput('current_employer', 'Current / Most Recent Employer', 'text', profile, suggestions, fieldStatuses, { placeholder: 'Hospital or facility' })}
           </div>
+          <section data-smart-employment-emergency="1">
+            <h2>Employment History Summary</h2>
+            ${smartInput('employment_countries', 'Countries of Employment', 'text', profile, suggestions, fieldStatuses)}
+            ${smartInput('healthcare_facility_names', 'Hospitals / Healthcare Facilities', 'text', profile, suggestions, fieldStatuses)}
+            ${smartInput('employment_positions', 'Positions Held', 'text', profile, suggestions, fieldStatuses)}
+            ${smartInput('emergency_contact_name_relationship', 'Emergency Contact: Name and Relationship', 'text', profile, suggestions, fieldStatuses)}
+            ${smartInput('emergency_contact_phone', 'Emergency Contact Number', 'text', profile, suggestions, fieldStatuses)}
+          </section>
           ${smartInput('specialty', 'Specialty / Clinical Area', 'text', profile, suggestions, fieldStatuses, { placeholder: 'ICU, ER, Medical-Surgical, etc.' })}
           <div class="nurselink-smart557-grid two">
             ${smartInput('primary_license_number', 'Primary Nursing License / PRC Number', 'text', profile, suggestions, fieldStatuses, { placeholder: 'License or registration number' })}
@@ -10493,6 +10726,7 @@ import {
             ${smartInput('graduation_year', 'Graduation Year', 'number', profile, suggestions, fieldStatuses, { min: 1940, max: new Date().getFullYear() + 1 })}
           </div>
 
+          ${smartStructuredRecords(data, 'professional')}
           <div class="nurselink-smart557-review-note">
             <strong>Important:</strong> Document extraction does not verify a professional license or credential. Verification remains a separate NurseLink reviewer action.
           </div>
@@ -10519,7 +10753,7 @@ import {
     const updateStatus = String(membership.profile_update_status || '');
     const memberUpdatePending = status === 'approved' && ['submitted', 'under_review', 'ready_for_approval'].includes(updateStatus);
     const memberUpdateNeedsInfo = status === 'approved' && updateStatus === 'needs_information';
-    const canSubmit = missing.length === 0 && (['draft', 'needs_information'].includes(status) || (status === 'approved' && !memberUpdatePending));
+    const canSubmit = missing.length === 0 && (['draft', 'needs_information', ...(membership.applicant_portal_access ? ['declined'] : [])].includes(status) || (status === 'approved' && !memberUpdatePending));
     const activeReview = ['submitted', 'under_review', 'ready_for_approval'].includes(status) || memberUpdatePending;
     const approved = status === 'approved';
     const eligibility = data?.eligibility_insights || {};
@@ -10582,7 +10816,7 @@ import {
         ${(membership.reviewer_notes && status === 'needs_information') || (membership.profile_update_reviewer_notes && memberUpdateNeedsInfo) ? `<div class="nurselink-smart557-reviewer-note"><strong>Reviewer requested more information</strong><p>${smartEsc(memberUpdateNeedsInfo ? membership.profile_update_reviewer_notes : membership.reviewer_notes)}</p></div>` : ''}
 
         <div class="nurselink-smart557-submit-state">
-          <span>Status</span><strong>${smartEsc((memberUpdatePending || memberUpdateNeedsInfo ? `member update ${updateStatus}` : status).replace(/_/g, ' '))}</strong>
+          <span>Status</span><strong>${smartEsc((memberUpdatePending || memberUpdateNeedsInfo ? `applicant update ${updateStatus}` : status).replace(/_/g, ' '))}</strong>
         </div>
 
         <div class="nurselink-smart557-actions split">
@@ -10609,8 +10843,28 @@ import {
 
     if (firstBind) {
       root.dataset.smartBound = '1';
+      let draftTimers={};
+      root.addEventListener('input',event=>{
+        const form=event.target.closest('[data-smart-form]'); if(!form)return;
+        const section=form.dataset.smartForm, values=Object.fromEntries(new FormData(form).entries()), records=smartCollectRecords(form,section);
+        if(smartRegistration557State.data)smartRegistration557State.data.profile={...smartRegistration557State.data.profile,...values,structured_data:{...(smartRegistration557State.data.profile?.structured_data||{}),...records}};
+        retainOfflineDraft(section,values,records).catch(error=>{smartRegistration557State.notice=error.message;});
+        clearTimeout(draftTimers[section]);draftTimers[section]=setTimeout(()=>saveOfflineDraft(section,values,records).catch(error=>{smartRegistration557State.notice=error.message;}),1500);
+      });
+
+      root.addEventListener('change', event => {
+        if (!event.target.matches('[data-record-include]')) return;
+        event.target.closest('[data-smart-record]')?.querySelectorAll('[data-record-key]').forEach(input => {
+          input.disabled = !event.target.checked;
+        });
+      });
 
       root.addEventListener('click', async event => {
+      const help=event.target.closest('[data-registration-help]');
+      if(help){const issue=root.querySelector('[data-registration-issue]')?.value||'help_requested';try{const result=await smartRegistrationRequest('/help',{method:'POST',body:JSON.stringify({issue})});smartRegistration557State.notice=result.message;}catch(error){smartRegistration557State.notice=error.message;}renderSmartRegistration557(document.querySelector('.page')||document.querySelector('main'));return;}
+      if(event.target.closest('[data-offline-export]')){await downloadOfflineDraft();return;}
+      if(event.target.closest('[data-offline-retry]')){await flushOffline();return;}
+      if(event.target.closest('[data-offline-clear]')){if(confirm('Clear unsynced local changes and selected documents? Download your saved draft first if you need a copy.')){await discardOfflineQueue();smartRegistration557State.loaded=false;await loadSmartRegistration557(true);renderSmartRegistration557(document.querySelector('.page')||document.querySelector('main'));}return;}
       const browse = event.target.closest('[data-smart-browse]');
       if (browse) {
         event.preventDefault();
@@ -10624,6 +10878,51 @@ import {
         if (stepButton.matches('a[href]')) return;
         event.preventDefault();
         smartSetStep(stepButton.dataset.smartStep || stepButton.dataset.smartNext);
+        return;
+      }
+
+      const addRecord = event.target.closest('[data-smart-add-record]');
+      if (addRecord) {
+        event.preventDefault();
+        const group = addRecord.dataset.smartAddRecord;
+        if (SMART_RECORD_GROUPS[group]) {
+          const list = root.querySelector(`[data-smart-record-list="${group}"]`);
+          if (list && list.children.length < 100) list.insertAdjacentHTML('beforeend', smartRecordCard(group, {}));
+        }
+        return;
+      }
+      const rescan = event.target.closest('[data-smart-rescan-document]');
+      if (rescan) {
+        event.preventDefault(); rescan.disabled = true;
+        try {
+          const response = await smartRegistrationRequest(`/documents/${rescan.dataset.smartRescanDocument}/reprocess`, {method:'POST', body:JSON.stringify({})});
+          smartRegistration557State.notice = response?.message || 'All-page scan queued.';
+          smartRegistration557State.noticeTone = 'success';
+          await loadSmartRegistration557(true);
+        } catch (error) {
+          smartRegistration557State.notice = error.message;
+          smartRegistration557State.noticeTone = 'error';
+        }
+        renderSmartRegistration557(document.querySelector('.page') || document.querySelector('main'));
+        return;
+      }
+
+      const resetTest = event.target.closest('[data-smart-reset-test]');
+      if (resetTest) {
+        event.preventDefault();
+        if (!confirm('Reset this applicant test record? Uploaded documents, OCR results and saved Smart Registration fields will be cleared.')) return;
+        resetTest.disabled = true;
+        try {
+          const response = await smartRegistrationRequest('/reset-test-record', {method:'POST', body:JSON.stringify({})});
+          smartRegistration557State.notice = response?.message || 'Applicant test record reset.';
+          smartRegistration557State.noticeTone = 'success';
+          smartRegistration557State.loaded = false;
+          await loadSmartRegistration557(true);
+        } catch (error) {
+          smartRegistration557State.notice = error.message;
+          smartRegistration557State.noticeTone = 'error';
+        }
+        renderSmartRegistration557(document.querySelector('.page') || document.querySelector('main'));
         return;
       }
 
@@ -10722,15 +11021,15 @@ import {
       smartRegistration557State.noticeTone = 'info';
       renderSmartRegistration557(document.querySelector('.page') || document.querySelector('main'));
 
-      let uploaded = 0;
+      let uploaded = 0; let queued = 0;
       const errors = [];
 
       for (const file of files) {
         try {
           const body = new FormData();
           body.append('document', file);
-          await smartRegistrationRequest('/documents', { method: 'POST', body });
-          uploaded++;
+          const result=await smartRegistrationRequest('/documents', { method: 'POST', body });
+          if(!result.queued)uploaded++; else queued++; 
         } catch (error) {
           errors.push(`${file.name}: ${error.message}`);
         }
@@ -10738,7 +11037,7 @@ import {
 
       smartRegistration557State.notice = errors.length
         ? `${uploaded} uploaded. ${errors.join(' ')}`
-        : `${uploaded} document${uploaded === 1 ? '' : 's'} uploaded and analyzed.`;
+        : `${uploaded} document${uploaded === 1 ? '' : 's'} received by the server${queued ? `; ${queued} saved on this device, waiting to upload` : ''}.`;
       smartRegistration557State.noticeTone = errors.length ? 'warning' : 'success';
       await loadSmartRegistration557(true);
       renderSmartRegistration557(document.querySelector('.page') || document.querySelector('main'));
@@ -10747,6 +11046,7 @@ import {
     root.addEventListener('submit', async event => {
       const form = event.target.closest('[data-smart-form]');
       if (!form) return;
+      clearTimeout(draftTimers[form.dataset.smartForm]);
       event.preventDefault();
       if (!form.reportValidity()) return;
 
@@ -10768,6 +11068,7 @@ import {
 
       const fields = Object.keys(data);
       data.sources = smartSourcesFor(fields, state.suggestions || {}, data);
+      data.structured_data = smartCollectRecords(form, section);
 
       try {
         const result = await smartRegistrationRequest(`/${section}`, {
@@ -10863,7 +11164,7 @@ import {
     const completion = Number(data.completion || 0);
     const membershipStatus = String(data?.membership?.status || 'draft');
     const updatePending = ['submitted', 'under_review', 'ready_for_approval'].includes(String(data?.membership?.profile_update_status || ''));
-    const editable = ['draft', 'needs_information'].includes(membershipStatus) || (membershipStatus === 'approved' && !updatePending);
+    const editable = data?.membership?.applicant_portal_access || membershipState.data?.applicant_portal_access || ['draft', 'submitted', 'under_review', 'ready_for_approval', 'needs_information', 'approved'].includes(membershipStatus);
     const body = !editable
       ? smartLockedApplication(data)
       : step === 1
@@ -10874,8 +11175,11 @@ import {
             ? smartProfessionalStep(data)
             : smartReviewStep(data);
 
-    root.innerHTML = `${smartStepHeader(step, completion, Boolean(data?.membership))}${smartNoticeHtml()}${membershipStatus === 'approved' && editable ? '<div class="nurselink-smart557-complete-callout"><strong>Update your credentials</strong><p>Upload renewed documents and update your details, then choose Submit Updates for Review in step 4. Your membership remains approved while the changes are reviewed.</p></div>' : ''}${body}`;
+    const sa=data?.eligibility_insights?.saudi_readiness;
+    const saHtml=sa && step===4 ? `<section class="nurselink-smart557-card"><h2>Saudi Arabia document readiness</h2><p>${smartEsc(sa.note)}</p><ul>${sa.checks.map(c=>`<li>${smartEsc(c.code.replaceAll('_',' '))}: ${smartEsc(c.status.replaceAll('_',' '))}</li>`).join('')}</ul><a href="https://scfhs.org.sa/en/mumaris-faq" target="_blank" rel="noopener noreferrer">SCFHS requirements</a></section>` : '';
+    root.innerHTML = `${smartStepHeader(step, completion, Boolean(data?.membership))}${smartNoticeHtml()}${registrationOfflinePanel()}${saHtml}${editable && (['submitted','under_review','ready_for_approval'].includes(membershipStatus) || updatePending) ? '<div class="nurselink-smart557-complete-callout"><strong>Your application is being reviewed</strong><p>You can continue updating your information and replacing documents. Staff will review the latest changes; changes made after readiness require another review.</p></div>' : ''}${membershipStatus === 'approved' && editable ? "<div class=\"nurselink-smart557-complete-callout\"><strong>Update your credentials</strong><p>Upload renewed documents and update your details, then choose Submit Updates for Review in step 4. Your applicant registration remains approved while the changes are reviewed.</p></div>" : ''}${body}`;
     bindSmartRegistration557(root);
+    hydrateSmartOcrPreviews(root);
 
     const extractionPending = (Array.isArray(data.documents) ? data.documents : [])
       .some(document =>
