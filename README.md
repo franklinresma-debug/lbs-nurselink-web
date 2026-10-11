@@ -12,19 +12,19 @@ Production frontend for LBS NurseLink, the applicant and administration portal s
 
 ## Local Setup
 
-`    npm install
-cp .env.example .env
-npm run dev`
+    npm install
+    cp .env.example .env
+    npm run dev
 
 Set VITE_API_URL in .env for the backend API you want to use.
 
 ## Build
 
-`    npm run build`
+    npm run build
 
 The production server currently uses this equivalent build command when the npm shim is unavailable:
 
-`    node node_modules/vite/bin/vite.js build && node scripts/generate-social-pages.mjs`
+    node node_modules/vite/bin/vite.js build && node scripts/generate-social-pages.mjs
 
 ## Production
 
