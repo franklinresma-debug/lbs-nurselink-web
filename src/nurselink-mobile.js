@@ -10404,6 +10404,89 @@ import {
     </div>`;
   }
 
+
+  function smartApplicantPreviewPick(field, profile = {}, suggestions = {}) {
+    const suggestion = suggestions?.[field];
+    const suggestedValue = suggestion?.value;
+    if (suggestedValue !== null && suggestedValue !== undefined && String(suggestedValue).trim() !== '') {
+      return {
+        value: String(suggestedValue).trim(),
+        detected: true,
+        source: suggestion.source_name || 'uploaded document',
+        page: suggestion.source_page || null,
+        confidence: Number(suggestion.confidence || 0)
+      };
+    }
+    const savedValue = profile?.[field];
+    if (savedValue !== null && savedValue !== undefined && String(savedValue).trim() !== '') {
+      return {value: String(savedValue).trim(), detected: false, source: 'saved profile', page: null, confidence: 1};
+    }
+    return null;
+  }
+
+  function smartApplicantPreviewLine(label, fields, profile, suggestions) {
+    const values = fields.map(field => smartApplicantPreviewPick(field, profile, suggestions)).filter(Boolean);
+    if (!values.length) return '';
+    const text = values.map(item => item.value).join(' · ');
+    const detected = values.find(item => item.detected);
+    const source = detected
+      ? `${detected.source}${detected.page ? ` · Page ${detected.page}` : ''}${detected.confidence ? ` · ${Math.round(detected.confidence * 100)}%` : ''}`
+      : values[0].source;
+    return `<span><b>${smartEsc(label)}</b><em>${smartEsc(text)}</em><small>${smartEsc(source)}</small></span>`;
+  }
+
+  function smartApplicantDetectedRecordCounts(structured = {}) {
+    const labels = {
+      employment: 'work experience',
+      education: 'education',
+      credentials: 'licenses/certificates',
+      languages: 'languages',
+      references: 'references',
+      skills: 'skills'
+    };
+    return Object.entries(labels).map(([key, label]) => {
+      const count = Array.isArray(structured?.[key]) ? structured[key].length : 0;
+      return count ? `<span><b>${smartEsc(label)}</b><em>${smartEsc(count)} detected</em><small>Review before saving</small></span>` : '';
+    }).filter(Boolean).join('');
+  }
+
+  function smartApplicantPreviewHtml(data) {
+    const documents = Array.isArray(data?.documents) ? data.documents : [];
+    if (!documents.length) return '';
+    const profile = data?.profile || {};
+    const suggestions = data?.suggestions || {};
+    const structured = data?.structured_suggestions || {};
+    const active = documents.some(document => ['queued', 'processing'].includes(document?.extraction_status)
+      || ['pending', 'scanning', 'scan_failed'].includes(document?.security_status));
+    const detectedCount = Object.keys(suggestions).filter(field => {
+      const value = suggestions?.[field]?.value;
+      return value !== null && value !== undefined && String(value).trim() !== '';
+    }).length;
+    const name = ['first_name', 'middle_name', 'last_name']
+      .map(field => smartApplicantPreviewPick(field, profile, suggestions)?.value)
+      .filter(Boolean)
+      .join(' ');
+    const rows = [
+      name ? `<span class="nl-applicant-preview-name"><b>Applicant</b><em>${smartEsc(name)}</em><small>${detectedCount ? 'Preliminary OCR profile' : 'Saved profile'}</small></span>` : '',
+      smartApplicantPreviewLine('Contact', ['phone'], profile, suggestions),
+      smartApplicantPreviewLine('Birth / Sex', ['birth_date', 'sex'], profile, suggestions),
+      smartApplicantPreviewLine('Location', ['city', 'province', 'country'], profile, suggestions),
+      smartApplicantPreviewLine('Profession', ['professional_title', 'current_position', 'current_employer'], profile, suggestions),
+      smartApplicantPreviewLine('Experience / Specialty', ['years_experience', 'specialty'], profile, suggestions),
+      smartApplicantPreviewLine('License', ['primary_license_number', 'primary_license_country', 'primary_license_expiry'], profile, suggestions),
+      smartApplicantPreviewLine('Education', ['highest_nursing_education', 'graduation_year'], profile, suggestions),
+      smartApplicantDetectedRecordCounts(structured)
+    ].filter(Boolean).join('');
+    return `<section class="nl-applicant-scan-preview" aria-live="polite">
+      <div class="nl-applicant-scan-preview-head">
+        <strong>Applicant preview</strong>
+        <span>${active ? 'Updating while scanning' : 'Ready for review'}</span>
+      </div>
+      ${rows ? `<div class="nl-applicant-scan-preview-grid">${rows}</div>` : `<p>Waiting for the first readable applicant details. The preview will fill in as OCR finds names, license details, education and work history.</p>`}
+      <p>Preliminary only. OCR suggestions are not verified and must be reviewed before saving or submission.</p>
+    </section>`;
+  }
+
   function smartUploadStep(data) {
     const documents = Array.isArray(data?.documents) ? data.documents : [];
     const capabilities = data?.extraction_capabilities || {};
@@ -10445,6 +10528,7 @@ import {
               <span>${documents.length} file${documents.length === 1 ? '' : 's'}</span>
             </div>
             ${smartOcrAggregateProgressHtml(documents)}
+            ${smartApplicantPreviewHtml(data)}
             ${documents.map(doc => {
               const fields = Object.keys(doc.extracted_fields || {}).length;
               const status = doc.security_status === 'quarantined'

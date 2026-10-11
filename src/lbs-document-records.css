@@ -38,7 +38,23 @@
 .nurselink-smart557 .nurselink-smart557-test-reset { display: grid; gap: 8px; margin: 18px 0; padding: 12px; border: 1px dashed #d28a8a; border-radius: 8px; background: #fff8f8; font-size: 13px; line-height: 1.45; }
 .nurselink-smart557 .nurselink-smart557-test-reset strong { color: #8b1f1f; }
 .nurselink-smart557 .nurselink-smart557-test-reset button { justify-self: start; }
+
+.nurselink-smart557 .nl-applicant-scan-preview { display: grid; gap: 10px; margin: 12px 0 18px; padding: 14px; border: 1px solid #9bbbd9; border-radius: 8px; background: #f4f9fd; color: #173247; font-size: 13px; line-height: 1.45; }
+.nurselink-smart557 .nl-applicant-scan-preview-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.nurselink-smart557 .nl-applicant-scan-preview-head strong { font-size: 15px; color: #0d3f67; }
+.nurselink-smart557 .nl-applicant-scan-preview-head span { color: #1576b9; font-weight: 700; }
+.nurselink-smart557 .nl-applicant-scan-preview-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.nurselink-smart557 .nl-applicant-scan-preview-grid > span { display: grid; gap: 3px; min-width: 0; padding: 9px; border: 1px solid #c6d7e6; border-radius: 7px; background: #fff; }
+.nurselink-smart557 .nl-applicant-scan-preview-grid b { color: #526b8f; font-size: 11px; text-transform: uppercase; letter-spacing: .02em; }
+.nurselink-smart557 .nl-applicant-scan-preview-grid em { color: #10233f; font-style: normal; font-weight: 700; overflow-wrap: anywhere; }
+.nurselink-smart557 .nl-applicant-scan-preview-grid small { color: #667b94; overflow-wrap: anywhere; }
+.nurselink-smart557 .nl-applicant-scan-preview-grid .nl-applicant-preview-name { grid-column: span 2; border-color: #91b9dc; }
+.nurselink-smart557 .nl-applicant-scan-preview > p { margin: 0; color: #526b8f; }
 @media (max-width: 600px) {
+  .nurselink-smart557 .nl-applicant-scan-preview { padding: 12px; }
+  .nurselink-smart557 .nl-applicant-scan-preview-head { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .nurselink-smart557 .nl-applicant-scan-preview-grid { grid-template-columns: minmax(0,1fr); }
+  .nurselink-smart557 .nl-applicant-scan-preview-grid .nl-applicant-preview-name { grid-column: auto; }
   .nurselink-smart557 .nurselink-smart557-document { grid-template-columns: 30px minmax(0,1fr); }
   .nurselink-smart557 .nurselink-smart558-document-actions { grid-column: 1 / -1; justify-content: flex-start; }
   .nurselink-smart557 .nl-ocr-scanner { grid-template-columns: 92px minmax(0,1fr); }
