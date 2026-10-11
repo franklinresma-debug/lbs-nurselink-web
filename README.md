@@ -1,16 +1,47 @@
-# React + Vite
+# LBS NurseLink Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Production frontend for LBS NurseLink, the applicant and administration portal served at https://lbs.amsertech.com.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19
+- Vite
+- React Router
+- Static assets served by the production web root
+- Backend API served from https://lbs.amsertech.com/backend
 
-## React Compiler
+## Local Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`    npm install
+cp .env.example .env
+npm run dev`
 
-## Expanding the ESLint configuration
+Set VITE_API_URL in .env for the backend API you want to use.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Build
+
+`    npm run build`
+
+The production server currently uses this equivalent build command when the npm shim is unavailable:
+
+`    node node_modules/vite/bin/vite.js build && node scripts/generate-social-pages.mjs`
+
+## Production
+
+- Host: lbs.amsertech.com
+- Server path: /var/www/lbs-nurselink-web
+- Served directory: /var/www/lbs-nurselink-web/dist
+- Main branch: main
+- Backup branch from pre-sync GitHub state: github-main-backup-before-production-sync-20261012
+
+## Deployment Notes
+
+1. Back up the current production source/build before changing files.
+2. Apply the frontend change.
+3. Run the build command.
+4. Verify the affected desktop and mobile workflows on https://lbs.amsertech.com.
+5. Commit and push to GitHub.
+
+## Public Repository Safety
+
+This repository is public. Do not commit .env, private keys, database dumps, production logs, uploaded documents, or generated runtime folders.
