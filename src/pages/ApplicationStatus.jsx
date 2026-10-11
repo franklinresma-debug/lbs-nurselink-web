@@ -27,7 +27,7 @@ const statusLabels = {
 
 const statusDescriptions = {
   draft:
-    'Your NurseLink membership application has been created.',
+    "Your NurseLink applicant registration application has been created.",
 
   in_progress:
     'Complete your profile and supporting information before submitting your application.',
@@ -39,7 +39,7 @@ const statusDescriptions = {
     'Your application has been submitted and is waiting for NurseLink review.',
 
   under_review:
-    'Your membership application is currently being reviewed.',
+    "Your applicant registration application is currently being reviewed.",
 
   returned_for_information:
     'The reviewer requires additional information before your application can continue.',
@@ -48,10 +48,10 @@ const statusDescriptions = {
     'Your updated application has been resubmitted and is waiting for review.',
 
   approved:
-    'Congratulations. Your NurseLink membership application has been approved.',
+    "Congratulations. Your NurseLink applicant registration application has been approved.",
 
   rejected:
-    'Your membership application was not approved. Please review the decision information below.',
+    "Your applicant registration application was not approved. Please review the decision information below.",
 }
 
 function getErrorMessage(error) {
@@ -160,7 +160,7 @@ export default function ApplicationStatus() {
 
     if (
       !window.confirm(
-        'Submit your NurseLink membership application for review?'
+        "Submit your NurseLink applicant registration application for review?"
       )
     ) {
       return
@@ -181,7 +181,7 @@ export default function ApplicationStatus() {
       await refreshUser()
 
       setMessage(
-        'Your NurseLink membership application has been submitted successfully.'
+        "Your NurseLink applicant registration application has been submitted successfully."
       )
     } catch (err) {
       setError(
@@ -242,12 +242,12 @@ export default function ApplicationStatus() {
       <div className="page">
         <div className="panel">
           <h2>
-            No membership application found
+            No applicant registration application found
           </h2>
 
           <p>
             Complete your NurseLink profile
-            to begin your membership application.
+            to begin your applicant registration application.
           </p>
         </div>
       </div>
@@ -276,7 +276,7 @@ export default function ApplicationStatus() {
       <div className="page-header">
         <div>
           <div className="eyebrow">
-            Membership Application
+            Applicant registration Application
           </div>
 
           <h1>
@@ -285,7 +285,7 @@ export default function ApplicationStatus() {
 
           <p>
             Track, complete and submit your
-            NurseLink membership application.
+            NurseLink applicant registration application.
           </p>
         </div>
 
@@ -431,8 +431,8 @@ export default function ApplicationStatus() {
 
             {status === 'approved' && (
               <div className="application-approved">
-                Membership activated.
-                Member services are now available.
+                Applicant registration activated.
+                Applicant services are now available.
               </div>
             )}
 
@@ -651,7 +651,7 @@ export default function ApplicationStatus() {
 
             <div>
               <strong>
-                Membership Review
+                Applicant registration Review
               </strong>
 
               <small>
@@ -671,11 +671,11 @@ export default function ApplicationStatus() {
 
             <div>
               <strong>
-                NurseLink Member
+                NurseLink Applicant
               </strong>
 
               <small>
-                Member services activated
+                Applicant services activated
               </small>
             </div>
           </div>

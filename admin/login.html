@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f7fbff">
+  <title>NurseLink Administrator Sign In</title>
+  <link rel="stylesheet" href="./admin-login-lbs.css?v=20261004-fullhd">
+  <link rel="stylesheet" href="/nurselink-password-visibility-v4.css?v=4">
+  <script src="/nurselink-password-visibility-v3.js?v=5" defer></script>
+<script src="/global-appearance.js?v=7200" defer></script>
+</head>
+<body class="nl-admin-auth-body">
+  <main class="nl-admin-auth-shell">
+    <section class="nl-admin-auth-brand">
+      <div class="nl-admin-hero-media" aria-hidden="true">
+        <picture class="is-active" style="--hero-x:72%;--hero-y:32%;--hero-tablet-x:78%;--hero-tablet-y:28%;--hero-mobile-x:50%;--hero-mobile-y:26%">
+          <source media="(max-width:680px)" srcset="/images/registration-hero/nurselink-hero-global-hospital-01-mob.png">
+          <img src="/images/registration-hero/nurselink-hero-global-hospital-01.png" alt="" decoding="async" fetchpriority="high">
+        </picture>
+        <picture class="" style="--hero-x:72%;--hero-y:32%;--hero-tablet-x:78%;--hero-tablet-y:28%;--hero-mobile-x:50%;--hero-mobile-y:24%">
+          <source media="(max-width:680px)" srcset="/images/registration-hero/nurselink-hero-surgery-02-mob.png">
+          <img src="/images/registration-hero/nurselink-hero-surgery-02.png" alt="" decoding="async" loading="lazy">
+        </picture>
+        <picture class="" style="--hero-x:82%;--hero-y:30%;--hero-tablet-x:86%;--hero-tablet-y:27%;--hero-mobile-x:50%;--hero-mobile-y:24%">
+          <source media="(max-width:680px)" srcset="/images/registration-hero/nurselink-hero-hallway-03-mob.png">
+          <img src="/images/registration-hero/nurselink-hero-hallway-03.png" alt="" decoding="async" loading="lazy">
+        </picture>
+        <picture class="" style="--hero-x:84%;--hero-y:30%;--hero-tablet-x:88%;--hero-tablet-y:27%;--hero-mobile-x:50%;--hero-mobile-y:24%">
+          <source media="(max-width:680px)" srcset="/images/registration-hero/nurselink-hero-senior-global-04-mob.png">
+          <img src="/images/registration-hero/nurselink-hero-senior-global-04.png" alt="" decoding="async" loading="lazy">
+        </picture>
+        <picture class="" style="--hero-x:64%;--hero-y:32%;--hero-tablet-x:70%;--hero-tablet-y:28%;--hero-mobile-x:50%;--hero-mobile-y:26%">
+          <source media="(max-width:680px)" srcset="/images/registration-hero/nurselink-hero-middle-east-05-mob.png">
+          <img src="/images/registration-hero/nurselink-hero-middle-east-05.png" alt="" decoding="async" loading="lazy">
+        </picture>
+      </div>
+      <div class="nl-admin-hero-content">
+      <div class="nl-admin-hero-intro">
+      <div class="nl-admin-brand-logo">
+        <img src="/backend/api/nurselink/appearance-assets/login-34ff1b36-11a8-45d1-b4a0-6f5325c6bac0.png" alt="LBS NurseLink logo">
+      </div>
+      <div class="nl-admin-hero-message">
+      
+      <h1>Welcome back to NurseLink</h1>
+      </div>
+      </div>
+      <div class="nl-admin-hero-description">
+      <p>Manage applications, support members, and keep your team connected.</p>
+      </div>
+      <div class="nl-admin-security-note">
+        <strong>Protected staff access</strong>
+        <small>A normal NurseLink member sign-in does not establish an Administrator Portal session.</small>
+      </div>
+      </div>
+    </section>
+
+    <div class="nl-admin-auth-panel">
+    <section class="nl-admin-login-card">
+      <span class="nl-admin-access-pill">STAFF ACCESS</span>
+      
+      <p>Sign in with your administrator or reviewer email, or encoder username / email. Your account opens its assigned workspace.</p>
+
+      <form id="adminLoginForm">
+        <label>
+          <span>Staff email or encoder username</span>
+          <input id="adminEmail" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          <span>Password</span>
+          <input id="adminPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <div id="adminLoginStatus" class="nl-admin-form-status" aria-live="polite"></div>
+        <button id="adminLoginButton" class="primary" type="submit">Sign in</button>
+      </form>
+
+      <div class="nl-admin-auth-links nl-admin-auth-links-single">
+        <a href="/login">Member / Applicant Sign In</a>
+      </div>
+    </section>
+    </div>
+  </main>
+  <script src="./admin-login-lbs.js?v=20260912-1" defer></script>
+  <script src="./portal-config.js?nlv=558"></script>
+  <script src="./login.js?nlv=staff-role-2" defer></script>
+<!-- legacy regression marker: nurselink-admin-login.js?nlv=552 -->
+
+<!-- v5.1.2 regression marker: nurselink-admin-login.js?nlv=552 -->
+</body>
+</html>

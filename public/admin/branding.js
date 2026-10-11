@@ -3,8 +3,8 @@
 
   const API = 'https://lbs.amsertech.com/backend';
   const placements = [
-    ['login', 'Member Login', 'Above the welcome message on the member sign-in page.'],
-    ['sidebar', 'Shared Sidebar Logo', 'One image for both the member portal and admin panel.'],
+    ['login', "Applicant Login", "Above the welcome message on the applicant sign-in page."],
+    ['sidebar', 'Shared Sidebar Logo', "One image for both the applicant portal and admin panel."],
     ['favicon', 'Browser Icon (Favicon)', 'Use a square PNG, ideally 64 × 64 px, for browser tabs.']
   ];
   const controls = document.getElementById('adminBrandingControls');
@@ -99,8 +99,14 @@
         enabled: false,
         source: '',
         alt: `${title} logo`,
+        sizePercent: 100,
+        sidePadding: 0,
         ...(next.branding.logos[key] || {})
       };
+      const size = Number(next.branding.logos[key].sizePercent);
+      next.branding.logos[key].sizePercent = Number.isFinite(size)
+        ? Math.max(50, Math.min(220, Math.round(size)))
+        : 100;
     });
     return next;
   }
@@ -133,6 +139,17 @@
       }
       image.src = source;
       image.alt = logo.alt || 'NurseLink administration logo';
+      const size = logoSizePercent(logo);
+      const padding = logoBoxPadding(logo);
+      node.style.width = `${Math.round(103 * size / 100)}px`;
+      node.style.minWidth = node.style.width;
+      node.style.maxWidth = node.style.width;
+      node.style.height = `${Math.round(38 * size / 100)}px`;
+      node.style.minHeight = node.style.height;
+      node.style.maxHeight = node.style.height;
+      node.style.boxSizing = 'border-box';
+      node.style.padding = `0 ${padding}px`;
+      node.style.overflow = 'hidden';
     });
   }
 
@@ -160,6 +177,44 @@
     });
   }
 
+  // LBS_LOGO_BOX_SETTINGS_V2
+  function logoBoxPadding(logo) {
+    const value = Number(logo.sidePadding ?? 5);
+    return Number.isFinite(value)
+      ? Math.max(0, Math.min(40, Math.round(value))) : 5;
+  }
+
+  function logoSizePercent(logo) {
+    const value = Number(logo?.sizePercent ?? 100);
+    return Number.isFinite(value)
+      ? Math.max(50, Math.min(220, Math.round(value)))
+      : 100;
+  }
+
+  function refreshLogoPreview(key) {
+    const logo = config.branding.logos[key];
+    if (!logo) return;
+    const padding = logoBoxPadding(logo);
+    const output = controls.querySelector(`[data-logo-box-padding-value="${key}"]`);
+    if (output) output.textContent = String(padding);
+    const image = controls.querySelector(
+      `[data-logo-card="${key}"] .nl640-logo-preview img`
+    );
+    if (!image) return;
+    Object.assign(image.style, {
+      width: key === 'login' && logo.fitBox === false ? '180px' : '100%',
+      height: key === 'sidebar' ? '84px' : '52px',
+      maxHeight: key === 'sidebar' ? '84px' : '52px',
+      maxWidth: '100%',
+      padding: `0 ${padding}px`,
+      boxSizing: 'border-box',
+      objectFit: 'contain', background: 'rgba(255,255,255,.94)',
+      border: '1px solid rgba(255,255,255,.8)',
+      borderRadius: '10px', flex: '0 0 auto'
+    });
+    image.parentElement.style.background = '#eef2f6';
+  }
+
   function render() {
     if (!controls || !config) return;
     controls.innerHTML = placements.map(([key, title, description]) => {
@@ -176,9 +231,45 @@
           <label><span>Upload PNG, JPG or WebP · max 2 MB</span><input type="file" data-logo-file="${key}" accept="image/png,image/jpeg,image/webp"></label>
           <label><span>Or use an image URL</span><input type="url" data-logo-source="${key}" value="${esc(logo.source)}" placeholder="https://…"></label>
           <label><span>Accessible description</span><input type="text" data-logo-alt="${key}" value="${esc(logo.alt)}" maxlength="190"></label>
-          <div class="nl640-logo-foot"><span class="nl640-logo-status">${source ? 'Ready to save' : 'Upload a file or enter a URL'}</span><button class="nl640-logo-remove" type="button" data-logo-remove="${key}" ${source ? '' : 'disabled'}>Remove</button></div>
+          <label>
+            <span>Logo size:
+              <output data-logo-size-value="${key}">${logoSizePercent(logo)}</output>%
+            </span>
+            <input type="range" data-logo-size="${key}" min="50" max="220"
+              step="5" value="${logoSizePercent(logo)}">
+          </label>
+          ${key === 'login' ? `
+          <label class="nl640-logo-enabled">
+            <input type="checkbox" data-logo-box-fit ${logo.fitBox !== false ? 'checked' : ''}>
+            Fit box to logo
+          </label>
+          ` : ''}
+          ${key === 'login' || key === 'sidebar' ? `
+          <label>
+            <span>Side padding:
+              <output data-logo-box-padding-value="${key}">${logoBoxPadding(logo)}</output> px
+            </span>
+            <input type="range" data-logo-box-padding="${key}" min="0" max="40"
+              step="1" value="${logoBoxPadding(logo)}">
+          </label>
+          <p>Preview uses the mobile logo size. Save Draft, then Publish to apply.</p>
+        ` : ''}
+        <div class="nl640-logo-foot"><span class="nl640-logo-status">${source ? 'Ready to save' : 'Upload a file or enter a URL'}</span><button class="nl640-logo-remove" type="button" data-logo-remove="${key}" ${source ? '' : 'disabled'}>Remove</button></div>
         </article>`;
     }).join('');
+
+    controls.querySelector('[data-logo-box-fit]')?.addEventListener('change', event => {
+      config.branding.logos.login.fitBox = event.target.checked;
+      refreshLogoPreview('login');
+    });
+    controls.querySelectorAll('[data-logo-box-padding]').forEach(input => input.addEventListener('input', event => {
+      const placement = event.target.dataset.logoBoxPadding;
+      config.branding.logos[placement].sidePadding =
+        logoBoxPadding({sidePadding: event.target.value});
+      refreshLogoPreview(placement);
+      if (placement === 'sidebar') applyAdminLogo(config.branding);
+    }));
+    ['login', 'sidebar'].forEach(refreshLogoPreview);
 
     controls.querySelectorAll('[data-logo-enabled]').forEach(input => input.addEventListener('change', () => {
       config.branding.logos[input.dataset.logoEnabled].enabled = input.checked;
@@ -193,6 +284,14 @@
     }));
     controls.querySelectorAll('[data-logo-alt]').forEach(input => input.addEventListener('input', () => {
       config.branding.logos[input.dataset.logoAlt].alt = input.value;
+    }));
+    controls.querySelectorAll('[data-logo-size]').forEach(input => input.addEventListener('input', () => {
+      const placement = input.dataset.logoSize;
+      const logo = config.branding.logos[placement];
+      logo.sizePercent = logoSizePercent({sizePercent: input.value});
+      const output = controls.querySelector(`[data-logo-size-value="${placement}"]`);
+      if (output) output.textContent = String(logo.sizePercent);
+      if (placement === 'sidebar') applyAdminLogo(config.branding);
     }));
     controls.querySelectorAll('[data-logo-file]').forEach(input => input.addEventListener('change', () => upload(input.dataset.logoFile, input.files?.[0])));
     controls.querySelectorAll('[data-logo-remove]').forEach(button => button.addEventListener('click', () => {

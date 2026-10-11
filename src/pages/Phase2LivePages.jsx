@@ -16,7 +16,7 @@ function value(payload) {
   return payload?.data ?? payload ?? null
 }
 
-function PageShell({ eyebrow='NurseLink Member Services', title, description, children }) {
+function PageShell({ eyebrow="NurseLink Applicant Services", title, description, children }) {
   return <div className="page nl-live-page">
     <div className="page-header"><div><div className="eyebrow">{eyebrow}</div><h1>{title}</h1><p>{description}</p></div></div>
     {children}
@@ -43,7 +43,7 @@ export function Phase2JobsPage(){
   const jobs=unwrap(data).filter(job=>[job.title,job.employer_name,job.country,job.specialty].filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase()))
   const [busy,setBusy]=useState(null),[notice,setNotice]=useState('')
   async function apply(job){ setBusy(job.id); setNotice(''); try { await API().JobApi.apply({job_opportunity_id:job.id}); setNotice('Application submitted.'); } catch(e){ setNotice(e?.message||'Unable to apply.'); } finally { setBusy(null) } }
-  return <PageShell eyebrow="Career & Jobs" title="LBS Vacancies" description="Explore verified NurseLink opportunities and apply from your member account.">
+  return <PageShell eyebrow="Career & Jobs" title="LBS Vacancies" description="Explore verified NurseLink opportunities and apply from your applicant account.">
     <label>Search vacancies<input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Position, company, country or specialty" /></label><p>Jobs are ordered by NurseLink’s existing matching service. Review the requirements before applying.</p>
     {notice && <div className="nl-phase2-note">{notice}</div>}
     <State loading={loading} error={error} empty={!jobs.length}><div className="nl-live-list">{jobs.map(job=><article className="nl-phase2-panel" key={job.id}>
@@ -150,7 +150,7 @@ export function Phase2LearningPage(){
   const {data,loading,error}=useLoad(()=>API().EventsApi.list())
   const events=unwrap(data)
   return <PageShell eyebrow="Professional Learning" title="Learning" description="Discover NurseLink events that can support your continuing professional development.">
-    <div className="nl-phase2-note">The production route inventory does not expose a standalone member learning-records endpoint, so this screen shows verified event-based learning opportunities without fabricating record data.</div>
+    <div className="nl-phase2-note">The production route inventory does not expose a standalone applicant learning-records endpoint, so this screen shows verified event-based learning opportunities without fabricating record data.</div>
     <State loading={loading} error={error} empty={!events.length}><div className="nl-live-list">{events.map(e=><article className="nl-phase2-panel" key={e.id}><div className="nl-live-card-head"><div><h2>{e.title||'NurseLink Event'}</h2><p>{e.event_type||e.delivery_mode||e.format||'Learning activity'}</p></div><span className="badge">{e.status||'scheduled'}</span></div><div className="nl-live-meta">{(e.starts_at)&&<span>{new Date(e.starts_at).toLocaleString()}</span>}{(e.learning_hours||e.cpd_units_claimed)&&<span>{e.learning_hours||e.cpd_units_claimed} learning/CPD units</span>}</div></article>)}</div></State>
   </PageShell>
 }

@@ -83,7 +83,7 @@
 
     return `
       <section class="nl6439-page">
-        <div class="nl6439-breadcrumb">Home <span>›</span> Members <span>›</span> My Profile <span>›</span> Qualifications</div>
+        <div class="nl6439-breadcrumb">Home <span>›</span> Applicants <span>›</span> My Profile <span>›</span> Qualifications</div>
 
         <div class="nl6439-page-head">
           <div>
@@ -97,14 +97,14 @@
           <div class="nl6439-member-left">
             ${id.img ? `<img class="nl6439-avatar" src="${esc(id.img)}" alt="">` : `<div class="nl6439-avatar nl6439-avatar-fallback">NL</div>`}
             <div class="nl6439-member-copy">
-              <span class="nl6439-member-badge">MEMBER</span>
+              <span class="nl6439-member-badge">APPLICANT</span>
               <div class="nl6439-member-number">${esc(memberNumber)} <button data-copy="${esc(memberNumber)}" type="button">⧉</button></div>
               <h2>${esc(id.name)}</h2>
               <p>${esc(role)}</p>
               <div class="nl6439-identity-meta">
                 ${pill(q.is_demo ? '✓ Verified (Demo)' : '✓ Verified','verified')}
                 <span>⌖ Philippines</span>
-                <span>✉ NurseLink Member</span>
+                <span>✉ NurseLink Applicant</span>
                 <span>▣ Joined 2026</span>
               </div>
             </div>
@@ -245,7 +245,7 @@
       const image = document.createElement('img');
       const objectUrl = URL.createObjectURL(blob);
       image.className = 'nl6439-avatar';
-      image.alt = 'NurseLink member profile photo';
+      image.alt = "NurseLink applicant profile photo";
       image.src = objectUrl;
       image.addEventListener('load', () => {
         avatar.replaceWith(image);

@@ -1,7 +1,7 @@
 .nl640-branding-card{margin-bottom:18px!important}
-[data-nurselink-logo-placement="admin"].nl640-has-logo{overflow:hidden;padding:3px;background:#fff!important;color:transparent!important}
+[data-nurselink-logo-placement="admin"].nl640-has-logo{overflow:hidden;padding:0 16px;background:#fff!important;color:transparent!important;box-sizing:border-box}
 [data-nurselink-logo-placement="admin"].nl640-has-logo img{display:block;width:100%;height:100%;object-fit:contain}
-.nl-admin-sidebar-brand .nl-admin-brand-mark.nl640-has-logo{width:82px!important;max-width:42%;height:50px!important;flex:0 0 auto}
+.nl-admin-sidebar-brand .nl-admin-brand-mark.nl640-has-logo{width:226px!important;min-width:226px!important;max-width:226px!important;height:84px!important;min-height:84px!important;max-height:84px!important;flex:0 0 auto!important}
 .nl555-mobile-brand>b.nl640-has-logo{width:52px!important;height:36px!important}
 .nl541-session-gate-brand.nl640-has-logo{width:96px!important;height:58px!important;border-radius:12px!important}
 .nl640-version{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid var(--nl631-border,#d4e0ec);border-radius:999px;background:var(--nl631-surface2,#f6f9fc);color:var(--nl631-text2,#60748a);font-size:11px;font-weight:800;white-space:nowrap}
@@ -27,12 +27,26 @@
 .nl640-branding-actions .nl640-primary{border-color:#1677e8;background:#1677e8;color:#fff}
 .nl640-branding-actions button:disabled{opacity:.5;cursor:not-allowed}
 [data-nurselink-logo-placement="admin"] img{display:block;width:auto;max-width:100%;height:auto;max-height:100%;object-fit:contain}
-.nl-admin-brand-mark[data-nurselink-logo-placement="admin"]:has(img){width:72px;padding:4px;background:#fff!important}
+.nl-admin-brand-mark[data-nurselink-logo-placement="admin"]:has(img){width:226px!important;min-width:226px!important;max-width:226px!important;height:84px!important;min-height:84px!important;max-height:84px!important;padding:0 16px!important;background:#fff!important;box-sizing:border-box!important}
 .nl555-mobile-brand>b[data-nurselink-logo-placement="admin"]:has(img){padding:3px;background:#fff!important}
 .nl541-session-gate-brand[data-nurselink-logo-placement="admin"]:has(img){padding:5px;background:#fff!important}
 html[data-nl-theme="dark"] .nl640-logo-card{background:var(--nl631-surface2,#122239)}
 html[data-nl-theme="dark"] .nl640-logo-preview{background:#fff}
 @media(max-width:1100px){.nl640-logo-grid{grid-template-columns:1fr}}
 @media(max-width:720px){.nl640-branding-actions{align-items:stretch;flex-direction:column}.nl640-branding-actions p{margin:0}.nl640-branding-actions button{width:100%}}
+
+@media(max-width:950px){
+  .nl-admin-sidebar-brand.nl530-brand{min-height:162px!important;padding:10px 28px 20px 8px!important}
+  .nl-admin-sidebar-brand .nl-admin-brand-mark.nl640-has-logo,
+  .nl-admin-brand-mark[data-nurselink-logo-placement="admin"]:has(img){
+    width:226px!important;min-width:226px!important;max-width:226px!important;
+    height:84px!important;min-height:84px!important;max-height:84px!important;
+    box-sizing:border-box!important;overflow:hidden!important;
+  }
+  .nl555-mobile-brand>b.nl640-has-logo{
+    width:68px!important;min-width:68px!important;height:38px!important;
+    padding:0 4px!important;box-sizing:border-box!important;overflow:hidden!important;
+  }
+}
 
 .nl-favicon-set{grid-column:1/-1}.nl-favicon-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.nl-favicon-row{display:flex;gap:12px;align-items:center;border:1px solid #d5e2f0;border-radius:8px;padding:12px}.nl-favicon-row img{width:40px;height:40px;object-fit:contain}.nl-favicon-row div{min-width:0;flex:1}.nl-favicon-row strong{overflow-wrap:anywhere}.nl-favicon-row small{display:block;margin-top:5px}.nl-favicon-set>p{font-size:12px;line-height:1.5}

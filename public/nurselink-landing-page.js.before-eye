@@ -1,0 +1,73 @@
+(() => {
+  const root = document.getElementById('nurselink');
+  const loginForm = root.querySelector('#nl-form');
+  const loginStatus = root.querySelector('#nl-signin-note');
+  const loginButton = loginForm?.querySelector('button[type="submit"]');
+  const apiBase = '/backend';
+  const cookie = (name) => {
+    const prefix = `${name}=`;
+    const row = document.cookie.split(';').map((value) => value.trim()).find((value) => value.startsWith(prefix));
+    return row ? row.slice(prefix.length) : '';
+  };
+  const showLoginStatus = (message, tone = '') => {
+    if (!loginStatus) return;
+    loginStatus.textContent = message;
+    loginStatus.dataset.tone = tone;
+    loginStatus.hidden = !message;
+  };
+  const memberLogin = async (email, password) => {
+    const standardHeaders = { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+    const bootstrap = await fetch(`${apiBase}/api/nurselink/session-bootstrap`, { method: 'POST', credentials: 'include', headers: standardHeaders });
+    if (!bootstrap.ok) throw new Error('Unable to initialize your secure NurseLink session. Please try again.');
+    const csrf = await fetch(`${apiBase}/sanctum/csrf-cookie`, { method: 'GET', credentials: 'include', headers: standardHeaders });
+    if (!csrf.ok && csrf.status !== 204) throw new Error('Unable to initialize secure sign-in. Please try again.');
+    const token = cookie('XSRF-TOKEN');
+    const response = await fetch(`${apiBase}/api/nurselink/session-login`, {
+      method: 'POST', credentials: 'include',
+      headers: { ...standardHeaders, 'Content-Type': 'application/json', ...(token ? { 'X-XSRF-TOKEN': decodeURIComponent(token) } : {}) },
+      body: JSON.stringify({ email, password })
+    });
+    let data = null;
+    try { data = await response.json(); } catch (_) {}
+    if (!response.ok) throw new Error(data?.errors?.email?.[0] || data?.message || 'We could not sign you in. Please check your email and password.');
+    return data;
+  };
+  loginForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const email = root.querySelector('#nl-email')?.value.trim() || '';
+    const password = root.querySelector('#nl-password')?.value || '';
+    if (!email || !password) { showLoginStatus('Enter your email address and password to sign in.', 'error'); return; }
+    loginButton.disabled = true;
+    loginButton.textContent = 'Signing in…';
+    showLoginStatus('');
+    try {
+      await memberLogin(email, password);
+      showLoginStatus('Sign-in confirmed. Opening your NurseLink dashboard…', 'success');
+      window.location.assign('/dashboard');
+    } catch (error) {
+      showLoginStatus(error.message || 'We could not sign you in. Please try again.', 'error');
+      loginButton.disabled = false;
+      loginButton.innerHTML = 'Sign in <span>→</span>';
+    }
+  });
+  root.querySelectorAll('[data-register]').forEach((button) => button.addEventListener('click', () => window.location.assign('/register')));
+  root.querySelectorAll('[data-demo]').forEach((button) => button.addEventListener('click', () => window.location.assign('/login')));
+  const slides = [...root.querySelectorAll('.nl-hero-slide')];
+  const dots = [...root.querySelectorAll('[data-slide-to]')];
+  let currentSlide = 0;
+  let timer;
+  const showSlide = (index) => {
+    currentSlide = (index + slides.length) % slides.length;
+    slides.forEach((slide, i) => { const active = i === currentSlide; slide.classList.toggle('is-active', active); slide.setAttribute('aria-hidden', String(!active)); });
+    dots.forEach((dot, i) => dot.setAttribute('aria-selected', String(i === currentSlide)));
+  };
+  const startSlider = () => { stopSlider(); if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) timer = window.setInterval(() => showSlide(currentSlide + 1), 6000); };
+  const stopSlider = () => { window.clearInterval(timer); };
+  root.querySelector('[data-slide-next]')?.addEventListener('click', () => { showSlide(currentSlide + 1); stopSlider(); startSlider(); });
+  root.querySelector('[data-slide-prev]')?.addEventListener('click', () => { showSlide(currentSlide - 1); stopSlider(); startSlider(); });
+  dots.forEach((dot) => dot.addEventListener('click', () => { showSlide(Number(dot.dataset.slideTo)); stopSlider(); startSlider(); }));
+  root.querySelector('.nl-hero')?.addEventListener('mouseenter', stopSlider);
+  root.querySelector('.nl-hero')?.addEventListener('mouseleave', startSlider);
+  startSlider();
+  root.style.setProperty('--nl-radius', '16px');
+})();

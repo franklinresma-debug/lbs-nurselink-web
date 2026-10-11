@@ -151,7 +151,7 @@
         <td>
           <strong>${esc(row.member_name)}</strong>
           <small>${esc(row.member_email)}</small>
-          <small>${esc(row.member_number || 'No member number')}</small>
+          <small>${esc(row.member_number || "No applicant number")}</small>
         </td>
         <td>
           <strong>${esc(row.title)}</strong>
@@ -187,7 +187,7 @@
               data-current-status="${esc(renewal.status)}">
               Manage
             </button>
-          ` : '<small>Member has not started a renewal plan.</small>'}
+          ` : "<small>Applicant has not started a renewal plan.</small>"}
         </td>
       </tr>
     `;
@@ -210,7 +210,7 @@
         <table class="nl-compliance-table">
           <thead>
             <tr>
-              <th>Member</th>
+              <th>Applicant</th>
               <th>Credential</th>
               <th>Expiry</th>
               <th>Verification</th>
@@ -348,10 +348,10 @@
     if (!rows.length) return;
 
     const header = [
-      'Member Name',
+      "Applicant Name",
       'Email',
-      'Member Number',
-      'Membership Standing',
+      "Applicant Number",
+      "Applicant registration Standing",
       'Credential Type',
       'Credential Title',
       'Issuing Body',

@@ -78,7 +78,7 @@
 
     if (!response.ok) {
       const error = new Error(
-        payload?.message || `Member Registry request failed (${response.status}).`
+        payload?.message || `Applicant Registry request failed (${response.status}).`
       );
       error.status = response.status;
       error.payload = payload;
@@ -113,7 +113,7 @@
 
   function renderSummary(data) {
     const cards = [
-      ['Approved Members', data.total_approved ?? 0],
+      ["Approved Applicants", data.total_approved ?? 0],
       ['Approved Last 30 Days', data.approved_last_30_days ?? 0],
       ['Approved This Year', data.approved_this_year ?? 0],
       ['Active Standing', data.active_members ?? 0],
@@ -145,14 +145,14 @@
 
   function rowHtml(row) {
     return `
-      <tr data-member-id="${esc(row.membership_id)}">
+      <tr data-applicant-id="${esc(row.membership_id)}">
         <td>
           <strong>${esc(row.name)}</strong>
           <small>${esc(row.email)}</small>
         </td>
         <td><strong>${esc(row.member_number || '—')}</strong></td>
         <td>
-          <span class="nl-member-standing"
+          <span class="nl-applicant-standing"
             data-standing="${esc(row.standing || 'active')}">
             ${esc(row.standing_label || row.standing || 'Active')}
           </span>
@@ -162,15 +162,15 @@
         <td>${esc(row.employment_records ?? 0)}</td>
         <td>${esc(row.learning_records ?? 0)}</td>
         <td>
-          <span class="nl-member-public-state"
+          <span class="nl-applicant-public-state"
             data-enabled="${row.public_profile?.enabled ? '1' : '0'}">
             ${row.public_profile?.enabled ? 'Enabled' : 'Disabled'}
           </span>
         </td>
         <td>
           <button type="button"
-            class="nl-member-view-button"
-            data-open-member="${esc(row.membership_id)}">
+            class="nl-applicant-view-button"
+            data-open-applicant="${esc(row.membership_id)}">
             View
           </button>
         </td>
@@ -184,7 +184,7 @@
     if (!rows.length) {
       registryEl.innerHTML = `
         <div class="nl-admin-empty">
-          No approved members match the current filters.
+          No approved applicants match the current filters.
         </div>
       `;
       return;
@@ -195,8 +195,8 @@
         <table class="nl-member-registry-table">
           <thead>
             <tr>
-              <th>Member</th>
-              <th>Member Number</th>
+              <th>Applicant</th>
+              <th>Applicant Number</th>
               <th>Standing</th>
               <th>Approved</th>
               <th>Credentials</th>
@@ -227,7 +227,7 @@
 
   async function loadRows() {
     registryEl.innerHTML = `
-      <div class="nl-admin-loading">Loading approved members…</div>
+      <div class="nl-admin-loading">Loading approved applicants…</div>
     `;
 
     const params = new URLSearchParams();
@@ -294,13 +294,13 @@
     detailEl.innerHTML = `
       <div class="nl-member-registry-detail-head">
         <div>
-          <span class="nl-admin-eyebrow">APPROVED MEMBER</span>
-          <h2>${esc(member.name || 'NurseLink Member')}</h2>
+          <span class="nl-admin-eyebrow">APPROVED APPLICANT</span>
+          <h2>${esc(member.name || "NurseLink Applicant")}</h2>
           <p>${esc(member.email || '')}</p>
         </div>
         <div class="nl-member-registry-status-stack">
           <span class="nl-member-approved-badge">Approved</span>
-          <span class="nl-member-standing"
+          <span class="nl-applicant-standing"
             data-standing="${esc(membership.standing || 'active')}">
             ${esc(membership.standing_label || membership.standing || 'Active')}
           </span>
@@ -309,7 +309,7 @@
 
       <div class="nl-member-registry-id-grid">
         <div>
-          <span>Member Number</span>
+          <span>Applicant Number</span>
           <strong>${esc(membership.member_number || '—')}</strong>
         </div>
         <div>
@@ -338,7 +338,7 @@
         ${membership.verification_url ? `
           <a href="${esc(membership.verification_url)}"
             target="_blank" rel="noopener noreferrer">
-            Verify Membership
+            Verify Applicant registration
           </a>
           <button type="button"
             id="copyMemberVerify"
@@ -376,10 +376,10 @@
       <section class="nl-member-lifecycle-panel">
         <div class="nl-member-registry-section-head">
           <div>
-            <h3>Membership Lifecycle Management</h3>
+            <h3>Applicant registration Lifecycle Management</h3>
             <small>
               Permanent approval remains unchanged. This changes professional
-              standing and member-only access.
+              standing and applicant-only access.
             </small>
           </div>
         </div>
@@ -399,7 +399,7 @@
               required
               minlength="3"
               maxlength="3000"
-              placeholder="Required reason for this membership standing change"></textarea>
+              placeholder="Required reason for this applicant registration standing change"></textarea>
           </label>
 
           <label id="memberLifecycleSelfConfirmWrap"
@@ -407,7 +407,7 @@
             hidden>
             <input id="memberLifecycleSelfConfirm" type="checkbox">
             <span>
-              I confirm this is my own membership record. This Super Administrator
+              I confirm this is my own applicant registration record. This Super Administrator
               self-action will be explicitly audited.
             </span>
           </label>
@@ -457,7 +457,7 @@
         </div>
       `)}
 
-      ${section('Membership Audit', audit, item => `
+      ${section("Applicant registration Audit", audit, item => `
         <div class="nl-member-registry-record">
           <div>
             <strong>${esc(item.action)}</strong>
@@ -480,7 +480,7 @@
         if (!value) return;
         try {
           await navigator.clipboard.writeText(value);
-          notice('Membership verification link copied.', 'success');
+          notice("Applicant registration verification link copied.", 'success');
         } catch (_) {
           notice('Unable to copy verification link.', 'error');
         }
@@ -547,7 +547,7 @@
         if (!target || why.length < 3) return;
 
         const confirmed = window.confirm(
-          `Change membership standing from ${standingLabel(lifecycle.standing)} to ${standingLabel(target)}?`
+          `Change applicant registration standing from ${standingLabel(lifecycle.standing)} to ${standingLabel(target)}?`
         );
 
         if (!confirmed) return;
@@ -570,7 +570,7 @@
           );
 
           notice(
-            result?.message || 'Membership standing updated.',
+            result?.message || "Applicant registration standing updated.",
             'success'
           );
 
@@ -602,7 +602,7 @@
   async function openMember(id) {
     selectedMembershipId = Number(id);
     detailEl.innerHTML = `
-      <div class="nl-admin-loading">Loading member details…</div>
+      <div class="nl-admin-loading">Loading applicant details…</div>
     `;
 
     try {
@@ -630,9 +630,9 @@
     if (!rows.length) return;
 
     const header = [
-      'Member Name',
+      "Applicant Name",
       'Email',
-      'Member Number',
+      "Applicant Number",
       'Professional Standing',
       'Standing Changed At',
       'Approved At',
@@ -676,7 +676,7 @@
     anchor.remove();
     URL.revokeObjectURL(url);
 
-    notice(`Exported ${rows.length} approved member${rows.length === 1 ? '' : 's'}.`, 'success');
+    notice(`Exported ${rows.length} approved applicant${rows.length === 1 ? '' : 's'}.`, 'success');
   }
 
   refreshButton?.addEventListener('click', async () => {

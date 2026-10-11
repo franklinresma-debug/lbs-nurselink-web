@@ -42,7 +42,7 @@
     });
 
     if (!response.ok) {
-      throw new Error('Unable to initialize secure membership review request.');
+      throw new Error("Unable to initialize secure applicant registration review request.");
     }
   }
 
@@ -76,7 +76,7 @@
 
     if (!response.ok) {
       const error = new Error(
-        payload?.message || `Membership review request failed (${response.status}).`
+        payload?.message || `Applicant registration review request failed (${response.status}).`
       );
       error.status = response.status;
       error.payload = payload;
@@ -125,7 +125,7 @@
   function summaryCard(status, value) {
     return `
       <button type="button"
-        class="nl-membership-summary-card"
+        class="nl-applicant registration-summary-card"
         data-summary-status="${esc(status)}">
         <span>${esc(label(status))}</span>
         <strong>${esc(value)}</strong>
@@ -154,14 +154,14 @@
 
   function queueRow(row) {
     return `
-      <tr data-membership-id="${esc(row.id)}">
+      <tr data-applicant registration-id="${esc(row.id)}">
         <td>
           <strong>${esc(row.name)}</strong>
           <small>${esc(row.email)}</small>
           ${row.is_self ? '<em>YOUR APPLICATION</em>' : ''}
         </td>
         <td>
-          <span class="nl-membership-status"
+          <span class="nl-applicant registration-status"
             data-status="${esc(row.status)}">
             ${esc(row.status_label || label(row.status))}
           </span>
@@ -187,7 +187,7 @@
     if (!queue.length) {
       queueEl.innerHTML = `
         <div class="nl-admin-empty">
-          No membership applications match the current filters.
+          No applicant registration applications match the current filters.
         </div>
       `;
       return;
@@ -200,7 +200,7 @@
             <tr>
               <th>Applicant</th>
               <th>Status</th>
-              <th>Member Number</th>
+              <th>Applicant Number</th>
               <th>Last Reviewer</th>
               <th>Updated</th>
               <th></th>
@@ -268,7 +268,7 @@
 
   function profileIndicator(labelText, value, tone = '') {
     return `
-      <div class="nl-membership-profile-indicator"
+      <div class="nl-applicant registration-profile-indicator"
         data-tone="${esc(tone)}">
         <span>${esc(labelText)}</span>
         <strong>${esc(value)}</strong>
@@ -372,7 +372,7 @@
           <h2>${esc(applicant.name || 'Applicant')}</h2>
           <p>${esc(applicant.email || '')}</p>
         </div>
-        <span class="nl-membership-status"
+        <span class="nl-applicant registration-status"
           data-status="${esc(membership.status)}">
           ${esc(membership.status_label || label(membership.status))}
         </span>
@@ -384,7 +384,7 @@
           <strong>#${esc(membership.id)}</strong>
         </div>
         <div>
-          <span>Member Number</span>
+          <span>Applicant Number</span>
           <strong>${esc(membership.member_number || 'Pending')}</strong>
         </div>
         <div>
@@ -464,7 +464,7 @@
               <span>Reviewer notes</span>
               <textarea id="membershipReviewerNotes"
                 rows="4"
-                placeholder="Internal review notes visible in the membership record">${esc(membership.reviewer_notes || '')}</textarea>
+                placeholder="Internal review notes visible in the applicant registration record">${esc(membership.reviewer_notes || '')}</textarea>
             </label>
 
             <label id="decisionReasonField" hidden>
@@ -478,7 +478,7 @@
               <label class="nl-membership-self-confirm">
                 <input id="membershipSelfConfirm" type="checkbox">
                 <span>
-                  I understand this is my own membership application.
+                  I understand this is my own applicant registration application.
                   This Super Administrator action will be explicitly recorded
                   in the NurseLink audit trail.
                 </span>
@@ -533,7 +533,7 @@
         <div class="nl558-delivery-list">
           ${deliveryRecent.length ? deliveryRecent.map(row => `
             <div class="nl558-delivery-row" data-status="${esc(row.status || 'pending')}">
-              <div><strong>${esc(label(row.event_key || 'membership update'))}</strong><small>${esc(row.recipient || 'No email')} · ${esc(label(row.status || 'pending'))} · ${Number(row.attempts || 0)} attempt${Number(row.attempts || 0) === 1 ? '' : 's'}</small>${row.last_error ? `<p>${esc(row.last_error)}</p>` : ''}</div>
+              <div><strong>${esc(label(row.event_key || "applicant registration update"))}</strong><small>${esc(row.recipient || 'No email')} · ${esc(label(row.status || 'pending'))} · ${Number(row.attempts || 0)} attempt${Number(row.attempts || 0) === 1 ? '' : 's'}</small>${row.last_error ? `<p>${esc(row.last_error)}</p>` : ''}</div>
               ${row.status === 'failed' ? `<button type="button" data-retry-delivery="${Number(row.id)}">Retry email</button>` : ''}
             </div>`).join('') : '<div class="nl-membership-history-empty">No notification deliveries recorded yet.</div>'}
         </div>
@@ -541,13 +541,13 @@
 
       <section class="nl-membership-history">
         <div class="nl-membership-history-head">
-          <h3>Membership Audit History</h3>
+          <h3>Applicant registration Audit History</h3>
           <span>${history.length} record${history.length === 1 ? '' : 's'}</span>
         </div>
         <div class="nl-membership-history-list">
           ${history.length
             ? history.map(historyRow).join('')
-            : '<div class="nl-membership-history-empty">No membership audit history yet.</div>'}
+            : "<div class=\"nl-membership-history-empty\">No applicant registration audit history yet.</div>"}
         </div>
       </section>
     `;
@@ -604,7 +604,7 @@
       if (value === 'approved') {
         warning.dataset.tone = 'approval';
         warning.textContent =
-          'Approval will issue the permanent NurseLink member number and activate member-only access.';
+          "Approval will issue the permanent NurseLink applicant number and activate applicant-only access.";
         return;
       }
 
@@ -637,14 +637,14 @@
 
       if (nextStatus === 'approved') {
         const confirmed = window.confirm(
-          'Approve this NurseLink membership and issue the permanent member number?'
+          "Approve this NurseLink applicant registration and issue the permanent applicant number?"
         );
         if (!confirmed) return;
       }
 
       if (nextStatus === 'declined') {
         const confirmed = window.confirm(
-          'Decline this NurseLink membership application? This command-center workflow treats decline as final.'
+          "Decline this NurseLink applicant registration application? This command-center workflow treats decline as final."
         );
         if (!confirmed) return;
       }
@@ -671,7 +671,7 @@
           }
         );
 
-        notice(result?.message || 'Membership review saved.', 'success');
+        notice(result?.message || "Applicant registration review saved.", 'success');
 
         await Promise.all([
           loadSummary(),
@@ -696,7 +696,7 @@
     selectedMembershipId = Number(id);
 
     panelEl.innerHTML = `
-      <div class="nl-admin-loading">Loading membership review…</div>
+      <div class="nl-admin-loading">Loading applicant registration review…</div>
     `;
 
     try {

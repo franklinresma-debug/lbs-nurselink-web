@@ -23,7 +23,7 @@ function renderOnboardingLock(){
   notice.dataset.tone='warning';
   notice.innerHTML=`
     <strong>🔒 Complete onboarding to unlock Mentoring</strong>
-    <span>Finish your NurseLink member onboarding before creating a mentoring profile, discovering mentors or managing mentoring requests.</span>
+    <span>Finish your NurseLink applicant onboarding before creating a mentoring profile, discovering mentors or managing mentoring requests.</span>
     <a href="/dashboard#membership">Complete Onboarding →</a>
   `;
 }

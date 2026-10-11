@@ -28,7 +28,7 @@ async function load(){
    stat('Event Attendance',e.attended||0,`${e.registrations||0} registered/attended records`),
    stat('Discoverable Mentoring Profiles',m.discoverable||0,`${m.profiles||0} total profiles`),
    stat('Active Mentoring',m.accepted_relationships||0,`${m.open_requests||0} open requests`),
-   stat('Available Benefits',bf.published_available||0,`${bf.requested||0} member requests`),
+   stat('Available Benefits',bf.published_available||0,`${bf.requested||0} applicant requests`),
    stat('Approved / Fulfilled Benefits',Number(bf.approved||0)+Number(bf.fulfilled||0),`${bf.fulfilled||0} fulfilled`)
   ].join('');
   $('ecChapters').textContent=`${c.active||0} active chapters · ${c.pending_requests||0} pending requests`;
@@ -36,7 +36,7 @@ async function load(){
   $('ecMentoring').textContent=`${m.discoverable||0} discoverable · ${m.accepted_relationships||0} active relationships`;
   $('ecBenefits').textContent=`${bf.published_available||0} available · ${bf.requested||0} requested · ${bf.fulfilled||0} fulfilled`;
   const rows=Array.isArray(d.chapter_activity)?d.chapter_activity:[];
-  $('chapterActivity').innerHTML=rows.length?`<table class="ec-table"><thead><tr><th>Chapter</th><th>Region</th><th>Active Members</th><th>Pending</th><th>Upcoming Events</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td><td>${esc([r.region,r.country].filter(Boolean).join(', '))}</td><td>${esc(r.active_members)}</td><td>${esc(r.pending_requests)}</td><td>${esc(r.upcoming_events)}</td></tr>`).join('')}</tbody></table>`:'<div class="nl-admin-empty">No active chapter activity.</div>';
+  $('chapterActivity').innerHTML=rows.length?`<table class="ec-table"><thead><tr><th>Chapter</th><th>Region</th><th>Active Applicants</th><th>Pending</th><th>Upcoming Events</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${esc(r.name)}</strong></td><td>${esc([r.region,r.country].filter(Boolean).join(', '))}</td><td>${esc(r.active_members)}</td><td>${esc(r.pending_requests)}</td><td>${esc(r.upcoming_events)}</td></tr>`).join('')}</tbody></table>`:'<div class="nl-admin-empty">No active chapter activity.</div>';
  }catch(e){if([401,403,419].includes(e.status)){login();return}show(e.message,'error')}
 }
 $('refreshEngagementAdmin').addEventListener('click',()=>Promise.all([load(),loadActivity()]));$('adminSignOut').addEventListener('click',async()=>{try{await request('/api/nurselink/admin/logout',{method:'POST',body:'{}'})}catch(_){}location.replace('/nurselink-admin-login.html')});

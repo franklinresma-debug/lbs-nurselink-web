@@ -49,7 +49,7 @@
     return `<section class="nl6441-inline-panel nl6448-live-panel">
       <div class="nl6441-inline-head">
         <div><div class="eyebrow">Professional Profile</div><h2>Overview</h2>
-        <p>A live summary of the records currently stored in this member's NurseLink database profile.</p></div>
+        <p>A live summary of the records currently stored in this applicant's NurseLink database profile.</p></div>
       </div>
       <div class="nl6448-overview-grid">
         ${card('Certificates',(d.certificates||[]).length,'♢')}
@@ -103,7 +103,7 @@
 
     return `<section class="nl6441-inline-panel nl6448-live-panel">
       <div class="nl6441-inline-head">
-        <div><div class="eyebrow">Member Professional Profile</div><h2>${esc(label)}</h2>
+        <div><div class="eyebrow">Applicant Professional Profile</div><h2>${esc(label)}</h2>
         <p>Live database records for ${esc(memberNumber())}.</p></div>
         <div class="nl6441-count"><strong>${rows.length}</strong><span>record${rows.length===1?'':'s'}</span></div>
       </div>

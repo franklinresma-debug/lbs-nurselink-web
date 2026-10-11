@@ -13,16 +13,21 @@ export default function CvMakerWorkspace() {
     const element = frame.current
     let resize
     const syncTheme = () => {
-      const doc = element.contentDocument
-      if (doc) doc.documentElement.dataset.theme = document.documentElement.dataset.theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+      const root = element.contentDocument?.documentElement
+      if (root) root.dataset.theme = document.documentElement.dataset.theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')
     }
     const loaded = () => {
       resize?.disconnect()
       const doc = element.contentDocument
-      if (!doc?.querySelector('main')) return
-      const measure = () => { element.style.height = `${Math.ceil(doc.querySelector('main').getBoundingClientRect().height) + 40}px` }
+      const main = doc?.querySelector('main')
+      if (!main) return
+      const measure = () => {
+        if (element.contentDocument === doc && main.isConnected) {
+          element.style.height = `${Math.ceil(main.getBoundingClientRect().height) + 40}px`
+        }
+      }
       resize = new ResizeObserver(measure)
-      resize.observe(doc.querySelector('main'))
+      resize.observe(main)
       syncTheme()
       measure()
     }

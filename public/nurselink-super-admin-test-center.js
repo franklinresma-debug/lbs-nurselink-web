@@ -126,12 +126,12 @@
           <strong>${active ? 'ACTIVE' : 'INACTIVE'}</strong>
           <small>
             ${active
-              ? 'Temporary approved-member gate bypass is enabled for this Super Administrator.'
-              : 'Normal membership access rules are in force.'}
+              ? "Temporary approved-applicant gate bypass is enabled for this Super Administrator."
+              : "Normal applicant registration access rules are in force."}
           </small>
         </div>
         <div>
-          <span>Real Membership</span>
+          <span>Real Applicant registration</span>
           <strong>${esc(data?.membership_status || 'Unknown')}</strong>
           <small>Test Mode never changes this value.</small>
         </div>
@@ -201,7 +201,7 @@
 
   const SAFE_TESTS = [
     ['Authenticated Session', '/api/me'],
-    ['Membership Record', '/api/membership/me'],
+    ["Applicant registration Record", '/api/membership/me'],
     ['Notifications', '/api/notifications'],
     ['Credential Registry', '/api/credential-registry'],
     ['Portfolio', '/api/portfolio-items'],
@@ -214,23 +214,23 @@
     ['Mentoring Profile', '/api/mentoring/profile'],
     ['Mentoring Directory', '/api/mentoring/directory'],
     ['Mentoring Requests', '/api/mentoring/requests'],
-    ['Member Engagement Summary', '/api/engagement'],
-    ['Member Engagement Timeline', '/api/engagement/timeline'],
-    ['Enterprise Member Cohorts', '/api/enterprise/me'],
-    ['Enterprise Member Goals', '/api/enterprise/goals'],
+    ["Applicant Engagement Summary", '/api/engagement'],
+    ["Applicant Engagement Timeline", '/api/engagement/timeline'],
+    ["Enterprise Applicant Cohorts", '/api/enterprise/me'],
+    ["Enterprise Applicant Goals", '/api/enterprise/goals'],
     ['Enterprise Invitations', '/api/enterprise/invitations'],
-    ['Enterprise Member Outcomes', '/api/enterprise/outcomes'],
-    ['Enterprise Member Support', '/api/enterprise/support'],
-    ['Member Benefits', '/api/benefits'],
+    ["Enterprise Applicant Outcomes", '/api/enterprise/outcomes'],
+    ["Enterprise Applicant Support", '/api/enterprise/support'],
+    ["Applicant Benefits", '/api/benefits'],
     ['Benefit Intelligence', '/api/benefits/intelligence'],
     ['Benefit Reminders', '/api/benefits/reminders'],
     ['Administrator Dashboard', '/api/nurselink/admin/dashboard'],
     ['Administration Operations Center Summary', '/api/nurselink/admin/operations-center/summary'],
-    ['Membership Administration Overview', '/api/nurselink/admin/membership-administration/overview'],
-    ['Membership Onboarding Summary', '/api/nurselink/admin/membership-onboarding/summary'],
-    ['Membership Command Summary', '/api/nurselink/admin/membership-command/summary'],
-    ['Member Registry Summary', '/api/nurselink/admin/member-registry/summary'],
-    ['Membership Lifecycle Summary', '/api/nurselink/admin/membership-lifecycle/summary'],
+    ["Applicant registration Administration Overview", '/api/nurselink/admin/membership-administration/overview'],
+    ["Applicant registration Onboarding Summary", '/api/nurselink/admin/membership-onboarding/summary'],
+    ["Applicant registration Command Summary", '/api/nurselink/admin/membership-command/summary'],
+    ["Applicant Registry Summary", '/api/nurselink/admin/member-registry/summary'],
+    ["Applicant registration Lifecycle Summary", '/api/nurselink/admin/membership-lifecycle/summary'],
     ['Credential Renewal Admin Summary', '/api/nurselink/admin/credential-renewal/summary'],
     ['Credential Compliance Workload', '/api/nurselink/admin/credential-renewal'],
     ['Event Management', '/api/nurselink/admin/events'],

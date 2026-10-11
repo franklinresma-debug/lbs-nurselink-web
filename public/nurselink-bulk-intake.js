@@ -117,6 +117,12 @@
 
       error.status = response.status;
 
+      if (response.status === 401) {
+        currentCandidateBundles = [];
+        $('candidateList').innerHTML = '<p>Your encoder session expired. Sign in again through Encoder Workspace, then reopen this batch to load the latest review data.</p>';
+        notice('Your encoder session expired. Sign in again to refresh this batch.', 'error');
+      }
+
       throw error;
     }
 
@@ -759,6 +765,8 @@
     }
 
     $('uploadFiles').disabled = true;
+    $('fileInput').disabled = true;
+    $('uploadFiles').textContent = `Uploading 0/${selectedFiles.length}…`;
 
     let uploaded = 0;
     let failed = 0;
@@ -805,12 +813,13 @@
       }
 
       $('uploadFiles').textContent =
-        `Uploading ${uploaded + failed}/${selectedFiles.length}`;
+        `Uploading ${uploaded + failed + duplicates}/${selectedFiles.length}…`;
     }
 
     $('uploadFiles').disabled = false;
+    $('fileInput').disabled = false;
     $('uploadFiles').textContent =
-      'Upload Selected Files';
+      'Upload documents';
 
     selectedFiles = [];
     $('fileInput').value = '';
@@ -949,12 +958,20 @@
             ${pendingReviews.length ? `<p class="nlbi-summary-warning">Pending professional-record review: ${esc(pendingReviews.join(' · '))}</p>` : '<p class="nlbi-summary-complete">Professional records reviewed.</p>'}
           </div>
           <div>
-            <h4>Roster details (${rosterEntries.length})</h4>
+            <h4>Additional document details (${rosterEntries.length})</h4>
+            <p>Source-document claims and transcriptions. Confirm conflicts before import.</p>
             ${rosterEntries.length ? `<dl class="nlbi-summary-fields">${rosterEntries.map(([fieldLabel, value]) => `<div><dt>${esc(fieldLabel)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>` : '<p class="nlbi-summary-empty">No additional roster details supplied.</p>'}
           </div>
         </div>
       </section>
     `;
+  }
+
+  function recordEvidence(item) {
+    const notes = String(item.review_notes || '');
+    const start = notes.indexOf('{');
+    if (start < 0) return {};
+    try { return JSON.parse(notes.slice(start)); } catch (_) { return {}; }
   }
 
   function renderCandidates(rows) {
@@ -1097,7 +1114,7 @@
 
                       <small>
                         Approval only stages this choice.
-                        It does not overwrite an existing member photo.
+                        It does not overwrite an existing applicant photo.
                       </small>
                     </div>
                   </section>
@@ -1111,6 +1128,7 @@
               ${input('first_name', 'First Name', row.first_name)}
               ${input('second_name', 'Second Name', row.second_name)}
               ${input('middle_initial', 'Middle Initial', row.middle_initial)}
+              ${!row.second_name && !row.middle_initial ? input('middle_name', 'Full middle name / remaining given names (confirm)', row.middle_name) : ''}
               ${input('last_name', 'Last Name', row.last_name)}
               ${input('birth_date', 'Birth date', row.birth_date, 'date')}
               ${input('sex', 'Sex', row.sex)}
@@ -1159,7 +1177,7 @@
                         </div>
 
                         <small>
-                          ${esc(item.field_of_study || 'Nursing')}
+                          ${esc(item.field_of_study || 'Field of study not stated')}
                         </small>
 
                         <small>
@@ -1186,6 +1204,7 @@
                           · confidence ${esc(pct(item.confidence))}
                         </small>
 
+                        ${recordEvidence(item).date_text ? `<small>Year/date as written: ${esc(recordEvidence(item).date_text)}</small>` : ''}
                         ${recordActions('education', item)}
                       </div>
                     `).join('')
@@ -1263,6 +1282,7 @@
                             : ''
                         }
 
+                        ${recordEvidence(item).date_text ? `<small>Dates as written: ${esc(recordEvidence(item).date_text)}</small>` : ''}
                         ${recordActions('employment', item)}
                       </div>
                     `).join('')
@@ -1295,7 +1315,7 @@
                         </div>
 
                         <small>
-                          ${esc(item.domain || 'Clinical Nursing')}
+                          ${esc(item.domain || 'Domain not stated')}
                           · confidence ${esc(pct(item.confidence))}
                         </small>
 
@@ -2554,7 +2574,7 @@
   $('refreshBatch')
     ?.addEventListener(
       'click',
-      refreshBatch
+      () => refreshBatch().catch(error => notice(error.message, 'error'))
     );
 
   $('closeDocumentPreview')

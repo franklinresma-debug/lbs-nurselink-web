@@ -219,7 +219,7 @@
           <small>
             ${
               row.member_number
-                ? `Member ${esc(row.member_number)}`
+                ? `Applicant ${esc(row.member_number)}`
                 : 'Applicant record'
             }
           </small>
@@ -260,7 +260,7 @@
       <span class="nl-badge">
         ${
           currentMode === 'approved_member'
-            ? 'Approved member profile'
+            ? "Approved applicant profile"
             : 'Applicant / Smart Registration'
         }
       </span>
@@ -609,11 +609,13 @@
           ? Object.values(data.errors).flat().find(Boolean)
           : '';
 
-      throw new Error(
+      const error = new Error(
         validation
         || data?.message
         || `Workflow request failed (${response.status}).`
       );
+      error.missing = Array.isArray(data?.missing) ? data.missing : [];
+      throw error;
     }
 
     return data;
@@ -660,8 +662,8 @@
         <small>
           ${
             membership?.member_number
-              ? `Member number: ${membership.member_number}`
-              : 'No member number yet'
+              ? `Applicant number: ${membership.member_number}`
+              : "No applicant number yet"
           }
         </small>
       `;
@@ -770,8 +772,61 @@
     renderCredentials();
   }
 
+  let submissionPending = false;
+
+  function submissionNotice(message, tone, missing = []) {
+    const actions = $('workflowActions');
+    if (!actions) return;
+    let notice = $('workflowSubmissionNotice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'workflowSubmissionNotice';
+      notice.setAttribute('aria-live', 'polite');
+      notice.setAttribute('aria-atomic', 'true');
+      actions.insertAdjacentElement('afterend', notice);
+    }
+    notice.setAttribute('role', tone === 'error' ? 'alert' : 'status');
+    notice.textContent = message;
+    if (missing.length) {
+      notice.textContent = 'Complete these fields before submitting:';
+      const targets = {
+        first_name: 'firstName', last_name: 'lastName', birth_date: 'birthDate',
+        nationality: 'nationality', phone: 'phone', country: 'country',
+        professional_title: 'professionalTitle', years_experience: 'yearsExperience',
+        highest_nursing_education: 'highestEducation', professional_evidence: 'quickUploadDocument'
+      };
+      const list = document.createElement('ul');
+      for (const item of missing) {
+        const row = document.createElement('li');
+        const target = document.getElementById(targets[item.field] || '');
+        if (target) {
+          const link = document.createElement('a');
+          link.href = '#' + target.id;
+          link.textContent = item.label || item.field;
+          link.style.cssText = 'color:inherit;text-decoration:underline;font-weight:600;';
+          link.addEventListener('click', event => {
+            event.preventDefault();
+            target.scrollIntoView({behavior: 'smooth', block: 'center'});
+            target.focus({preventScroll: true});
+          });
+          row.appendChild(link);
+        } else {
+          row.textContent = item.label || item.field;
+        }
+        list.appendChild(row);
+      }
+      notice.appendChild(list);
+      const help = document.createElement('div');
+      help.textContent = 'Select a field to edit it, save that section, then submit again.';
+      notice.appendChild(help);
+    }
+    notice.style.cssText = 'margin-top:12px;padding:12px;border-radius:8px;border:1px solid;white-space:pre-line;';
+    notice.style.backgroundColor = tone === 'error' ? '#fff1f2' : tone === 'success' ? '#ecfdf5' : '#eff6ff';
+    notice.style.color = tone === 'error' ? '#991b1b' : tone === 'success' ? '#065f46' : '#1e40af';
+  }
+
   async function submitApplication() {
-    if (!workflowUserId) return;
+    if (!workflowUserId || submissionPending) return;
 
     if (
       !confirm(
@@ -781,23 +836,33 @@
       return;
     }
 
+    submissionPending = true;
+    const submittedUserId = workflowUserId;
+    const button = document.querySelector('[data-workflow-submit]');
+    const originalLabel = button?.textContent;
+    if (button) { button.disabled = true; button.textContent = 'Submitting…'; }
+    submissionNotice('Submitting application. Please wait…', 'info');
+
     try {
       const result = await request(
-        `/api/nurselink/encoder/nurses/${encodeURIComponent(workflowUserId)}/submit`,
+        `/api/nurselink/encoder/nurses/${encodeURIComponent(submittedUserId)}/submit`,
         {
           method: 'POST',
           body: '{}'
         }
       );
 
-      announce(
-        result?.message || 'Application submitted.',
-        'success'
-      );
-
-      await loadWorkflow(workflowUserId);
+      if (workflowUserId === submittedUserId) {
+        submissionNotice((result?.message || 'Application submitted for review.') + '\nNext: Administrator → Applicants → Registration review.', 'success');
+        await loadWorkflow(submittedUserId);
+      }
     } catch (error) {
-      announce(error.message, 'error');
+      if (workflowUserId === submittedUserId) {
+        submissionNotice(error.message || 'Submission could not be confirmed. Refresh the status before trying again.', 'error', error.missing);
+      }
+    } finally {
+      submissionPending = false;
+      if (button?.isConnected) { button.disabled = false; button.textContent = originalLabel; }
     }
   }
 
@@ -827,7 +892,7 @@
       if (
         pendingTransition === 'approved'
         && !confirm(
-          'Approve this NurseLink membership? This is a final membership decision.'
+          "Approve this NurseLink applicant registration? This is a final applicant registration decision."
         )
       ) {
         return;
@@ -849,7 +914,7 @@
         );
 
         announce(
-          result?.message || 'Membership workflow updated.',
+          result?.message || "Applicant registration workflow updated.",
           'success'
         );
 
@@ -890,7 +955,7 @@
 
       if (
         !confirm(
-          `Change this member's standing to ${label(standing)}?`
+          `Change this applicant's standing to ${label(standing)}?`
         )
       ) {
         return;
@@ -909,7 +974,7 @@
         );
 
         announce(
-          result?.message || 'Membership standing updated.',
+          result?.message || "Applicant registration standing updated.",
           'success'
         );
 
@@ -1080,6 +1145,20 @@
 /* NURSELINK_TEMP_ENCODER_DOCUMENT_VIEWER_V708 */
 (() => {
   const byId = id => document.getElementById(id);
+  const API = 'https://lbs.amsertech.com/backend';
+  function esc(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+  function notice(message, tone) { const el=byId('encoderNotice');if(el){el.hidden=false;el.textContent=message;el.dataset.tone=tone;} }
+  async function request(path, options={}) {
+    const mutating=options.method && options.method!=='GET';
+    if(mutating){const csrf=await fetch(API+'/sanctum/csrf-cookie',{credentials:'include',headers:{Accept:'application/json'}});if(!csrf.ok)throw new Error('Unable to initialize secure upload.');}
+    const token=decodeURIComponent(document.cookie.split('; ').find(row=>row.startsWith('XSRF-TOKEN='))?.slice(11)||'');
+    const response=await fetch(API+path,{...options,credentials:'include',headers:{Accept:'application/json','X-Requested-With':'XMLHttpRequest',...(mutating&&token?{'X-XSRF-TOKEN':token}:{}),...(options.headers||{})}});
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(Object.values(payload.errors||{}).flat().join(' ')||payload.message||'Unable to load or upload documents.');
+    if(Array.isArray(payload.data))payload.data=payload.data.map(row=>({...row,preview_url:row.preview_url?.startsWith('/api/')?API+row.preview_url:row.preview_url}));
+    return payload;
+  }
+
 
   let documentViewerUserId = null;
   let documentViewerRows = [];
@@ -1336,7 +1415,7 @@
       if (list) {
         list.innerHTML = `
           <div class="nl-empty">
-            ${error.message || 'Unable to load documents.'}
+            ${esc(error.message || 'Unable to load documents.')}
           </div>
         `;
       }
@@ -1427,40 +1506,10 @@
       }
 
       try {
-        const response =
-          await fetch(
-            `/api/nurselink/encoder/nurses/${encodeURIComponent(documentViewerUserId)}/documents`,
-            {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'X-XSRF-TOKEN':
-                  decodeURIComponent(
-                    document.cookie
-                      .split('; ')
-                      .find(row =>
-                        row.startsWith('XSRF-TOKEN=')
-                      )
-                      ?.split('=')[1]
-                    || ''
-                  ),
-                'Accept':
-                  'application/json'
-              },
-              body
-            }
-          );
-
-        const payload =
-          await response.json()
-            .catch(() => ({}));
-
-        if (!response.ok) {
-          throw new Error(
-            payload?.message
-            || 'Unable to upload document.'
-          );
-        }
+        const payload = await request(
+          `/api/nurselink/encoder/nurses/${encodeURIComponent(documentViewerUserId)}/documents`,
+          {method:'POST',body}
+        );
 
         notice(
           payload?.message

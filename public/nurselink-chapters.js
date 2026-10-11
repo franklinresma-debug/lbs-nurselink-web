@@ -19,10 +19,10 @@
     const m=row.membership;
     const active=m?.status==='active', pending=m?.status==='pending';
     return `<article class="ch-card" data-status="${esc(m?.status||'none')}">
-      <div class="ch-main"><span>${esc(label(row.chapter_type))}</span><h2>${esc(row.name)}</h2><p>${esc(row.description||'')}</p><div class="ch-meta">${row.region?`<strong>${esc(row.region)}</strong>`:''}<span>${esc([row.city,row.country].filter(Boolean).join(', ')||'Location not specified')}</span><span>${esc(row.active_member_count)} active member${Number(row.active_member_count)===1?'':'s'}</span>${row.contact_email?`<span>${esc(row.contact_email)}</span>`:''}</div></div>
+      <div class="ch-main"><span>${esc(label(row.chapter_type))}</span><h2>${esc(row.name)}</h2><p>${esc(row.description||'')}</p><div class="ch-meta">${row.region?`<strong>${esc(row.region)}</strong>`:''}<span>${esc([row.city,row.country].filter(Boolean).join(', ')||'Location not specified')}</span><span>${esc(row.active_member_count)} active applicant${Number(row.active_member_count)===1?'':'s'}</span>${row.contact_email?`<span>${esc(row.contact_email)}</span>`:''}</div></div>
       <div class="ch-side">
         ${m?`<span class="ch-status" data-status="${esc(m.status)}">${esc(label(m.status))}</span>`:''}
-        ${active?`<strong>${m.is_primary?'Primary Chapter':'Chapter Member'}</strong><small>${esc(label(m.chapter_role||'member'))}</small><button data-leave="${esc(row.id)}" type="button">Leave Chapter</button>`:
+        ${active?`<strong>${m.is_primary?'Primary Chapter':"Chapter Applicant"}</strong><small>${esc(label(m.chapter_role||'member'))}</small><button data-leave="${esc(row.id)}" type="button">Leave Chapter</button>`:
           pending?`<strong>Request Pending</strong><button data-leave="${esc(row.id)}" type="button">Withdraw Request</button>`:
           row.member_join_enabled?`<button data-join="${esc(row.id)}" type="button">Request to Join</button>`:'<small>Join requests are currently closed.</small>'}
       </div>
@@ -39,7 +39,7 @@
   }
   function bind(){
     list.querySelectorAll('[data-join]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;try{const r=await request(`/api/chapters/${b.dataset.join}/request`,{method:'POST',body:'{}'});show(r?.message||'Chapter request submitted.','success');await load()}catch(e){show(e.message,'error');b.disabled=false}}));
-    list.querySelectorAll('[data-leave]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Withdraw or end this chapter membership?'))return;b.disabled=true;try{const r=await request(`/api/chapters/${b.dataset.leave}/membership`,{method:'DELETE'});show(r?.message||'Chapter membership updated.','success');await load()}catch(e){show(e.message,'error');b.disabled=false}}));
+    list.querySelectorAll('[data-leave]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm("Withdraw or end this chapter applicant registration?"))return;b.disabled=true;try{const r=await request(`/api/chapters/${b.dataset.leave}/membership`,{method:'DELETE'});show(r?.message||"Chapter applicant registration updated.",'success');await load()}catch(e){show(e.message,'error');b.disabled=false}}));
   }
   search.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(load,250)});type.addEventListener('change',load);scope.addEventListener('change',load);refresh.addEventListener('click',load);load();
 })();

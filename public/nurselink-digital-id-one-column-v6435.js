@@ -3,8 +3,8 @@
   if (window.__NL_DIGITAL_ID_ONE_COLUMN_V6435__) return;
   window.__NL_DIGITAL_ID_ONE_COLUMN_V6435__ = true;
 
-  const MEMBER_ID_TEXT = 'Your NurseLink Member ID';
-  const MEMBERSHIP_TEXT = 'Keep your member details current';
+  const MEMBER_ID_TEXT = "Your NurseLink Applicant ID";
+  const MEMBERSHIP_TEXT = "Keep your applicant details current";
 
   function normalizedText(el) {
     return (el?.textContent || '').replace(/\s+/g, ' ').trim();

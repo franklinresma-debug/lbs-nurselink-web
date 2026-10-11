@@ -1,0 +1,11 @@
+lbs-processing{display:block;color:inherit;max-width:100%;overflow-wrap:anywhere}
+lbs-processing header,lbs-processing .lbs-p-actions{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+lbs-processing section{margin:20px 0}lbs-processing details{padding:14px 0;border-bottom:1px solid #8091a455}lbs-processing summary{cursor:pointer;min-height:44px;display:list-item;padding:8px 0;font-weight:600}
+lbs-processing form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+lbs-processing label{display:grid;gap:6px;font-size:14px}lbs-processing input,lbs-processing select,lbs-processing textarea{width:100%;box-sizing:border-box;min-height:44px;padding:10px;border:1px solid #8091a4;border-radius:6px;background:var(--card-bg,#fff);color:var(--text-color,#15243b);font:inherit;font-size:16px}
+lbs-processing textarea{min-height:90px;resize:vertical}lbs-processing button{padding:10px 16px;min-height:44px;border:1px solid #71849b;border-radius:6px;background:#174e77;color:#fff;font:inherit;cursor:pointer}lbs-processing button:disabled{opacity:.6;cursor:wait}
+lbs-processing button:focus-visible,lbs-processing summary:focus-visible,lbs-processing input:focus-visible,lbs-processing select:focus-visible,lbs-processing textarea:focus-visible{outline:3px solid #438fe0;outline-offset:3px}
+lbs-processing article{padding:12px 0;border-bottom:1px solid #8091a433}lbs-processing dl{display:grid;grid-template-columns:minmax(120px,1fr) 3fr;gap:8px}lbs-processing dd{margin:0}lbs-processing dt{font-weight:600}lbs-processing pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}lbs-processing .lbs-p-text{white-space:pre-wrap}lbs-processing .lbs-p-check{display:flex;align-items:center}lbs-processing .lbs-p-check input{width:24px;min-height:24px}
+lbs-processing [data-message]:not(:empty){padding:12px;background:#dcecff;color:#132e4e;border-radius:6px}lbs-processing .lbs-p-case{border-top:2px solid #8091a466;padding-top:20px}
+@media(prefers-color-scheme:dark){lbs-processing input,lbs-processing select,lbs-processing textarea{background:var(--card-bg,#172438);color:var(--text-color,#f1f5fa)}}
+@media(max-width:640px){lbs-processing form{grid-template-columns:1fr}lbs-processing dl{grid-template-columns:1fr}lbs-processing dd{margin-bottom:8px}}

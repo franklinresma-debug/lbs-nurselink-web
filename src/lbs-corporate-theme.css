@@ -23,13 +23,13 @@ html:not([data-theme="dark"]) .member-react-safe-shell-v108 .page {
 
 .member-react-safe-shell-v108 .sidebar,
 .member-react-safe-shell-v108.member-shell-v636 .sidebar {
-  background: linear-gradient(180deg, #88b91d 0%, #6f9813 100%) !important;
-  box-shadow: 8px 0 28px rgba(83, 114, 16, 0.18) !important;
+  background: linear-gradient(180deg, #13518b 0%, #0c477d 52%, #08345f 100%) !important;
+  box-shadow: 8px 0 28px rgba(8, 52, 95, 0.22) !important;
 }
 
 .member-react-safe-shell-v108 .sidebar nav a.active,
 .member-react-safe-shell-v108.member-shell-v636 .sidebar nav a.active {
-  background: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
   box-shadow: inset 3px 0 0 var(--lbs-orange) !important;
 }
 
@@ -53,20 +53,22 @@ html:not([data-theme="dark"]) .member-react-safe-shell-v108 .page {
 
 .member-react-safe-shell-v108 .nurselink-sidebar-brand {
   display: flex !important;
-  flex-direction: column !important;
+  flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
-  text-align: center;
+  gap: 12px !important;
+  padding: 6px 6px 14px !important;
+  text-align: left;
 }
 
 .member-react-safe-shell-v108 .nurselink-sidebar-brand-copy {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  flex: 1 1 auto;
+  align-items: flex-start;
   justify-content: center;
-  text-align: center;
+  text-align: left;
   line-height: 1.15;
 }
 
@@ -91,22 +93,26 @@ html:not([data-theme="dark"]) .member-react-safe-shell-v108 .page {
 }
 
 .member-react-safe-shell-v108 .nurselink-sidebar-logo {
-  width: 100%;
-  min-height: 46px;
-  max-height: 92px;
-  padding: 6px;
-  display: grid;
-  place-items: center;
+  flex: 0 0 62px;
+  width: 62px;
+  min-height: 44px;
+  max-height: 44px;
+  padding: 5px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
   overflow: hidden;
   border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(3, 27, 50, 0.24);
 }
 
 .member-react-safe-shell-v108 .nurselink-sidebar-logo img {
   display: block;
-  width: auto;
+  width: 100%;
   max-width: 100%;
   height: auto;
-  max-height: 80px;
+  max-height: 34px;
   object-fit: contain;
 }
 
@@ -323,14 +329,35 @@ html:not([data-theme="dark"]) .member-react-safe-shell-v108 [class*="-card"] {
   align-items: center;
 }
 
+/* Keep the logo slot in flow so copy, hero height and image crop stay stable.
+   The brand itself is one compact overlay shared by every slider image. */
 .nl713-login-hero-content .nurselink-login-logo img {
+  position: absolute;
+  top: 12px;
+  left: clamp(22px, 4vw, 64px);
+  z-index: 3;
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: min(220px, 45%);
+  max-width: 45%;
   height: auto;
-  max-height: 100%;
+  max-height: 64px;
+  padding: 5px 7px;
+  border: 1px solid rgba(255, 255, 255, .8);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 3px 12px rgba(2, 20, 33, .16);
   object-fit: contain;
-  filter: drop-shadow(0 3px 12px rgba(2, 20, 33, .24));
+  filter: none;
+}
+
+@media (max-width: 780px) {
+  .nl713-login-hero-content .nurselink-login-logo img {
+    top: 8px;
+    left: 22px;
+    width: min(180px, 45%);
+    max-height: 52px;
+    padding: 3px 5px;
+  }
 }
 
 .nl713-login-hero-content .nurselink-login-logo:not([hidden]) + .nl713-login-message {
@@ -690,4 +717,340 @@ html[data-theme="dark"] .member-react-safe-shell-v108 button[class*="primary"] {
   .nl713-login-hero-foot {
     padding-block: 12px;
   }
+}
+
+/* The tablet split layout has less empty sky to the left of the nurses. */
+@media (min-width: 781px) and (max-width: 1050px) {
+  .nl713-login-hero-content .nurselink-login-logo img {
+    top: 8px;
+    left: 12px;
+    width: min(140px, 35%);
+    max-width: 35%;
+    max-height: 44px;
+    padding: 3px 5px;
+  }
+}
+/* LBS_LOGO_TIGHT_FIT_V1 */
+.nl713-login-hero-content .nurselink-login-logo img {
+  width: auto !important;
+  height: 64px !important;
+}
+@media (max-width: 780px) {
+  .nl713-login-hero-content .nurselink-login-logo img {
+    height: 52px !important;
+  }
+}
+@media (min-width: 781px) and (max-width: 1050px) {
+  .nl713-login-hero-content .nurselink-login-logo img {
+    height: 44px !important;
+  }
+}
+
+/* LBS_LOGO_BOX_SETTINGS_V2 */
+.nl713-login-hero-content .nurselink-login-logo img {
+  width: var(--lbs-logo-width, auto) !important;
+  height: 64px !important;
+  padding-left: var(--lbs-logo-padding, 5px) !important;
+  padding-right: var(--lbs-logo-padding, 5px) !important;
+}
+@media (max-width: 780px) {
+  .nl713-login-hero-content .nurselink-login-logo img {
+    width: var(--lbs-logo-width-mobile, auto) !important;
+    height: 52px !important;
+  }
+}
+@media (min-width: 781px) and (max-width: 1050px) {
+  .nl713-login-hero-content .nurselink-login-logo img {
+    width: var(--lbs-logo-width-tablet, auto) !important;
+    height: 44px !important;
+  }
+}
+
+/* LBS_MOBILE_HERO_TOP_GAP_V1 */
+@media (max-width: 780px) {
+  html.nurselink-route-login body #root > main.nl713-login-shell {
+    padding-top: 0 !important;
+  }
+}
+
+/* Login refinement refinements */
+.nl713-login-hero-content .nurselink-login-logo img {padding:2px !important; width:auto !important;}
+.nl713-login-card .nl713-login-card-kicker {margin-bottom:0 !important;}
+.nl713-login-card .nl713-login-card-intro {margin-top:12px !important;margin-bottom:24px !important;}
+
+/* Mobile login layout: unobstructed faces and compact sign-in. */
+@media(max-width:780px){
+ .nl713-login-hero{min-height:0!important;height:auto!important;}
+ .nl713-login-hero-media{height:210px!important;bottom:auto!important;}
+ .nl713-login-hero-content{padding:218px 20px 18px!important;min-height:0!important;}
+ .nl713-login-intro{min-height:0!important;}
+ .nl713-login-hero-content .nurselink-login-logo{height:0!important;margin:0!important;}
+ .nl713-login-hero-content .nl713-login-message{margin:0!important;}
+ .nl713-login-message h1{font-size:28px!important;line-height:1.12!important;margin:0 0 8px!important;}
+ .nl713-login-message>p{font-size:14px!important;line-height:1.4!important;margin:0!important;}
+ .nl713-login-panel{padding:0 12px 20px!important;margin-top:0!important;}
+ .nl713-login-card{padding:18px 20px!important;}
+ .nl713-login-card .nl713-login-card-kicker{font-size:11px!important;padding:5px 12px!important;}
+ .nl713-login-card .nl713-login-card-intro{font-size:14px!important;line-height:1.4!important;margin:8px 0 14px!important;}
+ .nl713-login-form{gap:10px!important;}
+ .nl713-login-field{gap:5px!important;margin:0!important;}
+ .nl713-login-field>span{font-size:14px!important;}
+ .nl713-login-field input{height:44px!important;min-height:44px!important;padding:10px 12px!important;font-size:16px!important;}
+ .nl713-login-forgot{margin:0!important;font-size:14px!important;}
+ .nl713-login-submit{min-height:44px!important;height:44px!important;padding:10px!important;margin:0!important;}
+ .nl713-login-register{margin:14px 0!important;font-size:14px!important;}
+}
+
+@media(max-width:780px){.nl713-login-card{margin-top:0!important}.nl713-login-form{margin-top:0!important}.nl713-login-hero-content .nurselink-login-logo img{z-index:10!important}}
+
+@media(max-width:780px) and (max-height:740px){.nl713-login-hero-media{height:180px!important}.nl713-login-hero-content{padding-top:188px!important}.nl713-login-card{padding-top:14px!important;padding-bottom:14px!important}}
+
+/* Mobile hero: larger photo with copy over its lower edge. */
+@media(max-width:780px){
+ .nl713-login-hero{height:340px!important;min-height:340px!important;}
+ .nl713-login-hero-media{height:100%!important;inset:0!important;}
+ .nl713-login-hero-media::after{background:linear-gradient(180deg,transparent 42%,rgba(3,26,44,.48) 62%,rgba(3,26,44,.94) 100%)!important;}
+ .nl713-login-hero-content{height:100%!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:flex-end!important;padding:0 20px 18px!important;}
+ .nl713-login-intro{width:100%!important;}
+ .nl713-login-message{position:relative;z-index:2;}
+ .nl713-login-message h1{font-size:28px!important;line-height:1.12!important;text-shadow:0 2px 8px rgba(0,0,0,.5)!important;}
+ .nl713-login-message>p{font-size:13px!important;line-height:1.35!important;}
+}
+@media(max-width:780px) and (max-height:740px){
+ .nl713-login-hero{height:320px!important;min-height:320px!important;}
+ .nl713-login-hero-content{padding:0 20px 14px!important;}
+ .nl713-login-card{padding-top:12px!important;}
+ .nl713-login-form{gap:8px!important;}
+}
+
+/* Mobile layout: floating member access card. */
+@media(max-width:780px){.nl713-login-hero{height:364px!important;min-height:364px!important}.nl713-login-hero-content{padding-bottom:42px!important}.nl713-login-card{margin-top:-24px!important;z-index:4!important}}
+@media(max-width:780px) and (max-height:740px){.nl713-login-hero{height:344px!important;min-height:344px!important}.nl713-login-hero-content{padding-bottom:38px!important}}
+
+/* Mobile layout: readable hero copy and balanced logo inset. */
+@media(max-width:780px){
+.nl713-login-hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,#07518b 0%,#07518b 24%,rgba(7,81,139,.88) 38%,rgba(7,81,139,.40) 55%,transparent 76%)}
+.nl713-login-hero-content{position:relative!important;z-index:2!important}
+.nl713-login-hero-content .nurselink-login-logo img{padding:2px!important;border-radius:8px!important;clip-path:inset(3px 7px round 6px)}
+}
+
+/* Place the brand in the welcome group, away from faces. */
+.nl713-login-hero-content .nurselink-login-logo{height:auto!important;margin:0 0 10px!important;width:auto!important}
+.nl713-login-hero-content .nurselink-login-logo img{position:static!important;height:52px!important;max-height:52px!important;max-width:160px!important;width:auto!important}
+.nl713-login-hero-content .nurselink-login-logo:not([hidden]) + .nl713-login-message{margin-top:0!important}
+@media(max-width:780px){.nl713-login-hero{height:418px!important;min-height:418px!important}.nl713-login-hero-content .nurselink-login-logo img{height:44px!important;max-height:44px!important}}
+@media(max-width:780px) and (max-height:740px){.nl713-login-hero{height:398px!important;min-height:398px!important}}
+
+/* Mobile hero aligned to the access card content: 12px gutter + 1px border + 20px inset. */
+@media(max-width:780px){
+ .nl713-login-hero-content{padding-left:33px!important;padding-right:33px!important}
+ .nl713-login-hero-content .nurselink-login-logo img{margin-left:-7px!important}
+}
+
+/* Mobile benefits: centered labels and matching outline icons. */
+.nl-login-benefit-symbol{display:none}
+@media(max-width:780px){
+ .nl713-login-trust-item{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:5px!important;padding:14px 8px!important}
+ .nl713-login-trust-item .nl-login-benefit-symbol{display:block;width:26px;height:26px;flex-shrink:0;color:#1768b0;margin:0 0 3px}
+ .nl713-login-trust-item strong{font-size:14px!important;line-height:1.4!important;margin:0!important}
+ .nl713-login-trust-item span{font-size:14px!important;line-height:1.4!important;margin:0!important}
+}
+
+/* Reserve space for sign-in within the browser's small viewport. */
+@media(max-width:780px){
+ .nl713-login-hero{height:clamp(260px,calc(100svh - 330px - env(safe-area-inset-bottom,0px)),418px)!important;min-height:0!important}
+ .nl713-login-card{padding-top:12px!important}
+ .nl713-login-form{gap:8px!important}
+}
+
+@media(max-width:780px){
+ .nl713-login-intro{display:grid!important;grid-template-columns:90px minmax(0,1fr);column-gap:12px;align-items:center}
+ .nl713-login-message{display:contents!important}
+ .nl713-login-hero-content .nurselink-login-logo{margin:0!important;grid-column:1;grid-row:1}
+ .nl713-login-hero-content .nurselink-login-logo img{width:90px!important;height:auto!important;max-height:52px!important;max-width:90px!important;margin-left:0!important;clip-path:none!important}
+ .nl713-login-message h1{grid-column:2;grid-row:1;font-size:23px!important;line-height:1.15!important;margin:0!important;letter-spacing:-.025em!important}
+ .nl713-login-message>p{grid-column:1 / -1;margin-top:12px!important}
+}
+
+@media(max-width:780px){.nl713-login-hero-content .nurselink-login-logo img{clip-path:inset(2px 4px round 5px)!important;margin-left:-4px!important}}
+
+@media(max-width:780px){
+ .nl713-login-intro{grid-template-columns:126px minmax(0,1fr);column-gap:10px}
+ .nl713-login-hero-content .nurselink-login-logo img{width:130px!important;max-width:130px!important;height:calc(clamp(43.7px,12.19vw,52.9px) + 4px)!important;max-height:calc(clamp(43.7px,12.19vw,52.9px) + 4px)!important;object-fit:contain!important}
+ .nl713-login-message h1{font-size:clamp(19px,5.3vw,23px)!important;line-height:1.15!important}
+}
+
+@media(max-width:780px){
+ .nl713-login-hero-content .nurselink-login-logo{width:122px!important;height:clamp(43.7px,12.19vw,52.9px)!important;overflow:hidden!important;border-radius:5px;background:white;position:relative!important}
+ .nl713-login-hero-content .nurselink-login-logo img{clip-path:none!important;transform:scale(1.18);transform-origin:center;flex-shrink:0;margin-top:-2px!important;padding:0!important}
+}
+
+@media(max-width:780px){
+ .nl713-login-intro{grid-template-columns:122px minmax(0,max-content)!important;justify-content:center!important;column-gap:10px!important}
+ .nl713-login-message h1{text-align:center!important;max-width:180px!important}
+ .nl713-login-message>p{text-align:center!important;width:100%!important;justify-self:center!important}
+ .nl713-login-hero-content .nurselink-login-logo{justify-self:center!important}
+}
+
+@media(max-width:780px){.nl713-login-message h1{text-align:left!important}}
+
+@media(max-width:780px){.nl713-login-intro{width:min(100%,304px)!important;margin-inline:auto!important;grid-template-columns:122px minmax(0,1fr)!important;column-gap:10px!important}.nl713-login-message h1{width:100%!important;max-width:none!important}}
+
+/* NurseLink by LBS: outcome-led member portal introduction. */
+.nl-login-public-brand{display:block;font-size:16px;font-weight:750;letter-spacing:.03em;color:#fff;margin-bottom:10px}
+.nl-login-protected{font-size:13px;line-height:1.5;color:#425a70;text-align:center;margin:14px 0 8px}
+.nl713-login-register{font-size:12px!important;line-height:1.5!important;text-align:center;margin:8px 0 18px!important}
+.nl713-login-trust{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.nl713-login-trust-item{display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;padding:14px 8px!important;gap:6px!important}
+.nl713-login-trust-item .nl-login-benefit-symbol{display:block;width:26px;height:26px;color:#1768b0;flex-shrink:0}
+.nl713-login-trust-item strong{font-size:14px!important;line-height:1.35!important}
+.nl713-login-trust-item span{font-size:13px!important;line-height:1.45!important}
+.nl-login-system-name{font-size:11px;line-height:1.5;color:#52687e;text-align:center;margin:18px 0 12px}
+@media(max-width:780px){
+ .nl713-login-intro{display:flex!important;flex-direction:column!important;width:100%!important;gap:8px!important}
+ .nl713-login-message{display:block!important;text-align:center!important}
+ .nl-login-public-brand{font-size:13px;margin:0 0 6px}
+ .nl713-login-message h1{font-size:clamp(23px,6.2vw,28px)!important;line-height:1.12!important;text-align:center!important;max-width:360px!important;margin:0 auto!important}
+ .nl713-login-message>p{font-size:12px!important;line-height:1.4!important;margin:9px 0 0!important}
+ .nl713-login-hero-content{padding-left:25px!important;padding-right:25px!important}
+ .nl713-login-hero::after{background:linear-gradient(to top,#07518b 0%,#07518b 30%,rgba(7,81,139,.84) 48%,rgba(7,81,139,.25) 70%,transparent 90%)}
+}
+
+.nl713-login-card .nl-login-protected{font-size:13px!important;line-height:1.5!important;margin:14px 0 8px!important}
+.nl713-login-card .nl-login-system-name{font-size:11px!important;line-height:1.5!important;margin:18px 0 12px!important}
+.nl713-login-trust .nl713-login-trust-item{margin:0!important;border-top:1px solid #dbe5ef!important;justify-content:flex-start!important}
+
+/* NurseLink member sidebar: compact, full-height navigation. */
+@media (min-width: 781px) {
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar {
+    padding: 10px 14px !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .logo {
+    gap: 8px !important;
+    min-height: 162px !important;
+    padding: 6px 8px 20px !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .nurselink-sidebar-logo {
+    width: 226px !important;
+    min-width: 226px !important;
+    max-width: 226px !important;
+    height: 84px !important;
+    min-height: 84px !important;
+    max-height: 84px !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border-radius: 10px !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .nurselink-sidebar-logo img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .nurselink-sidebar-brand-copy strong {
+    font-size: 18px !important;
+    line-height: 1.05 !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .nurselink-sidebar-brand-copy small {
+    margin-top: 2px !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav {
+    gap: 0 !important;
+    margin-top: 4px !important;
+    padding-bottom: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > a {
+    flex: 1 1 0 !important;
+    min-height: 20px !important;
+    padding: 1px 12px 1px 24px !important;
+    gap: 7px !important;
+    font-size: clamp(11px, 1.7vh, 13px) !important;
+    line-height: 16px !important;
+    border-radius: 8px !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > a .member-admin-nav-label {
+    font-size: inherit !important;
+    line-height: 16px !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > nav > .nl-member-nav-group {
+    height: 19px !important;
+    min-height: 19px !important;
+    margin: 2px 0 0 !important;
+    padding: 3px 12px 1px !important;
+    font-size: 9px !important;
+    line-height: 14px !important;
+    letter-spacing: .13em !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom {
+    gap: 4px !important;
+    margin-top: 4px !important;
+    padding-top: 0 !important;
+  }
+
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom > a,
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar > .sidebar-bottom > button,
+  html body .app-shell.member-shell-v636:not(#nl-spacing-override):not(#nl-spacing-priority) .sidebar button.sidebar-logout {
+    box-sizing: border-box !important;
+    min-height: 30px !important;
+    height: 30px !important;
+    max-height: 30px !important;
+    margin: 0 !important;
+    padding: 3px 10px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    border-radius: 999px !important;
+  }
+}
+
+@media(min-width:781px){.nl713-login-hero{position:relative}.nl713-login-hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(90deg,rgba(4,39,67,.88),rgba(4,39,67,.65) 55%,rgba(4,39,67,.18))}.nl713-login-hero-content{position:relative;z-index:2}}
+
+.nl713-login-card .nl-login-protected{font-size:13px!important;line-height:1.5!important;margin:14px 0 8px!important}
+.nl713-login-card .nl-login-system-name{font-size:11px!important;line-height:1.5!important;margin:18px 0 12px!important}
+.nl713-login-trust .nl713-login-trust-item{margin:0!important;border-top:1px solid #dbe5ef!important;justify-content:flex-start!important}
+
+/* Desktop member login: prominent LBS corporate logo. */
+@media(min-width:781px){
+ .nl713-login-hero-content .nurselink-login-logo{width:224px!important;height:auto!important;margin:0 0 18px!important;overflow:visible!important}
+ .nl713-login-hero-content .nurselink-login-logo img{width:224px!important;max-width:224px!important;height:auto!important;max-height:100px!important;object-fit:contain!important;transform:none!important;clip-path:none!important;margin:0!important}
+}
+
+/* Desktop member login: prominent LBS corporate logo. */
+@media(min-width:781px){
+ .nl713-login-hero-content .nurselink-login-logo{width:340px!important;height:auto!important;margin:0 0 18px!important;overflow:visible!important}
+ .nl713-login-hero-content .nurselink-login-logo img{width:340px!important;max-width:340px!important;height:auto!important;max-height:150px!important;object-fit:contain!important;transform:none!important;clip-path:none!important;margin:0!important}
+}
+
+/* Desktop hero fills the image column; logo uses its own rounded artwork. */
+@media(min-width:781px){
+ .nl713-login-hero-media{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;aspect-ratio:auto!important}
+ .nl713-login-hero-media picture,.nl713-login-hero-media img{height:100%!important;width:100%!important}
+ .nl713-login-hero-content .nurselink-login-logo,.nl713-login-hero-content .nurselink-login-logo img{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+}
+
+/* Desktop member card overlaps the hero edge. */
+@media(min-width:1100px){
+ .nl713-login-shell{grid-template-columns:minmax(0,64%) minmax(0,36%)!important;isolation:isolate}
+ .nl713-login-hero{grid-column:1;grid-row:1}
+ .nl713-login-panel{grid-column:2;grid-row:1;position:relative;z-index:5;margin-left:-96px!important;padding:64px 40px 64px 0!important;justify-content:flex-start!important;background:transparent!important;border:0!important}
+ .nl713-login-card{width:100%!important;max-width:520px!important;box-shadow:0 24px 70px rgba(4,30,52,.24)!important}
+ .nl713-login-message h1,.nl713-login-message>p{max-width:min(520px,calc(100% - 96px))!important}
 }

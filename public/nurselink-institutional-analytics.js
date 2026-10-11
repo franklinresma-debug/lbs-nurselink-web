@@ -198,7 +198,7 @@
 
       <div class="privacy">
         Aggregate analytics only. Candidate identities, contact information,
-        addresses, credentials, uploaded documents, enterprise member identities
+        addresses, credentials, uploaded documents, enterprise applicant identities
         and enterprise internal notes are excluded.
       </div>
     `;

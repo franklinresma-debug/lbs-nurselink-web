@@ -541,7 +541,7 @@
             <small>
               ${
                 row.member_number
-                  ? `Member ${esc(row.member_number)}`
+                  ? `Applicant ${esc(row.member_number)}`
                   : 'Applicant record'
               }
               · expires ${esc(formatDate(row.expires_at))}

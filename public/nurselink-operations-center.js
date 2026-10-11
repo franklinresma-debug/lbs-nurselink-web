@@ -159,11 +159,11 @@
       </section>
 
       <section class="panel" style="margin-top:14px">
-        <div class="panel-head"><h2>Incident Register</h2><span class="muted">Operational incidents only. Do not enter member personal data.</span></div>
+        <div class="panel-head"><h2>Incident Register</h2><span class="muted">Operational incidents only. Do not enter applicant personal data.</span></div>
         <form id="incidentForm" class="incident-form">
           <select name="severity"><option value="warning">Warning</option><option value="critical">Critical</option><option value="info">Info</option></select>
           <input name="title" maxlength="160" required placeholder="Incident title">
-          <textarea name="description" maxlength="2000" placeholder="Operational description. Do not include member personal data."></textarea>
+          <textarea name="description" maxlength="2000" placeholder="Operational description. Do not include applicant personal data."></textarea>
           <button class="primary" type="submit">Record Incident</button>
         </form>
         ${incidentRows ? `<div class="table-wrap"><table class="ops-table"><thead><tr><th>Incident</th><th>Status</th><th>Opened</th><th>Action</th></tr></thead><tbody>${incidentRows}</tbody></table></div>` : '<div class="empty">No incidents recorded.</div>'}

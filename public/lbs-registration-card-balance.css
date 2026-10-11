@@ -1,0 +1,33 @@
+/* Keep the Smart Registration upload and guidance cards in one balanced row. */
+@layer lbs-uiux-release {
+  .app-shell.lbs-uiux .content-grid:has(> .upload-panel):has(.smart-steps) {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    align-items: stretch !important;
+  }
+  .app-shell.lbs-uiux .content-grid:has(> .upload-panel):has(.smart-steps) > .panel {
+    margin: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    align-self: stretch !important;
+    box-sizing: border-box !important;
+    padding: 24px !important;
+  }
+  .app-shell.lbs-uiux .content-grid:has(> .upload-panel):has(.smart-steps) > .panel h2 {
+    margin: 0 0 18px !important;
+    font-size: 24px !important;
+    line-height: 1.3 !important;
+    overflow-wrap: anywhere !important;
+  }
+  @media (max-width: 900px) {
+    .app-shell.lbs-uiux .content-grid:has(> .upload-panel):has(.smart-steps) {
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 16px !important;
+    }
+    .app-shell.lbs-uiux .content-grid:has(> .upload-panel):has(.smart-steps) > .panel {
+      padding: 20px !important;
+    }
+  }
+}

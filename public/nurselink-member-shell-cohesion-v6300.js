@@ -100,7 +100,7 @@
     ['Credentials','/credentials'],
     ['Qualifications','/qualifications'],
     ['Documents','/documents'],
-    ['Digital Member ID','/nurselink-digital-id.html'],
+    ["Digital Applicant ID",'/nurselink-digital-id.html'],
     ['Messages','/messages'],
     ['Events','/events'],
     ['Programs & Initiatives','/initiatives'],

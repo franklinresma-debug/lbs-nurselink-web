@@ -117,7 +117,7 @@
   }
 
   function render(data) {
-    document.title = `${data.member_name || 'NurseLink Member'} · NurseLink`;
+    document.title = `${data.member_name || "NurseLink Applicant"} · NurseLink`;
 
     root.innerHTML = `
       <header class="profile-hero">
@@ -134,15 +134,15 @@
           </div>
 
           <div class="identity">
-            <span>VERIFIED NURSELINK MEMBER</span>
-            <h1>${esc(data.member_name || 'NurseLink Member')}</h1>
+            <span>VERIFIED NURSELINK APPLICANT</span>
+            <h1>${esc(data.member_name || "NurseLink Applicant")}</h1>
             ${data.headline ? `<p>${esc(data.headline)}</p>` : ''}
             ${data.membership.member_number ? `<strong>${esc(data.membership.member_number)}</strong>` : ''}
           </div>
 
           <div class="verified">
             <div>✓</div>
-            <strong>Membership Verified</strong>
+            <strong>Applicant registration Verified</strong>
             <small>Approved ${esc(fmt(data.membership.approved_at))}</small>
           </div>
         </div>

@@ -1,0 +1,16 @@
+/* ARMS demo lineup, scoped to the existing administration Employment panel. */
+#armsLineupCard { margin-bottom: 1.25rem; min-width: 0; }
+#armsApplicantLineup { padding: 0 1rem 1rem; }
+#armsApplicantLineup .arms-warning { border-left: 4px solid #b7791f; padding: .8rem; background: rgba(183,121,31,.12); line-height: 1.5; }
+#armsApplicantLineup .arms-controls { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; }
+#armsApplicantLineup label { display: grid; gap: .35rem; }
+#armsApplicantLineup input, #armsApplicantLineup select { min-height: 42px; max-width: 100%; }
+#armsApplicantLineup .arms-table-scroll { overflow-x: auto; max-width: 100%; border: 1px solid #8195a855; border-radius: .5rem; }
+#armsApplicantLineup .arms-table { width: 100%; min-width: 1260px; border-collapse: collapse; font-size: .875rem; }
+#armsApplicantLineup caption { text-align: left; padding: .8rem; font-weight: 700; }
+#armsApplicantLineup th, #armsApplicantLineup td { text-align: left; vertical-align: top; padding: .85rem; border-bottom: 1px solid #8195a855; line-height: 1.45; }
+#armsApplicantLineup thead th { background: rgba(100,130,150,.12); }
+#armsApplicantLineup small { display: block; margin-top: .3rem; font-weight: normal; }
+#armsApplicantLineup button { min-height: 42px; }
+#armsApplicantLineup :focus-visible { outline: 3px solid #2d9dce; outline-offset: 3px; }
+@media (max-width: 600px) { #armsApplicantLineup .arms-controls > * { width: 100%; } }

@@ -12,19 +12,19 @@
     ['Authentication','Sign out and confirm protected data no longer loads.'],
     ['Applicant Journey','Complete Step 1 Personal Information.'],
     ['Applicant Journey','Complete Step 2 Professional Information.'],
-    ['Applicant Journey','Create a Step 3 credential while membership is pending.'],
+    ['Applicant Journey',"Create a Step 3 credential while applicant registration is pending."],
     ['Applicant Journey','Confirm applicant cannot self-verify a credential.'],
     ['Applicant Journey','Complete Step 4 Employment / OFW History.'],
     ['Applicant Journey','Upload Step 5 documents and refresh missing information.'],
-    ['Applicant Journey','Review Step 6 and submit the membership application.'],
+    ['Applicant Journey',"Review Step 6 and submit the applicant registration application."],
     ['Reviewer','Reviewer Center loads summary, credentials and applications.'],
     ['Reviewer','Reviewer verifies a credential and audit record is created.'],
-    ['Reviewer','Reviewer requests additional membership information.'],
-    ['Reviewer','Admin approves a ready membership application.'],
-    ['Approved Member','Permanent member number is displayed after approval.'],
-    ['Approved Member','Digital Member ID displays the member profile photo.'],
-    ['Approved Member','Digital Member ID QR opens public verification.'],
-    ['Approved Member','Portfolio, Career, Learning, Jobs and Applications unlock.'],
+    ['Reviewer',"Reviewer requests additional applicant registration information."],
+    ['Reviewer',"Admin approves a ready applicant registration application."],
+    ["Approved Applicant","Permanent applicant number is displayed after approval."],
+    ["Approved Applicant","Digital Applicant ID displays the applicant profile photo."],
+    ["Approved Applicant","Digital Applicant ID QR opens public verification."],
+    ["Approved Applicant",'Portfolio, Career, Learning, Jobs and Applications unlock.'],
     ['Jobs','Save and unsave a verified job.'],
     ['Jobs','Submit a job application and view it in Applications.'],
     ['Partner','Verified partner opens Partner Portal without auth errors.'],
@@ -34,7 +34,7 @@
     ['Analytics','Partner analytics loads and exports CSV.'],
     ['Analytics','Institutional Analytics opens for authorized staff.'],
     ['Public Privacy','Public profile exposes no credential number/contact data.'],
-    ['Public Privacy','Invalid verification code exposes no member information.'],
+    ['Public Privacy',"Invalid verification code exposes no applicant information."],
     ['Responsive','Applicant portal works at mobile width without overflow.'],
     ['Responsive','Partner and Reviewer portals work on mobile/tablet widths.'],
     ['Operations','Run rollback drill on staging or a backup copy.'],
@@ -99,7 +99,7 @@
           ['Critical Blockers',data.summary?.critical_blockers ?? 0],
           ['Warnings',data.summary?.warnings ?? 0],
           ['Active Reviewers',data.counts?.active_reviewers ?? '—'],
-          ['Approved Members',data.counts?.approved_memberships ?? '—'],
+          ["Approved Applicants",data.counts?.approved_memberships ?? '—'],
           ['Verified Partners',data.counts?.verified_partner_organizations ?? '—']
         ].map(([a,b])=>`<article><span>${esc(a)}</span><strong>${esc(b)}</strong></article>`).join('')}
       </div>
@@ -170,7 +170,7 @@
   }
 
   async function boot() {
-    root.innerHTML='<section class="loading"><div class="spinner"></div><strong>Running production readiness checks…</strong><small>No secrets or personal member data are included.</small></section>';
+    root.innerHTML="<section class=\"loading\"><div class=\"spinner\"></div><strong>Running production readiness checks…</strong><small>No secrets or personal applicant data are included.</small></section>";
     try { render(await requestReadiness()); }
     catch (error) {
       root.innerHTML=`<section class="error"><div>NL</div><strong>Production Readiness Access Required</strong><p>${esc(error.message)}</p><a href="/login?return=%2Fnurselink-production-readiness.html">Sign in</a></section>`;

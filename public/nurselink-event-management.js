@@ -66,7 +66,7 @@
     const b=await request('/api/nurselink/admin/chapters');
     chapters=Array.isArray(b?.data)?b.data:[];
     $('eventChapter').innerHTML=
-      '<option value="">All NurseLink members</option>'+
+      "<option value=\"\">All NurseLink applicants</option>"+
       chapters
         .filter(c=>c.status==='active')
         .map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`)

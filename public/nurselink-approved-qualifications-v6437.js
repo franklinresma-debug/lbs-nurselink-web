@@ -10,7 +10,7 @@
   function identity(){
     const chip=document.querySelector('.user-chip,.nurselink-super-admin-user');
     return {
-      name:chip?.querySelector('strong')?.textContent?.trim()||'NurseLink Member',
+      name:chip?.querySelector('strong')?.textContent?.trim()||"NurseLink Applicant",
       memberNumber:chip?.querySelector('small')?.textContent?.trim()||'',
       img:chip?.querySelector('img')?.getAttribute('src')||''
     };
@@ -38,7 +38,7 @@
       <div class="nl6437-hero">
         <div class="nl6437-person">
           ${u.img?`<img src="${esc(u.img)}" alt="">`:`<div class="nl6437-avatar">NL</div>`}
-          <div><span>MEMBER</span><strong>${esc(data.member_number||u.memberNumber||'—')}</strong>
+          <div><span>APPLICANT</span><strong>${esc(data.member_number||u.memberNumber||'—')}</strong>
           <h2>${esc(u.name)}</h2><p>${esc(q.professional_role||'Registered Nurse')}</p></div>
         </div>
         <div class="nl6437-score"><span>Professional Readiness</span><strong>${score}<small>/100</small></strong><em>${esc(q.nurselink_reference_band||'Needs Review')}</em></div>

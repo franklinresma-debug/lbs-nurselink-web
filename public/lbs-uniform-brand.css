@@ -1,0 +1,56 @@
+/* Shared LBS logo dimensions. Loaded first so important layer rules have priority. */
+@layer lbs-brand-uniform {
+  :root { --lbs-brand-width:226px; --lbs-brand-height:84px; }
+  :is(.nurselink-sidebar-logo,.nl-admin-sidebar .nl-admin-brand-mark,.nl541-session-gate-brand):has(img) {
+    width:var(--lbs-brand-width)!important;min-width:0!important;max-width:100%!important;
+    height:var(--lbs-brand-height)!important;min-height:var(--lbs-brand-height)!important;max-height:var(--lbs-brand-height)!important;
+    box-sizing:border-box!important;padding:4px!important;margin-inline:auto!important;
+    background:#fff!important;border:0!important;border-radius:10px!important;
+    overflow:hidden!important;box-shadow:none!important;flex:0 0 auto!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+  }
+  :is(.nurselink-sidebar-logo,.nl-admin-sidebar .nl-admin-brand-mark,.nl541-session-gate-brand) img {
+    display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+    object-fit:contain!important;object-position:center!important;transform:none!important;filter:none!important;
+    padding:0!important;margin:0!important;border-radius:0!important;
+  }
+  :is(.sidebar .logo.nurselink-sidebar-brand,.nl-admin-sidebar-brand.nl530-brand) {
+    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+    text-align:center!important;gap:8px!important;padding:12px 0 20px!important;min-height:156px!important;box-sizing:border-box!important;
+  }
+  :is(.nurselink-sidebar-brand-copy,.nl530-brand>div:last-of-type) {
+    width:100%!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;
+  }
+  :is(.nurselink-sidebar-brand-copy,.nl530-brand) strong {
+    font-size:22px!important;line-height:1.15!important;font-weight:800!important;letter-spacing:0!important;margin:0!important;color:#fff!important;
+  }
+  :is(.nurselink-sidebar-brand-copy,.nl530-brand) small {
+    font-size:11px!important;line-height:1.35!important;font-weight:600!important;letter-spacing:0!important;margin:4px 0 0!important;color:#e8f4ff!important;
+  }
+  #nurselink .nl-lbs-logo {
+    width:var(--lbs-brand-width)!important;height:var(--lbs-brand-height)!important;max-width:100%!important;max-height:none!important;
+    object-fit:contain!important;object-position:center!important;transform:none!important;
+    padding:4px!important;border-radius:10px!important;background:#fff!important;box-shadow:none!important;box-sizing:border-box!important;
+  }
+  .nl555-mobile-brand>b:has(img) {
+    width:113px!important;min-width:0!important;height:42px!important;padding:2px!important;
+    border-radius:5px!important;background:#fff!important;box-sizing:border-box!important;overflow:hidden!important;
+  }
+  .nl555-mobile-brand>b img {width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important;}
+  @media(max-width:760px){#nurselink .nl-lbs-logo{width:113px!important;height:42px!important;padding:2px!important;border-radius:5px!important;}}
+}
+
+
+/* LBS NurseLink: 1920 x 1080 desktop reference, with natural document scrolling. */
+@layer lbs-brand-uniform {
+  @media screen and (min-width:951px) {
+    #nurselink,
+    .app-shell.lbs-uiux,
+    body.lbs-admin-uiux .nl-admin-shell {
+      width:100%!important;
+      max-width:1920px!important;
+      margin-inline:auto!important;
+      box-sizing:border-box!important;
+    }
+  }
+}

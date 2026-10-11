@@ -19,7 +19,7 @@
 
   function getChipIdentity() {
     const chip = document.querySelector('.user-chip, .nurselink-super-admin-user');
-    const name = chip?.querySelector('strong')?.textContent?.trim() || 'NurseLink Member';
+    const name = chip?.querySelector('strong')?.textContent?.trim() || "NurseLink Applicant";
     const memberNumber = chip?.querySelector('small')?.textContent?.trim() || '';
     const img = chip?.querySelector('img')?.getAttribute('src') || '';
     return {name, memberNumber, img};
@@ -67,7 +67,7 @@
 
     return `
       <section class="nl6438-page">
-        <div class="nl6438-breadcrumb">Home <span>›</span> Members <span>›</span> My Profile <span>›</span> Qualifications</div>
+        <div class="nl6438-breadcrumb">Home <span>›</span> Applicants <span>›</span> My Profile <span>›</span> Qualifications</div>
 
         <div class="nl6438-page-head">
           <div>
@@ -83,14 +83,14 @@
               ? `<img class="nl6438-avatar" src="${esc(identity.img)}" alt="">`
               : `<div class="nl6438-avatar nl6438-avatar-fallback">NL</div>`}
             <div class="nl6438-member-copy">
-              <span class="nl6438-member-badge">MEMBER</span>
-              <div class="nl6438-member-number">${esc(memberNumber)} <button type="button" title="Copy member number" aria-label="Copy member number" data-copy="${esc(memberNumber)}">⧉</button></div>
+              <span class="nl6438-member-badge">APPLICANT</span>
+              <div class="nl6438-member-number">${esc(memberNumber)} <button type="button" title="Copy applicant number" aria-label="Copy applicant number" data-copy="${esc(memberNumber)}">⧉</button></div>
               <h2>${esc(identity.name)}</h2>
               <p>${esc(currentRole)}</p>
               <div class="nl6438-identity-meta">
                 ${pill('✓ ' + verifiedText, 'verified')}
                 <span>⌖ Philippines</span>
-                <span>✉ Member Account</span>
+                <span>✉ Applicant Account</span>
                 <span>▣ NurseLink</span>
               </div>
             </div>
@@ -103,7 +103,7 @@
           </div>
         </section>
 
-        <nav class="nl6438-tabs" aria-label="Member profile sections">
+        <nav class="nl6438-tabs" aria-label="Applicant profile sections">
           <span>▣ Overview</span>
           <strong>◇ Qualifications</strong>
           <span>♢ Certificates</span>

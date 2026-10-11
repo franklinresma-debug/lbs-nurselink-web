@@ -1,0 +1,4 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+const dir=path.resolve('dist/assets'),assets=fs.readdirSync(dir).filter(n=>/\.(js|css|woff2?)$/.test(n)).map(n=>'/assets/'+n);if(fs.existsSync('dist/nurselink-context-icons.js'))assets.push('/nurselink-context-icons.js');fs.writeFileSync('dist/nurselink-offline-assets.json',JSON.stringify(assets));
+const hash=crypto.createHash('sha256').update(JSON.stringify(assets)).digest('hex').slice(0,12);let worker=fs.readFileSync('public/nurselink-offline-sw.js','utf8').replace(/nurselink-registration-shell-[^']+';/,'nurselink-registration-shell-'+hash+"';");fs.writeFileSync('public/nurselink-offline-sw.js',worker);fs.writeFileSync('dist/nurselink-offline-sw.js',worker);console.log('Offline public shell manifest generated');
+

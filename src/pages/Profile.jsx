@@ -190,7 +190,7 @@ export default function Profile() {
         setMember(updatedMember)
       } else {
         if (!application?.id) {
-          throw new Error('Unable to resolve your membership application.')
+          throw new Error("Unable to resolve your applicant registration application.")
         }
 
         const updated = await updateApplicationProfile(
@@ -245,14 +245,14 @@ export default function Profile() {
       <div className="page-header">
         <div>
           <div className="eyebrow">
-            Membership Application
+            Applicant registration Application
           </div>
 
           <h1>My Profile</h1>
 
           <p>
             {member
-              ? 'Keep your NurseLink member profile current.'
+              ? "Keep your NurseLink applicant profile current."
               : 'Complete your personal and professional information for your NurseLink application.'}
           </p>
         </div>

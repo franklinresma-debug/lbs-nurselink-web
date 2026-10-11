@@ -15,3 +15,21 @@ html[data-theme="dark"] .nld-dashboard{--nld-surface:#172a3d;--nld-bg:#102133;--
 @media(max-width:600px){.app-shell .main-area>.nld-dashboard{width:calc(100% - 28px)!important;padding-top:20px!important}.nld-heading{display:grid;grid-template-columns:1fr;gap:12px}.nld-heading>.nld-outline{justify-self:start}.app-shell .nld-dashboard .nld-heading h1{font-size:26px!important;line-height:1.25!important}}
 
 .nld-applicant-facts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}.nld-applicant-facts>div{display:grid;gap:5px}.nld-applicant-facts span,.nld-applicant-facts small{color:var(--nld-muted,#64748b)}.nld-arms details{border-top:1px solid #dce5ed;padding:16px 0;margin-top:14px}.nld-arms summary{cursor:pointer;font-weight:700;min-height:28px}.nld-arms h3{margin-top:20px}@media(max-width:600px){.nld-applicant-facts{grid-template-columns:1fr}}
+
+/* Compact LBS service queue on the applicant home page. */
+.nld-dashboard .nld-queue{border-top:4px solid #84b728!important}
+.nld-queue-heading{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.nld-queue-heading img{width:125px;height:54px;object-fit:contain;background:white;border-radius:6px;padding:4px}
+.nld-queue-heading h2{margin:3px 0 0}
+.nld-queue-tickets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px}
+.nld-queue-tickets article{display:flex;flex-direction:column;gap:7px;padding:18px;border:1px solid var(--lbs-line,#dbe3e9);border-left:4px solid #075da6;border-radius:10px;min-width:0;overflow-wrap:anywhere}
+.nld-queue-tickets strong{font-size:32px;line-height:1.15;color:var(--lbs-ink,#173247)}
+.nld-queue-tickets span{font-size:15px;font-weight:650}
+.nld-queue-tickets small{font-size:13px;color:var(--lbs-muted,#526678)}
+.nld-queue-updated{font-size:12px;color:var(--lbs-muted,#526678);margin:14px 0}
+.nld-queue-links{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:16px}
+.nld-queue-links>a{font-size:13px;font-weight:650;color:var(--lbs-green,#17613e)}
+@layer lbs-uiux-release {
+ .app-shell.lbs-uiux .nld-dashboard .nld-queue{width:100%!important;max-width:none!important;margin-inline:0!important;border-top:4px solid #84b728!important}
+ .app-shell.lbs-uiux .nld-dashboard .nld-queue-tickets article{border-left:4px solid #075da6!important}
+}

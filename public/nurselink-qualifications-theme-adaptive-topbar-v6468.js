@@ -91,7 +91,7 @@
     const menu = findControl(bar, ['menu','navigation','sidebar']);
     const theme = findControl(bar, ['theme','dark mode','light mode','appearance']);
     const notif = findControl(bar, ['notification','notifications','bell','alerts']);
-    let profile = findControl(bar, ['profile','my account','account','member profile','user']);
+    let profile = findControl(bar, ['profile','my account','account',"applicant profile",'user']);
 
     // Fallback profile: avatar/image-bearing clickable control that is not menu/theme/notification.
     if (!profile) {

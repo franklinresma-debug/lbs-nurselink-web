@@ -8,7 +8,7 @@ window.NurseLinkPortalConfig = Object.freeze({
   }),
   adminTabs: Object.freeze([
     ['dashboard', 'Dashboard'],
-    ['members', 'Members'],
+    ['members', "Applicants"],
     ['applications', 'Applications'],
     ['verification', 'Verification'],
     ['organizations', 'Organizations'],

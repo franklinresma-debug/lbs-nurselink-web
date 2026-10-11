@@ -122,11 +122,11 @@
   function recordsPanel(label,records,renderer,description){
     return `<section class="nl6441-inline-panel" data-tab-panel="${esc(label)}">
       <div class="nl6441-inline-head">
-        <div><div class="eyebrow">Member Professional Profile</div><h2>${esc(label)}</h2><p>${esc(description)}</p></div>
+        <div><div class="eyebrow">Applicant Professional Profile</div><h2>${esc(label)}</h2><p>${esc(description)}</p></div>
         <div class="nl6441-count"><strong>${records.length}</strong><span>record${records.length===1?'':'s'}</span></div>
       </div>
       <div class="nl6441-record-list">
-        ${records.length?records.map(renderer).join(''):empty(`No ${label.toLowerCase()} recorded yet`,`Records will appear here automatically when they are added to this member's NurseLink profile.`)}
+        ${records.length?records.map(renderer).join(''):empty(`No ${label.toLowerCase()} recorded yet`,`Records will appear here automatically when they are added to this applicant's NurseLink profile.`)}
       </div>
     </section>`;
   }
@@ -141,7 +141,7 @@
       ['Documents',data.documents?.length||0],
     ];
     return `<section class="nl6441-inline-panel">
-      <div class="nl6441-inline-head"><div><div class="eyebrow">Professional Profile</div><h2>Overview</h2><p>A summary of the records currently stored in this member's NurseLink profile.</p></div></div>
+      <div class="nl6441-inline-head"><div><div class="eyebrow">Professional Profile</div><h2>Overview</h2><p>A summary of the records currently stored in this applicant's NurseLink profile.</p></div></div>
       <div class="nl6441-overview-grid">
         ${sections.map(([name,count])=>`<button type="button" data-open-tab="${name}"><span>${icon(name)}</span><strong>${count}</strong><small>${name}</small></button>`).join('')}
       </div>
@@ -151,12 +151,12 @@
   function panelFor(label){
     const d=STATE.data||{};
     if(label==='Overview')return overviewPanel(d);
-    if(label==='Certificates')return recordsPanel('Certificates',d.certificates||[],certificateCard,'Professional certificates and certifications recorded for this member.');
+    if(label==='Certificates')return recordsPanel('Certificates',d.certificates||[],certificateCard,"Professional certificates and certifications recorded for this applicant.");
     if(label==='Portfolio')return recordsPanel('Portfolio',d.portfolio||[],portfolioCard,'Projects, leadership work, professional contributions and portfolio evidence.');
     if(label==='Experience')return recordsPanel('Experience',d.experience||[],experienceCard,'Employment and professional nursing experience.');
     if(label==='Licenses')return recordsPanel('Licenses',d.licenses||[],licenseCard,'Professional licenses and registration records.');
     if(label==='Education')return recordsPanel('Education',d.education||[],educationCard,'Academic qualifications and educational background.');
-    if(label==='Documents')return recordsPanel('Documents',d.documents||[],documentCard,'Professional documents stored in this member profile.');
+    if(label==='Documents')return recordsPanel('Documents',d.documents||[],documentCard,"Professional documents stored in this applicant profile.");
     return '';
   }
 

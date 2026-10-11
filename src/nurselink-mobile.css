@@ -12348,3 +12348,36 @@ html.nurselink-public-register .nurselink-auth-hero-inner {
     padding: 2px 8px !important;
   }
 }
+
+/* LBS NurseLink registration desktop canvas and accessible hero controls. */
+@layer lbs-brand-uniform {
+ .nurselink-auth-register .nurselink-registration-hero-slider {
+   mask-image:linear-gradient(to right,transparent 0%,#000 16%,#000 82%,transparent 100%),linear-gradient(to bottom,#000 0%,#000 70%,transparent 100%)!important;
+   -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 16%,#000 82%,transparent 100%),linear-gradient(to bottom,#000 0%,#000 70%,transparent 100%)!important;
+ }
+ .nurselink-auth-register .nurselink-registration-hero-slider {mask-composite:intersect!important;-webkit-mask-composite:source-in!important;}
+ .nurselink-auth-register .lbs-registration-slider-controls {
+   position:absolute!important;bottom:24px!important;left:50%!important;transform:translateX(-50%)!important;
+   z-index:20!important;display:flex!important;align-items:center!important;gap:8px!important;
+   padding:8px!important;border-radius:16px!important;background:rgba(8,42,72,.9)!important;max-width:calc(100% - 24px)!important;
+ }
+ .nurselink-auth-register .lbs-registration-slider-controls .nurselink-registration-hero-dots {
+   position:static!important;transform:none!important;display:flex!important;gap:2px!important;align-items:center!important;margin:0!important;
+ }
+ .nurselink-auth-register .lbs-registration-slider-controls button {
+   min-width:32px!important;min-height:44px!important;width:auto!important;height:44px!important;padding:4px!important;
+   border:0!important;background:transparent!important;color:white!important;cursor:pointer!important;box-shadow:none!important;
+ }
+ .nurselink-auth-register .lbs-registration-slider-controls button:focus-visible {outline:3px solid #f59221!important;outline-offset:1px!important;}
+ .nurselink-auth-register .lbs-registration-slider-controls .nurselink-registration-hero-dot {border-radius:8px!important;}
+ .nurselink-auth-register .lbs-registration-slider-controls .nurselink-registration-hero-dot::after {content:'';display:block;width:8px;height:8px;border-radius:50%;background:#fff;opacity:.45;margin:auto;}
+ .nurselink-auth-register .lbs-registration-slider-controls .nurselink-registration-hero-dot.is-active::after {opacity:1;background:#f59221;}
+ @media(min-width:951px) {
+  .nurselink-auth-layout.nurselink-auth-register {width:min(100%,1920px)!important;max-width:1920px!important;height:min(100dvh,1080px)!important;min-height:0!important;max-height:1080px!important;margin:auto!important;inset:0!important;}
+  .nurselink-auth-register :is(.nurselink-auth-hero,.nurselink-auth-panel-wrap) {min-height:100%!important;}
+ }
+ @media(max-width:420px) {
+  .nurselink-auth-register .lbs-registration-slider-controls {gap:2px!important;padding:4px!important;}
+  .nurselink-auth-register .lbs-registration-slider-controls button {min-width:26px!important;}
+ }
+}

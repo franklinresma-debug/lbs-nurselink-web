@@ -31,3 +31,5 @@ fs.writeFileSync(path.join(dist, 'register-social.html'), register);
 fs.writeFileSync(path.join(dist, 'login-social.html'), login);
 
 console.log('SUCCESS: social route HTML files generated.');
+
+await import('./generate-offline-assets.mjs');

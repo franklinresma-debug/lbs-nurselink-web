@@ -84,7 +84,7 @@
 
     if (holder.tagName === 'IMG') {
       if (holder.getAttribute('src') !== src) holder.setAttribute('src',src);
-      holder.alt = 'Member profile photo';
+      holder.alt = "Applicant profile photo";
       holder.classList.remove('nl6439-avatar-fallback');
       return true;
     }
@@ -92,7 +92,7 @@
     const img = document.createElement('img');
     img.className = 'nl6439-avatar nl6440-profile-photo';
     img.src = src;
-    img.alt = 'Member profile photo';
+    img.alt = "Applicant profile photo";
     holder.replaceWith(img);
     return true;
   }
@@ -162,7 +162,7 @@
         const old=btn.textContent;
         btn.textContent='✓';
         btn.title='Copied';
-        setTimeout(()=>{btn.textContent=old;btn.title='Copy member number';},1000);
+        setTimeout(()=>{btn.textContent=old;btn.title="Copy applicant number";},1000);
       } catch (_) {
         const input=document.createElement('textarea');
         input.value=value;
@@ -174,7 +174,7 @@
         input.remove();
       }
     });
-    btn.title='Copy member number';
+    btn.title="Copy applicant number";
     btn.dataset.nl6440Ready='1';
   }
 

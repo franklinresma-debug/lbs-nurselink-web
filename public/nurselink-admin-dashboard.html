@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="/lbs-uniform-brand.css?v=20260930-2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
@@ -60,8 +61,8 @@
     <nav id="operationsMenu" class="nl530-menu" aria-label="Administration Operations Center">
       <span class="nl630-nav-group">OVERVIEW</span>
       <a href="#dashboard" data-tab="dashboard"><b class="nl579-menu-icon" aria-hidden="true">📊</b><span>Dashboard</span></a>
-      <span class="nl630-nav-group">MEMBERSHIP</span>
-      <a href="#members" data-tab="members"><b class="nl579-menu-icon" aria-hidden="true">👥</b><span>Members</span></a>
+      <span class="nl630-nav-group">APPLICANT REGISTRATION</span>
+      <a href="#members" data-tab="members"><b class="nl579-menu-icon" aria-hidden="true">👥</b><span>Applicants</span></a>
       <a href="#applications" data-tab="applications"><b class="nl579-menu-icon" aria-hidden="true">📝</b><span>Applications</span></a>
       <a
         href="/nurselink-bulk-nurse-import-admin.html"
@@ -86,7 +87,7 @@
 
     <div class="nl530-sidebar-footer">
       <a href="/nurselink-qr-scan-center.html">QR Scan Center</a>
-      <a href="/dashboard">Member Portal</a>
+      <a href="/dashboard">Applicant Portal</a>
       <button id="adminSignOut" type="button">Sign out</button>
     </div>
   </aside>
@@ -96,13 +97,13 @@
       <div>
         <span class="nl-admin-eyebrow">ADMINISTRATION OPERATIONS CENTER</span>
         <h1 id="operationsTitle">Dashboard</h1>
-        <p id="operationsSubtitle">Operational workflows across membership, workforce, programs and platform health.</p>
+        <p id="operationsSubtitle">Operational workflows across applicant registration, workforce, programs and platform health.</p>
       </div>
       <div class="nl542-top-tools">
         <div class="nl542-global-search">
           <label for="adminGlobalSearch" class="sr-only">Search NurseLink administration</label>
           <span class="nl542-search-icon" aria-hidden="true">⌕</span>
-          <input id="adminGlobalSearch" type="search" autocomplete="off" placeholder="Search members, applications, support cases…" aria-controls="adminGlobalSearchPanel">
+          <input id="adminGlobalSearch" type="search" autocomplete="off" placeholder="Search applicants, applications, support cases…" aria-controls="adminGlobalSearchPanel">
           <kbd>Ctrl K</kbd>
         </div>
         <div class="nl630-theme-control">
@@ -141,13 +142,13 @@
       <section class="nl540-progress-card">
         <div class="nl530-card-head">
           <div>
-            <span>MEMBERSHIP PHASE</span>
-            <h2>Membership Processing Progress</h2>
+            <span>APPLICANT REGISTRATION PHASE</span>
+            <h2>Applicant registration Processing Progress</h2>
             <p>A single operational view of application review, approval, standing and post-approval activation.</p>
           </div>
           <a class="nl540-inline-link" href="#applications">Open Applications</a>
         </div>
-        <div id="membershipProgress" class="nl540-progress-grid"><div class="nl-admin-loading">Loading membership progress…</div></div>
+        <div id="membershipProgress" class="nl540-progress-grid"><div class="nl-admin-loading">Loading applicant registration progress…</div></div>
       </section>
 
       <div class="nl540-grid-main">
@@ -172,8 +173,8 @@
           <div class="nl530-principles">
             <div><strong>Workflow-first</strong><span>Administrators act through NurseLink services and controlled APIs—not raw database records.</span></div>
             <div><strong>Role-aware</strong><span>Reviewer, Administrator and Super Administrator boundaries remain enforced server-side.</span></div>
-            <div><strong>Auditable</strong><span>Membership, verification, support and communications actions leave an operational audit trail.</span></div>
-            <div><strong>Scalable</strong><span>Membership, workforce, organizations, programs and analytics share one administration shell.</span></div>
+            <div><strong>Auditable</strong><span>Applicant registration, verification, support and communications actions leave an operational audit trail.</span></div>
+            <div><strong>Scalable</strong><span>Applicant registration, workforce, organizations, programs and analytics share one administration shell.</span></div>
           </div>
         </section>
       </div>
@@ -181,15 +182,15 @@
 
     <section class="nl530-panel" data-panel="members" hidden>
       <div class="nl530-toolbar">
-        <div><label><span>Search</span><input id="memberSearch" placeholder="Name, email or member number"></label><label><span>Standing</span><select id="memberStanding"><option value="all">All</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="inactive">Inactive</option></select></label></div>
+        <div><label><span>Search</span><input id="memberSearch" placeholder="Name, email or applicant number"></label><label><span>Standing</span><select id="memberStanding"><option value="all">All</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="inactive">Inactive</option></select></label></div>
         <div class="nl530-row-actions">
           <button id="exportMembersCsv" type="button">Export CSV</button>
           <button id="refreshMembers" type="button">Refresh</button>
         </div>
       </div>
-      <div id="membersArea" class="nl530-list"><div class="nl-admin-loading">Loading members…</div></div>
+      <div id="membersArea" class="nl530-list"><div class="nl-admin-loading">Loading applicants…</div></div>
       <section class="nl530-card nl530-module-spaced">
-        <div class="nl530-card-head"><div><span>POST-APPROVAL</span><h2>Member Onboarding</h2><p>Welcome, activation and follow-up remain part of the Members workflow.</p></div><button id="refreshMemberOnboarding" type="button">Refresh</button></div>
+        <div class="nl530-card-head"><div><span>POST-APPROVAL</span><h2>Applicant Onboarding</h2><p>Welcome, activation and follow-up remain part of the Applicants workflow.</p></div><button id="refreshMemberOnboarding" type="button">Refresh</button></div>
         <div id="memberOnboardingArea" class="nl530-list"><div class="nl-admin-loading">Loading onboarding…</div></div>
       </section>
     </section>
@@ -204,13 +205,13 @@
       <section class="nl550-progress-card">
         <div class="nl550-section-heading">
           <div>
-            <span>MEMBERSHIP PROCESSING PROGRESS</span>
+            <span>APPLICANT REGISTRATION PROCESSING PROGRESS</span>
             <h2>Application Pipeline</h2>
-            <p>Live membership workflow counts from submission through approval and onboarding.</p>
+            <p>Live applicant registration workflow counts from submission through approval and onboarding.</p>
           </div>
         </div>
         <div id="applicationProgress" class="nl550-progress-grid">
-          <div class="nl-admin-loading">Loading membership processing progress…</div>
+          <div class="nl-admin-loading">Loading applicant registration processing progress…</div>
         </div>
       </section>
 
@@ -232,8 +233,8 @@
         <div class="nl550-queue-heading">
           <div>
             <span>APPLICATIONS QUEUE</span>
-            <h2>Membership Applications</h2>
-            <p>Review, assign and progress membership applications through governed NurseLink workflows.</p>
+            <h2>Applicant registration Applications</h2>
+            <p>Review, assign and progress applicant registration applications through governed NurseLink workflows.</p>
           </div>
           <div class="nl530-row-actions">
             <a
@@ -348,7 +349,7 @@
         <button id="applicationDrawerBackdrop" class="nl550-detail-backdrop" type="button" aria-label="Close application detail"></button>
         <aside class="nl550-detail-panel" role="dialog" aria-modal="true" aria-labelledby="applicationDetailTitle">
           <div class="nl550-detail-toolbar">
-            <div><span>MEMBERSHIP APPLICATION</span><strong id="applicationDetailTitle">Application Review</strong></div>
+            <div><span>APPLICANT REGISTRATION APPLICATION</span><strong id="applicationDetailTitle">Application Review</strong></div>
             <button id="closeApplicationDetail" type="button" aria-label="Close application detail">×</button>
           </div>
           <div id="applicationDetail" class="nl550-detail-body">
@@ -384,7 +385,7 @@
     </section>
 
     <section class="nl530-panel" data-panel="programs" hidden>
-      <div class="nl530-section-intro"><h2>Programs &amp; Member Services</h2><p>Manage communities, benefits, engagement and enterprise programs under the same Administrator session.</p></div>
+      <div class="nl530-section-intro"><h2>Programs &amp; Applicant Services</h2><p>Manage communities, benefits, engagement and enterprise programs under the same Administrator session.</p></div>
       <div id="programModules" class="nl530-module-grid"></div>
     </section>
 
@@ -403,15 +404,15 @@
     <section class="nl530-panel" data-panel="communications" hidden>
       <div class="nl530-grid-2">
         <form id="communicationForm" class="nl530-card nl530-form">
-          <div class="nl530-card-head"><div><span>MEMBER COMMUNICATION</span><h2>Send Notification</h2><p>Send a controlled in-app NurseLink notification to one resolved member.</p></div></div>
-          <label><span>Email, member number or user ID</span><input id="communicationMember" required></label>
+          <div class="nl530-card-head"><div><span>APPLICANT COMMUNICATION</span><h2>Send Notification</h2><p>Send a controlled in-app NurseLink notification to one resolved applicant.</p></div></div>
+          <label><span>Email, applicant number or user ID</span><input id="communicationMember" required></label>
           <label><span>Severity</span><select id="communicationSeverity"><option value="info">Information</option><option value="success">Success</option><option value="warning">Warning</option><option value="error">Important</option></select></label>
           <label><span>Title</span><input id="communicationTitle" maxlength="190" required></label>
           <label><span>Message</span><textarea id="communicationMessage" maxlength="5000" rows="6" required></textarea></label>
           <label><span>Optional NurseLink action path</span><input id="communicationAction" placeholder="/notifications"></label>
-          <button type="submit">Send Member Notification</button>
+          <button type="submit">Send Applicant Notification</button>
         </form>
-        <section class="nl530-card"><div class="nl530-card-head"><div><span>GOVERNANCE</span><h2>Communication Controls</h2></div></div><div class="nl530-principles"><div><strong>Targeted by default</strong><span>This release sends to one resolved NurseLink member; it does not create an unrestricted bulk-mail system.</span></div><div><strong>In-app first</strong><span>Messages use the existing NurseLink Notification Center.</span></div><div><strong>Audited</strong><span>Sender, target and message metadata are audited; the message body is excluded from the audit record.</span></div></div></section>
+        <section class="nl530-card"><div class="nl530-card-head"><div><span>GOVERNANCE</span><h2>Communication Controls</h2></div></div><div class="nl530-principles"><div><strong>Targeted by default</strong><span>This release sends to one resolved NurseLink applicant; it does not create an unrestricted bulk-mail system.</span></div><div><strong>In-app first</strong><span>Messages use the existing NurseLink Notification Center.</span></div><div><strong>Audited</strong><span>Sender, target and message metadata are audited; the message body is excluded from the audit record.</span></div></div></section>
       </div>
     </section>
 
@@ -424,8 +425,8 @@
       <div class="nl530-grid-support">
         <form id="supportCreateForm" class="nl530-card nl530-form">
           <div class="nl530-card-head"><div><span>CASE MANAGEMENT</span><h2>Open Support Case</h2></div></div>
-          <label><span>Member identifier (optional)</span><input id="supportMember"></label>
-          <label><span>Category</span><select id="supportCategory"><option value="membership">Membership</option><option value="verification">Verification</option><option value="employment">Employment</option><option value="training">Training</option><option value="technical">Technical</option><option value="organization">Organization</option><option value="communications">Communications</option><option value="other">Other</option></select></label>
+          <label><span>Applicant identifier (optional)</span><input id="supportMember"></label>
+          <label><span>Category</span><select id="supportCategory"><option value="membership">Applicant registration</option><option value="verification">Verification</option><option value="employment">Employment</option><option value="training">Training</option><option value="technical">Technical</option><option value="organization">Organization</option><option value="communications">Communications</option><option value="other">Other</option></select></label>
           <label><span>Priority</span><select id="supportPriority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option><option value="low">Low</option></select></label>
           <label><span>Subject</span><input id="supportSubject" required maxlength="190"></label>
           <label><span>Description</span><textarea id="supportDescription" rows="5" maxlength="10000"></textarea></label>
@@ -435,9 +436,9 @@
         <section class="nl530-card">
           <div class="nl530-card-head"><div><span>QUEUE</span><h2>Support Cases</h2><p>Search, ownership and priority filters for day-to-day case handling.</p></div><button id="refreshSupport" type="button">Refresh</button></div>
           <div class="nl542-support-toolbar">
-            <label><span>Search</span><input id="supportSearch" type="search" placeholder="Case #, member, email, subject"></label>
+            <label><span>Search</span><input id="supportSearch" type="search" placeholder="Case #, applicant, email, subject"></label>
             <label><span>Assignment</span><select id="supportAssignment"><option value="all">All</option><option value="mine">Mine</option><option value="unassigned">Unassigned</option><option value="assigned">Assigned</option></select></label>
-            <label><span>Status</span><select id="supportStatus"><option value="">All open / closed</option><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_member">Waiting Member</option><option value="waiting_internal">Waiting Internal</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
+            <label><span>Status</span><select id="supportStatus"><option value="">All open / closed</option><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_member">Waiting Applicant</option><option value="waiting_internal">Waiting Internal</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
             <label><span>Priority</span><select id="supportFilterPriority"><option value="">All</option><option value="urgent">Urgent</option><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option></select></label>
           </div>
           <div id="supportArea" class="nl530-list"><div class="nl-admin-loading">Loading cases…</div></div>
@@ -529,7 +530,7 @@
 
               <tr data-qat-id="registration" data-priority="Critical">
                 <td><strong>Registration</strong></td>
-                <td>Complete new-member registration end-to-end</td>
+                <td>Complete new-applicant registration end-to-end</td>
                 <td><span class="nlqat-priority critical">Critical</span></td>
                 <td></td><td></td>
               </tr>
@@ -665,7 +666,7 @@
             <span>STRATEGIC QAT</span>
             <h2>Professional Information Architecture</h2>
             <p>
-              NurseLink should be tested as more than a membership-registration
+              NurseLink should be tested as more than a applicant registration-registration
               portal if it is expected to support the future Professional
               Information System for Returned and Returning OFW Nurses (PIS-RON).
             </p>
@@ -689,7 +690,7 @@
           <b>→</b>
           <span>SPINB / Philippine Employment Interest</span>
           <b>→</b>
-          <span>Kapatiran Membership</span>
+          <span>Kapatiran Applicant registration</span>
           <b>→</b>
           <span>Consent / Data Governance</span>
         </div>
@@ -697,7 +698,7 @@
         <div class="nlqat-alert">
           <strong>Important architecture check</strong>
           <p>
-            A system designed primarily around membership registration may work
+            A system designed primarily around applicant registration registration may work
             correctly as a registration portal while still being structurally
             inadequate as a future professional information and workforce
             planning system.
@@ -805,31 +806,31 @@
         <section class="nl530-card">
           <div class="nl530-card-head">
             <div>
-              <span>EXISTING MEMBER</span>
+              <span>EXISTING APPLICANT</span>
               <h2>Assign Administrator Access</h2>
-              <p>Select an existing active, verified NurseLink member and grant one or more Administrator roles without changing their membership status.</p>
+              <p>Select an existing active, verified NurseLink applicant and grant one or more Administrator roles without changing their applicant registration status.</p>
             </div>
           </div>
 
           <form id="adminMemberAssignForm" class="nl530-form" hidden>
             <label>
-              <span>Search member</span>
+              <span>Search applicant</span>
               <input
                 id="adminMemberSearch"
                 type="search"
-                placeholder="Name, email, or member number"
+                placeholder="Name, email, or applicant number"
                 maxlength="190"
               >
             </label>
 
             <div>
-              <button id="adminMemberSearchButton" type="button">Search Members</button>
+              <button id="adminMemberSearchButton" type="button">Search Applicants</button>
             </div>
 
             <label>
-              <span>Select member</span>
+              <span>Select applicant</span>
               <select id="adminMemberCandidate" required>
-                <option value="">Search for an active verified member first</option>
+                <option value="">Search for an active verified applicant first</option>
               </select>
             </label>
 
@@ -840,7 +841,7 @@
               <input
                 id="adminMemberDepartment"
                 type="text"
-                placeholder="Membership, Verification, Finance…"
+                placeholder="Applicant registration, Verification, Finance…"
                 maxlength="190"
               >
             </label>
@@ -884,7 +885,7 @@
           <div class="nl530-card-head"><div><span>ADMINISTRATOR MANAGEMENT</span><h2>Add Administrator</h2><p>Invite by email, assign one or more operational roles, and activate access only after acceptance by the verified email owner.</p></div></div>
           <form id="adminInviteForm" class="nl530-form" hidden>
             <label><span>Email address</span><input id="adminInviteEmail" type="email" placeholder="juan.delacruz@example.com" required maxlength="255"></label>
-            <label><span>Department / Unit</span><input id="adminInviteDepartment" type="text" placeholder="Membership, Verification, Finance…" maxlength="190"></label>
+            <label><span>Department / Unit</span><input id="adminInviteDepartment" type="text" placeholder="Applicant registration, Verification, Finance…" maxlength="190"></label>
             <label><span>Access reason</span><textarea id="adminInviteReason" placeholder="Why is Administrator access required?" required minlength="10" maxlength="500"></textarea></label>
             <label><span>Approval notes</span><textarea id="adminInviteApprovalNotes" placeholder="Optional approval reference, approver name, ticket, or governance note" maxlength="1000"></textarea></label>
             <div>
@@ -904,7 +905,7 @@
       </div>
 
       <section class="nl530-card nl553-admin-roster-card">
-        <div class="nl530-card-head"><div><span>ACCESS</span><h2>Administrators</h2><p>Invitation Sent → Accepted → Active. Manage roles at any time; revoke access without deleting the member account.</p></div><button id="refreshSettings" type="button">Refresh</button></div>
+        <div class="nl530-card-head"><div><span>ACCESS</span><h2>Administrators</h2><p>Invitation Sent → Accepted → Active. Manage roles at any time; revoke access without deleting the applicant account.</p></div><button id="refreshSettings" type="button">Refresh</button></div>
         <div id="adminInvitationArea" class="nl553-invitation-list"></div>
         <div id="settingsAccessArea" class="nl530-list"><div class="nl-admin-loading">Loading administrators…</div></div>
       </section>
@@ -1117,7 +1118,7 @@
                     <input
                       id="temporaryEncoderNurseIdentifier"
                       type="text"
-                      placeholder="Email, member number, or NurseLink user ID"
+                      placeholder="Email, applicant number, or NurseLink user ID"
                       maxlength="255"
                       required
                     >

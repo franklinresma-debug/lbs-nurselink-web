@@ -1,0 +1,58 @@
+@media (min-width: 781px) {
+  html body #root .app-shell.lbs-uiux.member-shell-v636 #lbs-member-sidebar.sidebar > .logo.nurselink-sidebar-brand {
+    min-height: 162px !important;
+    gap: 8px !important;
+    padding: 6px 8px 20px !important;
+  }
+
+  html body #root .app-shell.lbs-uiux.member-shell-v636 #lbs-member-sidebar.sidebar .nurselink-sidebar-logo {
+    width: 226px !important;
+    min-width: 226px !important;
+    max-width: 226px !important;
+    height: 84px !important;
+    min-height: 84px !important;
+    max-height: 84px !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  html body #root .app-shell.lbs-uiux.member-shell-v636 #lbs-member-sidebar.sidebar .nurselink-sidebar-logo img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 950px) {
+  html body #root .app-shell.lbs-uiux.member-shell-v636 #lbs-member-sidebar.sidebar > .logo.nurselink-sidebar-brand {
+    min-height: 162px !important;
+    gap: 8px !important;
+    padding: 10px 28px 20px 8px !important;
+  }
+
+  html body #root .app-shell.lbs-uiux.member-shell-v636 #lbs-member-sidebar.sidebar .nurselink-sidebar-logo {
+    width: 226px !important;
+    min-width: 226px !important;
+    max-width: 226px !important;
+    height: 84px !important;
+    min-height: 84px !important;
+    max-height: 84px !important;
+    flex: 0 0 auto !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  html body #root .app-shell.lbs-uiux.member-shell-v636 #lbs-member-sidebar.sidebar .nurselink-sidebar-logo img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    transform: none !important;
+  }
+}

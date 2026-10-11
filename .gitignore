@@ -49,3 +49,7 @@ dist-ssr
 backups/
 playwright-report/
 test-results/
+
+# Historical production build snapshots
+.dist*/
+dist.before*/

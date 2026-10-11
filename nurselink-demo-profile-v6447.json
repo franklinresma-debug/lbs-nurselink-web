@@ -1,0 +1,193 @@
+{
+    "member_number": "NL-2026-000001",
+    "source": "mysql:nurselink_demo_profile_records",
+    "generated_at": "2026-08-21T23:22:47+08:00",
+    "version": "64.4.7",
+    "certificates": [
+        {
+            "id": "demo-cert-bls",
+            "title": "Basic Life Support (BLS)",
+            "issuer": "American Heart Association",
+            "description": "Basic life support certification covering high-quality CPR, AED use, airway support and emergency response for healthcare professionals.",
+            "issue_date": "2024-05-12",
+            "expiry_date": "2026-05-12",
+            "status": "Active",
+            "verified": true,
+            "credential_number": "AHA-BLS-2024-884201"
+        },
+        {
+            "id": "demo-cert-acls",
+            "title": "Advanced Cardiovascular Life Support (ACLS)",
+            "issuer": "American Heart Association",
+            "description": "Advanced resuscitation training for cardiopulmonary arrest, dysrhythmias, stroke and acute coronary syndromes.",
+            "issue_date": "2024-06-20",
+            "expiry_date": "2026-06-20",
+            "status": "Active",
+            "verified": true,
+            "credential_number": "AHA-ACLS-2024-771506"
+        },
+        {
+            "id": "demo-cert-ipc",
+            "title": "Infection Prevention and Control",
+            "issuer": "Department of Health / HealthPRO",
+            "description": "Continuing professional development training on infection prevention, surveillance, isolation precautions and patient-safety practices.",
+            "issue_date": "2023-08-15",
+            "expiry_date": null,
+            "status": "Active",
+            "verified": true,
+            "credential_number": "IPC-2023-44192"
+        },
+        {
+            "id": "demo-cert-leadership",
+            "title": "Nursing Leadership and Management",
+            "issuer": "NurseLink Continuing Professional Development",
+            "description": "Leadership development focused on clinical governance, staffing, coaching, conflict management and quality improvement for senior nurses.",
+            "issue_date": "2025-11-08",
+            "expiry_date": null,
+            "status": "Verified",
+            "verified": true,
+            "credential_number": "NL-CPD-LM-250108"
+        }
+    ],
+    "portfolio": [
+        {
+            "id": "demo-port-01",
+            "title": "Leadership in Nursing Practice",
+            "description": "Capstone project documenting leadership strategies used to improve shift coordination, staff communication and escalation of complex patient-care issues.",
+            "type": "Capstone Project",
+            "date": "2026-04-10",
+            "status": "Published",
+            "published": true
+        },
+        {
+            "id": "demo-port-02",
+            "title": "Quality Improvement Initiative",
+            "description": "Medical-surgical unit quality-improvement project focused on patient safety, incident review, nursing documentation and measurable clinical outcomes.",
+            "type": "Quality Improvement Project",
+            "date": "2026-03-28",
+            "status": "Published",
+            "published": true
+        },
+        {
+            "id": "demo-port-03",
+            "title": "Community Health Outreach Program",
+            "description": "Community nursing outreach supporting health education, blood-pressure screening and referral pathways for underserved communities.",
+            "type": "Professional Service",
+            "date": "2026-02-14",
+            "status": "Published",
+            "published": true
+        }
+    ],
+    "experience": [
+        {
+            "id": "demo-exp-01",
+            "title": "Head Nurse / Nurse Unit Manager",
+            "organization": "St. Catherine Medical Center",
+            "location": "Cavite, Philippines",
+            "description": "Leads a 32-bed medical-surgical unit, supervises nursing staff, coordinates staffing and patient flow, and supports clinical governance, mentoring and quality improvement.",
+            "start_date": "2019-01-01",
+            "end_date": null,
+            "current": true
+        },
+        {
+            "id": "demo-exp-02",
+            "title": "Senior Staff Nurse",
+            "organization": "Metropolitan General Hospital",
+            "location": "Metro Manila, Philippines",
+            "description": "Provided direct medical-surgical nursing care, precepted junior nurses, coordinated multidisciplinary care and supported ward-level quality and safety initiatives.",
+            "start_date": "2013-06-01",
+            "end_date": "2018-12-31",
+            "current": false
+        },
+        {
+            "id": "demo-exp-03",
+            "title": "Staff Nurse",
+            "organization": "Provincial Medical Center",
+            "location": "Cavite, Philippines",
+            "description": "Delivered bedside nursing care in adult medical and surgical services including medication administration, patient education, documentation and discharge coordination.",
+            "start_date": "2009-05-01",
+            "end_date": "2013-05-31",
+            "current": false
+        }
+    ],
+    "licenses": [
+        {
+            "id": "demo-license-01",
+            "title": "Registered Nurse",
+            "authority": "Professional Regulation Commission (PRC)",
+            "number": "RN-007654321",
+            "issue_date": "2009-03-20",
+            "expiry_date": "2027-12-31",
+            "status": "Active",
+            "verified": true,
+            "country": "Philippines"
+        },
+        {
+            "id": "demo-license-02",
+            "title": "IV Therapy Nurse Certification",
+            "authority": "Association of Nursing Service Administrators of the Philippines",
+            "number": "ANSAP-IVT-2019-55621",
+            "issue_date": "2019-07-16",
+            "expiry_date": null,
+            "status": "Verified",
+            "verified": true,
+            "country": "Philippines"
+        }
+    ],
+    "education": [
+        {
+            "id": "demo-edu-01",
+            "title": "Master of Arts in Nursing",
+            "institution": "University of the Philippines Open University",
+            "field": "Nursing Administration and Leadership",
+            "start_date": "2016-06-01",
+            "end_date": "2018-05-31",
+            "description": "Postgraduate nursing studies focused on nursing administration, leadership, health-service management, research and quality improvement.",
+            "status": "Verified"
+        },
+        {
+            "id": "demo-edu-02",
+            "title": "Bachelor of Science in Nursing",
+            "institution": "De La Salle Medical and Health Sciences Institute",
+            "field": "Nursing",
+            "start_date": "2005-06-01",
+            "end_date": "2009-03-31",
+            "description": "Professional nursing degree with clinical rotations across medical-surgical nursing, maternal-child health, community nursing, mental health and leadership.",
+            "status": "Verified"
+        }
+    ],
+    "documents": [
+        {
+            "id": "demo-doc-01",
+            "title": "PRC Professional Identification Card",
+            "type": "Professional License Document",
+            "description": "Demo professional identification record used for NurseLink profile verification.",
+            "uploaded_at": "2026-08-18",
+            "status": "Verified"
+        },
+        {
+            "id": "demo-doc-02",
+            "title": "Master of Arts in Nursing Diploma",
+            "type": "Education Document",
+            "description": "Supporting postgraduate education document associated with the member qualification framework reference.",
+            "uploaded_at": "2026-08-18",
+            "status": "Verified"
+        },
+        {
+            "id": "demo-doc-03",
+            "title": "Bachelor of Science in Nursing Diploma",
+            "type": "Education Document",
+            "description": "Supporting nursing degree document maintained in the demo professional profile.",
+            "uploaded_at": "2026-08-18",
+            "status": "Verified"
+        },
+        {
+            "id": "demo-doc-04",
+            "title": "Certificate of Employment – Head Nurse",
+            "type": "Employment Document",
+            "description": "Demo employment verification supporting the Head Nurse / Nurse Unit Manager professional experience record.",
+            "uploaded_at": "2026-08-18",
+            "status": "Verified"
+        }
+    ]
+}

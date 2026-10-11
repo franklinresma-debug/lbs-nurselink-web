@@ -1,0 +1,10 @@
+{
+  "product": "LBS NurseLink Medical Services Division",
+  "release": "0.1.0",
+  "build": "LBS-NL-MSD-0.1.0",
+  "environment": "development",
+  "stamped_at_utc": "2026-09-11T00:00:00Z",
+  "source_baseline": "NurseLink v5.5.9",
+  "scope": "Independent, data-isolated medical services division fork.",
+  "status": "development"
+}

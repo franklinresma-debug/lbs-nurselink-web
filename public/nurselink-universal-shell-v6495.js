@@ -17,7 +17,7 @@
     ['Credentials','/credentials'],
     ['Qualifications','/qualifications'],
     ['Documents','/documents'],
-    ['Digital Member ID','/nurselink-digital-id.html'],
+    ["Digital Applicant ID",'/nurselink-digital-id.html'],
     ['Messages','/messages'],
     ['Events','/events'],
     ['Programs & Initiatives','/programs'],
@@ -91,7 +91,7 @@
 
     const bar=document.createElement('header');
     bar.id='nurselink-universal-topbar';
-    bar.setAttribute('aria-label','NurseLink member topbar');
+    bar.setAttribute('aria-label',"NurseLink applicant topbar");
 
     const menu=document.createElement('button');
     menu.type='button';

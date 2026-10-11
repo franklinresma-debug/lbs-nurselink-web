@@ -1,0 +1,167 @@
+/* Isolated administrator login styling, matching the LBS member login. */
+:root { font-family: Arial, Helvetica, sans-serif; color: #20384f; background: #f3f6f9; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.nl-admin-auth-shell { min-height: 100dvh; display: grid; grid-template-columns: minmax(0,1.08fr) minmax(460px,.92fr); }
+.nl-admin-auth-brand { position: relative; container-type: inline-size; overflow: hidden; color: #fff; background: #0a3852; }
+.nl-admin-hero-media { position: absolute; inset: 0 0 auto; aspect-ratio: 2 / 1; }
+.nl-admin-hero-media picture { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 800ms ease, visibility 800ms ease; }
+.nl-admin-hero-media picture.is-active { opacity: 1; visibility: visible; }
+.nl-admin-hero-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--hero-x,72%) var(--hero-y,32%); filter: saturate(.9) contrast(1.04); }
+.nl-admin-hero-content { position: relative; min-height: 100dvh; padding: clamp(38px,4vw,64px); display: flex; flex-direction: column; }
+.nl-admin-hero-intro { display: flow-root; min-height: calc(50cqw - clamp(38px,4vw,64px)); }
+.nl-admin-brand-logo { width: min(420px,78%); height: clamp(64px,9vw,108px); margin-top: clamp(18px,4vh,44px); display: flex; align-items: center; }
+.nl-admin-brand-logo img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 3px 12px rgba(2,20,33,.24)); }
+.nl-admin-brand-logo[hidden] { display: none; }
+.nl-admin-hero-message { margin-top: clamp(22px,4vh,42px); }
+.nl-admin-hero-description { margin-top: 32px; }
+.nl-admin-access-pill { display: inline-flex; align-items: center; padding: 6px 16px; border-radius: 999px; background: #84B728; color: #fff; font-size: 12px; font-weight: 800; line-height: 1.55; letter-spacing: .12em; text-transform: uppercase; }
+.nl-admin-hero-message h1 { margin: 14px 0 0; max-width: 560px; font-size: clamp(44px,3.4vw,60px); line-height: 1.04; letter-spacing: -.038em; text-shadow: 0 2px 22px rgba(2,20,33,.24); }
+.nl-admin-hero-description p { max-width: 470px; margin: 0; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,.91); text-shadow: 0 1px 2px #011934,0 4px 14px rgba(1,30,63,.82); }
+.nl-admin-security-note { max-width: 470px; margin-top: 48px; padding: 16px 18px; border: 1px solid rgba(255,255,255,.18); border-radius: 15px; background: rgba(5,34,52,.68); box-shadow: 0 12px 34px rgba(2,20,33,.16); }
+.nl-admin-security-note strong,.nl-admin-security-note small { display: block; }
+.nl-admin-security-note strong { font-size: 14px; }
+.nl-admin-security-note small { margin-top: 5px; color: rgba(255,255,255,.82); font-size: 13px; line-height: 1.5; }
+.nl-admin-auth-panel { display: flex; align-items: center; justify-content: center; min-height: 100dvh; padding: clamp(28px,5vw,72px); border-left: 1px solid #dce4eb; background: #f3f6f9; }
+.nl-admin-login-card { position: relative; overflow: hidden; width: min(100%,520px); padding: clamp(28px,3.5vw,44px); border: 1px solid #d8e1e8; border-radius: 22px; background: #fff; box-shadow: 0 22px 58px rgba(18,48,71,.12); }
+.nl-admin-login-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg,#1768b0 0 72%,#9acb24 72% 90%,#f79331 90% 100%); }
+.nl-admin-login-card h2 { margin: 10px 0 0; font-size: clamp(28px,2.5vw,38px); line-height: 1.12; letter-spacing: -.025em; color: #102b4e; }
+.nl-admin-login-card > p { margin: 12px 0 0; color: #60758a; font-size: 15px; line-height: 1.55; }
+#adminLoginForm { display: grid; gap: 18px; margin-top: 28px; }
+#adminLoginForm label > span { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+#adminLoginForm input { width: 100%; min-height: 52px; padding: 0 15px; border: 1px solid #c9d5df; border-radius: 11px; background: #f8fafc; color: #102a43; font: inherit; outline: none; }
+#adminLoginForm input:focus { border-color: #1768b0; box-shadow: 0 0 0 4px rgba(23,104,176,.1); }
+#adminLoginButton { min-height: 52px; padding: 12px 15px; border: 0; border-radius: 11px; background: #1768b0; color: #fff; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px rgba(23,104,176,.16); }
+#adminLoginButton:hover:not(:disabled) { background: #10558f; }
+#adminLoginButton:disabled { opacity: .65; cursor: wait; }
+#adminLoginButton:focus-visible,.nl-admin-auth-links a:focus-visible { outline: 3px solid #84B728; outline-offset: 3px; }
+.nl-admin-form-status:empty { display: none; }
+.nl-admin-form-status { padding: 12px 14px; border: 1px solid #efc8c8; border-radius: 10px; background: #fff3f3; color: #9d2f2f; font-size: 14px; line-height: 1.5; }
+.nl-admin-form-status[data-tone=success] { color: #386017; border-color: #b8d79b; background: #f2faeb; }
+.nl-admin-auth-links { margin-top: 22px; }
+.nl-admin-auth-links a { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px; border: 1px solid #bfd0e2; border-radius: 11px; color: #1768b0; font-size: 14px; font-weight: 750; text-decoration: none; text-align: center; }
+.nl-admin-auth-links a:hover { background: #f7fbff; border-color: #1768b0; }
+@media (min-width:781px) and (max-width:1050px) {
+  .nl-admin-auth-shell { grid-template-columns: minmax(0,.95fr) minmax(430px,1.05fr); }
+  .nl-admin-hero-media img { object-position: var(--hero-tablet-x,78%) var(--hero-tablet-y,28%); }
+}
+@media (max-width:780px) {
+  .nl-admin-auth-shell { display: block; }
+  .nl-admin-auth-brand { container-type: normal; }
+  .nl-admin-hero-media { inset: 0 0 auto; height: 420px; aspect-ratio: auto; }
+  .nl-admin-hero-media img { object-position: var(--hero-mobile-x,50%) var(--hero-mobile-y,26%); }
+  .nl-admin-hero-content { min-height: 360px; padding: 26px 22px 62px; }
+  .nl-admin-hero-intro { min-height: 394px; }
+  .nl-admin-brand-logo { width: min(320px,82%); height: 72px; margin-top: 12px; }
+  .nl-admin-hero-message h1 { font-size: clamp(36px,10vw,48px); }
+  .nl-admin-hero-description p { font-size: 15px; }
+  .nl-admin-security-note { margin-top: 48px; }
+  .nl-admin-auth-panel { min-height: auto; padding: 0 16px 34px; border-left: 0; }
+  .nl-admin-login-card { margin-top: -36px; padding: 28px 22px; }
+  #adminLoginForm input { font-size: 16px; }
+}
+@media (prefers-reduced-motion:reduce) { .nl-admin-hero-media picture { transition: none; } }
+
+/* Shared LBS login presentation, with separate administrator authentication. */
+.nl-admin-brand-logo{height:64px;margin-top:0}
+.nl-admin-brand-logo img{position:absolute;top:12px;left:22px;height:64px;max-width:45%;padding:2px;background:#fff;border-radius:8px;clip-path:inset(3px 7px round 6px);object-fit:contain}
+.nl-admin-login-card>p{margin-top:12px}
+@media(max-width:780px){
+ .nl-admin-auth-brand{height:364px;min-height:364px}
+ .nl-admin-hero-media{inset:0;height:100%;aspect-ratio:auto}
+ .nl-admin-auth-brand::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,#07518b 0%,#07518b 24%,rgba(7,81,139,.88) 38%,rgba(7,81,139,.40) 55%,transparent 76%)}
+ .nl-admin-hero-content{height:100%;min-height:0;padding:0 20px 42px;justify-content:flex-end;z-index:2}
+ .nl-admin-hero-intro{min-height:0}
+ .nl-admin-brand-logo{height:0;margin:0}
+ .nl-admin-brand-logo img{height:52px;top:8px}
+ .nl-admin-hero-message{margin:0}
+ .nl-admin-hero-message h1{font-size:28px;line-height:1.12;margin:0 0 8px;text-shadow:0 2px 8px #0006}
+ .nl-admin-hero-description{margin:0}
+ .nl-admin-hero-description p{font-size:13px;line-height:1.35}
+ .nl-admin-security-note{display:none}
+ .nl-admin-auth-panel{padding:0 12px 20px}
+ .nl-admin-login-card{padding:18px 20px;margin-top:-24px;z-index:4}
+ .nl-admin-login-card>.nl-admin-access-pill{font-size:11px;padding:5px 12px}
+ .nl-admin-login-card>p{font-size:14px;line-height:1.4;margin:8px 0 14px}
+ #adminLoginForm{margin-top:0;gap:10px}
+ #adminLoginForm label>span{font-size:14px;margin-bottom:5px}
+ #adminLoginForm input{height:44px;min-height:44px;padding:10px 12px;background:#fff}
+ #adminLoginButton{height:44px;min-height:44px;padding:10px}
+ .nl-admin-auth-links{margin-top:14px}
+}
+@media(max-width:780px) and (max-height:740px){
+ .nl-admin-auth-brand{height:344px;min-height:344px}
+ .nl-admin-hero-content{padding-bottom:38px}
+ .nl-admin-login-card{padding-top:12px}
+ #adminLoginForm{gap:8px}
+}
+
+/* Brand above the welcome heading, not over the nurses. */
+.nl-admin-brand-logo{height:auto;margin:0 0 10px;width:auto}
+.nl-admin-brand-logo img{position:static;height:52px;max-height:52px;max-width:160px;width:auto}
+.nl-admin-hero-message{margin-top:0}
+@media(max-width:780px){.nl-admin-auth-brand{height:418px;min-height:418px}.nl-admin-brand-logo{height:auto}.nl-admin-brand-logo img{height:44px;max-height:44px}}
+@media(max-width:780px) and (max-height:740px){.nl-admin-auth-brand{height:398px;min-height:398px}}
+
+/* Match the access pill's left edge. Compensate for the logo's clipped white inset. */
+@media(max-width:780px){
+ .nl-admin-hero-content{padding-left:33px;padding-right:33px}
+ .nl-admin-brand-logo img{margin-left:-7px}
+}
+
+@media(max-width:780px){
+ .nl-admin-auth-brand{height:clamp(260px,calc(100svh - 330px - env(safe-area-inset-bottom,0px)),418px);min-height:0}
+ .nl-admin-login-card{padding-top:12px}
+ #adminLoginForm{gap:8px}
+}
+
+@media(max-width:780px){
+ .nl-admin-hero-intro{display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;align-items:center}
+ .nl-admin-brand-logo{margin:0}
+ .nl-admin-brand-logo img{width:90px;height:auto;max-height:52px;max-width:90px;margin-left:0;clip-path:none}
+ .nl-admin-hero-message h1{font-size:23px;line-height:1.15;margin:0;letter-spacing:-.025em}
+ .nl-admin-hero-description{margin-top:12px}
+}
+
+@media(max-width:780px){.nl-admin-brand-logo img{clip-path:inset(2px 4px round 5px);margin-left:-4px}}
+
+@media(max-width:780px){
+ .nl-admin-hero-intro{grid-template-columns:126px minmax(0,1fr);gap:10px}
+ .nl-admin-brand-logo img{width:130px;max-width:130px;height:calc(clamp(43.7px,12.19vw,52.9px) + 4px);max-height:calc(clamp(43.7px,12.19vw,52.9px) + 4px);object-fit:contain}
+ .nl-admin-hero-message h1{font-size:clamp(19px,5.3vw,23px);line-height:1.15}
+}
+
+@media(max-width:780px){
+ .nl-admin-brand-logo{width:122px;height:clamp(43.7px,12.19vw,52.9px);overflow:hidden;border-radius:5px;background:white;position:relative}
+ .nl-admin-brand-logo img{clip-path:none;transform:scale(1.18);transform-origin:center;flex-shrink:0;margin-top:-2px;padding:0}
+}
+
+@media(max-width:780px){
+ .nl-admin-hero-intro{grid-template-columns:122px minmax(0,max-content);justify-content:center;gap:10px}
+ .nl-admin-hero-message h1{text-align:center;max-width:180px}
+ .nl-admin-brand-logo{justify-self:center}
+ .nl-admin-hero-description p{text-align:center;width:100%;margin-inline:auto}
+}
+
+@media(max-width:780px){.nl-admin-hero-message h1{text-align:left}}
+
+@media(max-width:780px){.nl-admin-hero-intro{width:min(100%,304px);margin-inline:auto;grid-template-columns:122px minmax(0,1fr);gap:10px}.nl-admin-hero-message h1{width:100%;max-width:none}}
+
+/* Full HD desktop composition; fluid below the 1920 x 1080 design size. */
+@media(min-width:781px){
+ body.nl-admin-auth-body{min-height:100svh;background:#f3f6f9}
+ .nl-admin-auth-shell{width:100%;max-width:1920px;min-height:100svh;margin-inline:auto;grid-template-columns:minmax(0,1.08fr) minmax(420px,.92fr)}
+ .nl-admin-auth-brand{min-height:100svh}
+ .nl-admin-hero-media{inset:0;height:100%;aspect-ratio:auto}
+ .nl-admin-auth-brand::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(3,31,54,.1) 15%,rgba(3,31,54,.48) 50%,#073a5b 100%)}
+ .nl-admin-hero-content{z-index:1;min-height:100svh;padding:clamp(40px,4.2vw,80px);justify-content:flex-end}
+ .nl-admin-hero-intro{min-height:0}
+ .nl-admin-brand-logo{margin-bottom:24px}
+ .nl-admin-brand-logo img{max-width:220px;height:80px;max-height:80px;clip-path:none;padding:8px}
+ .nl-admin-hero-message h1{font-size:clamp(40px,3.13vw,60px);max-width:620px}
+ .nl-admin-hero-description{margin-top:24px}
+ .nl-admin-security-note{margin-top:32px}
+ .nl-admin-auth-panel{min-height:100svh;padding:clamp(32px,4.17vw,80px)}
+ .nl-admin-login-card{width:100%;max-width:560px;padding:48px}
+}
+@media(min-width:781px) and (max-width:1100px){.nl-admin-login-card{padding:28px}.nl-admin-hero-content{padding:36px}.nl-admin-auth-panel{padding:28px}}

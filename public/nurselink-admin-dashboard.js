@@ -44,15 +44,15 @@
   let applicationActiveQuickView = 'all';
 
   const subtitles = {
-    dashboard: 'Operational workflows across membership, workforce, programs and platform health.',
-    members: 'Manage approved NurseLink members through governed membership lifecycle workflows.',
-    applications: 'Review membership applications without working directly against raw membership records.',
+    dashboard: "Operational workflows across applicant registration, workforce, programs and platform health.",
+    members: "Manage approved NurseLink applicants through governed applicant registration lifecycle workflows.",
+    applications: "Review applicant registration applications without working directly against raw applicant registration records.",
     verification: 'Review professional credential records through the NurseLink verification workflow.',
     organizations: 'Manage hospitals, health systems, recruiters and institutional partners.',
     programs: 'Operate communities, benefits, engagement and enterprise programs.',
-    employment: 'Manage workforce opportunities and member job-application workflows.',
+    employment: "Manage workforce opportunities and applicant job-application workflows.",
     training: 'Operate NurseLink events and professional-development programs.',
-    communications: 'Send controlled, auditable in-app communications to resolved NurseLink members.',
+    communications: "Send controlled, auditable in-app communications to resolved NurseLink applicants.",
     reports: 'Use platform-level analytics rather than querying production tables directly.',
     support: 'Track operational cases with ownership, status, priority and resolution workflow.',
     audit: 'Review normalized administrative actions without exposing raw before/after database state.',
@@ -362,13 +362,13 @@
 
     let actions = [
       ['#dashboard', 'Dashboard', 'Operational overview'],
-      ['#applications', 'Applications', 'Membership review queue'],
+      ['#applications', 'Applications', "Applicant registration review queue"],
       ['#verification', 'Verification', 'Credential workflow']
     ];
 
     if (['administrator', 'admin', 'super_administrator', 'super_admin'].includes(role)) {
       actions = actions.concat([
-        ['#members', 'Members', 'Standing and onboarding'],
+        ['#members', "Applicants", 'Standing and onboarding'],
         ['#support', 'Support Cases', 'Assigned operational cases'],
         ['#organizations', 'Organizations', 'Institutional verification']
       ]);
@@ -499,9 +499,9 @@
       globalResultButton(
         'members',
         row.email || row.member_number || row.name || q,
-        row.name || row.email || 'Member',
-        `${row.member_number || 'Member'} · ${label(row.standing || 'active')}`,
-        'Member'
+        row.name || row.email || "Applicant",
+        `${row.member_number || "Applicant"} · ${label(row.standing || 'active')}`,
+        "Applicant"
       )
     ).join('');
 
@@ -526,8 +526,8 @@
     ).join('');
 
     const body = [
-      renderGlobalSearchGroup('Members', memberHtml),
-      renderGlobalSearchGroup('Membership Applications', applicationHtml),
+      renderGlobalSearchGroup("Applicants", memberHtml),
+      renderGlobalSearchGroup("Applicant registration Applications", applicationHtml),
       renderGlobalSearchGroup('Support Cases', supportHtml)
     ].join('');
 
@@ -673,7 +673,7 @@
         : [];
 
       $('dashboardMetrics').innerHTML = [
-        metric('Members', m.approved_members ?? 0, 'Approved NurseLink members'),
+        metric("Applicants", m.approved_members ?? 0, "Approved NurseLink applicants"),
         metric('Applications', m.pending_membership_applications ?? 0, `${counts.ready_for_approval ?? 0} ready for approval`, Number(m.pending_membership_applications || 0) ? 'attention' : 'good', ''),
         metric('Verification', m.pending_verifications ?? 0, 'Credentials awaiting review', Number(m.pending_verifications || 0) ? 'attention' : 'good'),
         metric('Support Cases', m.open_support_cases ?? 0, 'Open operational cases', Number(m.open_support_cases || 0) ? 'danger' : 'good')
@@ -684,7 +684,7 @@
           <div>
             <span>POLICY GOVERNANCE</span>
             <h2 id="dashboardPolicyConsentTitle">Current Terms & Privacy Consent</h2>
-            <p>Account holders must accept both current policy versions themselves. Administrators can monitor completion but cannot consent on a member’s behalf.</p>
+            <p>Account holders must accept both current policy versions themselves. Administrators can monitor completion but cannot consent on a applicant’s behalf.</p>
           </div>
           <div class="nl558-consent-summary" data-tone="${pendingConsentAccounts.length ? 'attention' : 'good'}">
             <strong>${esc(policyConsent.current ?? 0)} of ${esc(policyConsent.active_accounts ?? 0)}</strong>
@@ -723,8 +723,8 @@
 
       $('dashboardQueues').innerHTML = [
         ['Applications ready for approval', counts.ready_for_approval ?? 0, '#applications'],
-        ['Overdue membership reviews', membership.overdue_reviews ?? 0, '#applications'],
-        ['Unassigned membership reviews', membership.unassigned_reviews ?? 0, '#applications'],
+        ["Overdue applicant registration reviews", membership.overdue_reviews ?? 0, '#applications'],
+        ["Unassigned applicant registration reviews", membership.unassigned_reviews ?? 0, '#applications'],
         ['Open support cases', m.open_support_cases ?? 0, '#support'],
         ['Pending credential verification', m.pending_verifications ?? 0, '#verification'],
         ['Pending organizations', m.pending_organizations ?? 0, '#organizations']
@@ -744,31 +744,31 @@
 
       $('dashboardReminders').innerHTML = [
         reminderRow(
-          'Final membership decisions',
+          "Final applicant registration decisions",
           counts.ready_for_approval ?? 0,
           '#applications',
           'Applications already cleared for Administrator approval.',
           Number(counts.ready_for_approval || 0) ? 'good' : ''
         ),
         reminderRow(
-          'Overdue membership reviews',
+          "Overdue applicant registration reviews",
           membership.overdue_reviews ?? 0,
           '#applications',
           'Review due date has passed.',
           Number(membership.overdue_reviews || 0) ? 'danger' : ''
         ),
         reminderRow(
-          'Unassigned membership reviews',
+          "Unassigned applicant registration reviews",
           membership.unassigned_reviews ?? 0,
           '#applications',
           'Assign a Reviewer or Administrator owner.',
           Number(membership.unassigned_reviews || 0) ? 'attention' : ''
         ),
         reminderRow(
-          'Overdue member onboarding',
+          "Overdue applicant onboarding",
           onboarding.overdue ?? 0,
           '#members',
-          'Approved members requiring activation follow-up.',
+          "Approved applicants requiring activation follow-up.",
           Number(onboarding.overdue || 0) ? 'attention' : ''
         ),
         reminderRow(
@@ -794,14 +794,14 @@
 
       if ($('membershipProgress')) {
         $('membershipProgress').innerHTML =
-          '<div class="nl530-empty">Membership progress is temporarily unavailable.</div>';
+          "<div class=\"nl530-empty\">Applicant registration progress is temporarily unavailable.</div>";
       }
     }
   }
 
   async function loadMembers() {
     const el = $('membersArea');
-    el.innerHTML = '<div class="nl-admin-loading">Loading members…</div>';
+    el.innerHTML = "<div class=\"nl-admin-loading\">Loading applicants…</div>";
 
     const params = new URLSearchParams();
     const search = $('memberSearch')?.value.trim();
@@ -823,9 +823,9 @@
         })[current] || [];
 
         return `
-          <article class="nl530-row" data-member="${esc(row.membership_id)}">
+          <article class="nl530-row" data-applicant="${esc(row.membership_id)}">
             <div class="nl530-row-main">
-              ${badges([row.member_number || 'Member', 'good'], [label(current), current === 'active' ? 'good' : 'attention'])}
+              ${badges([row.member_number || "Applicant", 'good'], [label(current), current === 'active' ? 'good' : 'attention'])}
               <strong>${esc(row.name || row.email)}</strong>
               <small>${esc(row.email || '')} · ${esc(row.credentials?.verified ?? 0)} verified credential(s) · ${esc(row.employment_records ?? 0)} employment record(s)</small>
             </div>
@@ -834,7 +834,7 @@
             </div>
           </article>
         `;
-      }).join('') : '<div class="nl530-empty">No members match these filters.</div>';
+      }).join('') : "<div class=\"nl530-empty\">No applicants match these filters.</div>";
 
       loadMemberOnboarding();
 
@@ -854,12 +854,12 @@
                 confirm_self_action: false
               })
             });
-            notice('Membership standing updated.', 'success');
+            notice("Applicant registration standing updated.", 'success');
             await Promise.all([loadMembers(), loadDashboard()]);
           } catch (error) {
             if (
               error.payload?.confirmation_required
-              && confirm('This is your own membership. Confirm this Super Administrator self-action?')
+              && confirm("This is your own applicant registration. Confirm this Super Administrator self-action?")
             ) {
               try {
                 await request(`/api/nurselink/admin/membership-lifecycle/${row.dataset.member}/standing`, {
@@ -870,7 +870,7 @@
                     confirm_self_action: true
                   })
                 });
-                notice('Membership standing updated.', 'success');
+                notice("Applicant registration standing updated.", 'success');
                 await Promise.all([loadMembers(), loadDashboard()]);
               } catch (second) {
                 notice(second.message, 'error');
@@ -889,7 +889,7 @@
 
   function exportMembersCsv() {
     if (!memberRows.length) {
-      notice('There are no members in the current result set to export.', 'error');
+      notice("There are no applicants in the current result set to export.", 'error');
       return;
     }
 
@@ -900,9 +900,9 @@
 
     const lines = [
       [
-        'Member',
+        "Applicant",
         'Email',
-        'Member Number',
+        "Applicant Number",
         'Standing',
         'Approved',
         'Verified Credentials',
@@ -938,7 +938,7 @@
     URL.revokeObjectURL(url);
 
     notice(
-      `Exported ${memberRows.length} member${memberRows.length === 1 ? '' : 's'}.`,
+      `Exported ${memberRows.length} applicant${memberRows.length === 1 ? '' : 's'}.`,
       'success'
     );
   }
@@ -1111,7 +1111,7 @@
     }
 
     $('applicationCommandMetrics').innerHTML = [
-      applicationMetricCard('members', 'Members', metrics.approved_members ?? 0, 'Approved members', 'blue', 'members'),
+      applicationMetricCard('members', "Applicants", metrics.approved_members ?? 0, "Approved applicants", 'blue', 'members'),
       applicationMetricCard('applications', 'Applications', metrics.pending_membership_applications ?? 0, `${counts.ready_for_approval ?? 0} ready for approval`, 'amber', 'applications'),
       applicationMetricCard('verification', 'Verification', metrics.pending_verifications ?? 0, 'Credentials waiting', 'blue', 'verification'),
       applicationMetricCard('organizations', 'Organizations', metrics.pending_organizations ?? 0, 'Pending verification', 'blue', 'organizations'),
@@ -1126,7 +1126,7 @@
       applicationProgressCard('clock', 'Under Review', counts.under_review ?? 0, `${membership.unassigned_reviews ?? 0} unassigned`, 'amber', 'under_review'),
       applicationProgressCard('question', 'Needs Information', counts.needs_information ?? 0, 'Applicant follow-up', 'orange', 'needs_information'),
       applicationProgressCard('approval', 'Ready for Approval', counts.ready_for_approval ?? 0, 'Admin decision queue', 'purple', 'ready_for_approval'),
-      applicationProgressCard('check', 'Approved', counts.approved ?? 0, `${standing.active ?? 0} active members`, 'green', 'approved'),
+      applicationProgressCard('check', 'Approved', counts.approved ?? 0, `${standing.active ?? 0} active applicants`, 'green', 'approved'),
       applicationProgressCard('onboarding', 'Onboarding', Number(onboardingCounts.pending || 0) + Number(onboardingCounts.in_progress || 0), 'Completing setup', 'cyan', '', 'members'),
       applicationProgressCard('clock', 'Review Aging 8+ Days', Number(aging['8_14_days'] || 0) + Number(aging['15_plus_days'] || 0), `${aging['15_plus_days'] ?? 0} at 15+ days`, 'red', '', 'applications'),
       applicationProgressCard('inactive', 'Inactive / Suspended', Number(standing.inactive || 0) + Number(standing.suspended || 0), `${standing.suspended ?? 0} suspended`, 'gray', '', 'members')
@@ -1284,7 +1284,7 @@
 
     if (!rows.length) {
       el.innerHTML =
-        '<div class="nl530-empty nl550-empty-table">No membership applications match these filters.</div>';
+        "<div class=\"nl530-empty nl550-empty-table\">No applicant registration applications match these filters.</div>";
       renderApplicationPagination(0);
       return;
     }
@@ -1823,7 +1823,7 @@
     if (button) {
       button.textContent =
         applicationViewMode === 'all'
-          ? 'Back to Membership Queue'
+          ? "Back to Applicant registration Queue"
           : 'View All Applications';
     }
 
@@ -1831,14 +1831,14 @@
       heading.textContent =
         applicationViewMode === 'all'
           ? 'All Applications'
-          : 'Membership Applications';
+          : "Applicant registration Applications";
     }
 
     if (description) {
       description.textContent =
         applicationViewMode === 'all'
           ? 'View every NurseLink application, including draft and Temporary Encoder imports.'
-          : 'Review, assign and progress membership applications through governed NurseLink workflows.';
+          : "Review, assign and progress applicant registration applications through governed NurseLink workflows.";
     }
 
     const status = $('applicationStatus');
@@ -2254,7 +2254,7 @@
               ? `
                 <div class="nl530-empty">
                   Draft application. It has not yet been submitted
-                  into the membership review queue.
+                  into the applicant registration review queue.
                 </div>
 
                 ${
@@ -2290,8 +2290,8 @@
               : `
                 <div class="nl530-empty">
                   Current status: ${esc(label(data.status))}.
-                  Membership review actions remain in the governed
-                  Membership Applications queue.
+                  Applicant registration review actions remain in the governed
+                  Applicant registration Applications queue.
                 </div>
               `
           }
@@ -2856,7 +2856,7 @@
           return;
         }
 
-        if (['approved', 'declined'].includes(status) && !confirm(`${label(status)} this membership application?`)) return;
+        if (['approved', 'declined'].includes(status) && !confirm(`${label(status)} this applicant registration application?`)) return;
 
         const button = event.submitter;
         if (button) {
@@ -2886,7 +2886,7 @@
           } catch (error) {
             if (
               error.payload?.confirmation_required
-              && confirm('This is your own membership application. Confirm this audited Super Administrator action?')
+              && confirm("This is your own applicant registration application. Confirm this audited Super Administrator action?")
             ) {
               result = await transition(true);
             } else {
@@ -2922,7 +2922,7 @@
     return `
       <form class="nl530-row" data-onboarding="${esc(row.membership_id)}">
         <div class="nl530-row-main">
-          ${badges([label(row.status), row.status === 'completed' ? 'good' : 'attention'], [row.member_number || 'Member', ''])}
+          ${badges([label(row.status), row.status === 'completed' ? 'good' : 'attention'], [row.member_number || "Applicant", ''])}
           <strong>${esc(row.name || row.email)}</strong>
           <small>${esc(row.email || '')} · Activation ${esc(signals.activation_score ?? 0)}% · ${row.welcome_viewed_at ? 'Welcome viewed' : 'Welcome pending'} · ${row.orientation_completed_at ? 'Orientation complete' : 'Orientation pending'}</small>
         </div>
@@ -2984,7 +2984,7 @@
             );
 
             notice(
-              result?.message || 'Member onboarding updated.',
+              result?.message || "Applicant onboarding updated.",
               'success'
             );
 
@@ -3334,10 +3334,10 @@
         ${badges([row.case_number, ''], [label(row.status), ['resolved','closed'].includes(row.status) ? 'good' : 'attention'], [label(row.priority), row.priority === 'urgent' ? 'danger' : row.priority === 'high' ? 'attention' : ''])}
         <div class="nl530-row-main">
           <strong>${esc(row.subject)}</strong>
-          <small>${esc(label(row.category))} · ${esc(row.member?.name || row.member?.email || 'No member linked')} · ${esc(row.organization?.name || 'No organization')}</small>
+          <small>${esc(label(row.category))} · ${esc(row.member?.name || row.member?.email || "No applicant linked")} · ${esc(row.organization?.name || 'No organization')}</small>
         </div>
         <div class="nl530-row-form">
-          <label><span>Status</span><select name="status"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_member">Waiting Member</option><option value="waiting_internal">Waiting Internal</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
+          <label><span>Status</span><select name="status"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_member">Waiting Applicant</option><option value="waiting_internal">Waiting Internal</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
           <label><span>Priority</span><select name="priority"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
           <label><span>Owner</span><select name="assigned_admin_user_id">${adminOptions(row.assigned_admin_user_id)}</select></label>
           <label class="wide"><span>Subject</span><input name="subject" value="${esc(row.subject)}"></label>
@@ -3509,13 +3509,13 @@
         'Full administrative access, including administrator management, permissions, governance controls and protected system functions.',
 
       membership_administrator:
-        'Manages membership applications, approvals, onboarding, member standing and membership administration.',
+        "Manages applicant registration applications, approvals, onboarding, applicant standing and applicant registration administration.",
 
       verification_officer:
         'Reviews nursing credentials, submitted documents and professional verification requirements.',
 
       content_administrator:
-        'Manages approved member-facing content, informational content and controlled administrative content.',
+        "Manages approved applicant-facing content, informational content and controlled administrative content.",
 
       program_administrator:
         'Manages NurseLink programs, initiatives and related program administration.',
@@ -3527,10 +3527,10 @@
         'Manages training activities, events, schedules, registrations and related program information.',
 
       communications_administrator:
-        'Manages member communications, announcements, notifications and communication campaigns.',
+        "Manages applicant communications, announcements, notifications and communication campaigns.",
 
       support_officer:
-        'Handles member support cases, inquiries, follow-ups and operational service requests.',
+        "Handles applicant support cases, inquiries, follow-ups and operational service requests.",
 
       finance_treasurer:
         'Provides access to permitted finance-related administrative functions and financial records.',
@@ -3744,7 +3744,7 @@
 
     if (q) params.set('q', q);
 
-    select.innerHTML = '<option value="">Loading members…</option>';
+    select.innerHTML = "<option value=\"\">Loading applicants…</option>";
 
     try {
       const payload = await request(
@@ -3762,14 +3762,14 @@
 
       if (!members.length) {
         select.innerHTML =
-          '<option value="">No eligible active verified members found</option>';
+          "<option value=\"\">No eligible active verified applicants found</option>";
         return;
       }
 
       select.innerHTML = `
-        <option value="">Select a member</option>
+        <option value="">Select a applicant</option>
         ${members.map(member => {
-          const name = member.name || member.email || 'NurseLink member';
+          const name = member.name || member.email || "NurseLink applicant";
           const memberNo = member.member_no ? ` · ${member.member_no}` : '';
           const status = member.already_administrator
             ? ' · Already Administrator'
@@ -3831,13 +3831,13 @@
     area.hidden = false;
 
     area.innerHTML = `
-      <strong>${esc(member.name || member.email || 'NurseLink member')}</strong>
+      <strong>${esc(member.name || member.email || "NurseLink applicant")}</strong>
       <span>
-        ${esc(member.member_no || 'No member number')}
+        ${esc(member.member_no || "No applicant number")}
         · ${esc(member.email || '')}
       </span>
       <span>
-        Membership: ${esc(member.status || 'active')}
+        Applicant registration: ${esc(member.status || 'active')}
       </span>
       <span>
         Administrator access:
@@ -3847,7 +3847,7 @@
         Current roles: ${esc(roleText)}
       </span>
       ${member.already_administrator
-        ? '<span><strong>This member already has Administrator access. Use Manage Roles in the Administrator roster for changes.</strong></span>'
+        ? "<span><strong>This applicant already has Administrator access. Use Manage Roles in the Administrator roster for changes.</strong></span>"
         : ''}
     `;
   }
@@ -3866,7 +3866,7 @@
       $('adminMemberApprovalNotes')?.value.trim() || null;
 
     if (!memberId) {
-      return notice('Select an eligible NurseLink member.', 'error');
+      return notice("Select an eligible NurseLink applicant.", 'error');
     }
 
     if (!roles.length) {
@@ -3915,7 +3915,7 @@
       const select = $('adminMemberCandidate');
       if (select) {
         select.innerHTML =
-          '<option value="">Search for an active verified member first</option>';
+          "<option value=\"\">Search for an active verified applicant first</option>";
       }
 
       const statusArea = $('adminMemberStatus');
@@ -4150,7 +4150,7 @@
         })
       });
 
-      notice(result?.message || 'Member communication sent.', 'success');
+      notice(result?.message || "Applicant communication sent.", 'success');
       $('communicationTitle').value = '';
       $('communicationMessage').value = '';
       $('communicationAction').value = '';
@@ -5260,7 +5260,7 @@
     if (!confirm(
       `Publish the current ${label} draft? ` +
       'A new published version may require affected ' +
-      'members to provide updated consent.'
+      "applicants to provide updated consent."
     )) {
       return;
     }

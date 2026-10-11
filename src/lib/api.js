@@ -573,3 +573,9 @@ export {
   API_URL,
   request,
 }
+
+export const ocrWorkflowReview = id => request('/api/nurselink/admin/membership-command/'+id+'/workflow-review');
+export const ocrResolveIssue = (id,issue,note) => request('/api/nurselink/admin/membership-command/'+id+'/workflow-review/'+issue+'/resolve',{method:'POST',body:JSON.stringify({note})});
+
+export const ocrEmailIntakes = () => request('/api/nurselink/admin/email-intakes');
+export const ocrLinkEmailIntake = (id,candidate_email,note) => request('/api/nurselink/admin/email-intakes/'+id+'/link',{method:'POST',body:JSON.stringify({candidate_email,note})});

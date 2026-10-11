@@ -156,7 +156,7 @@
     host.innerHTML=`
       <section class="nl6441-inline-panel nl6443-demo-filled" data-tab-panel="${esc(label)}">
         <div class="nl6441-inline-head">
-          <div><div class="eyebrow">Member Professional Profile</div><h2>${esc(label)}</h2>
+          <div><div class="eyebrow">Applicant Professional Profile</div><h2>${esc(label)}</h2>
           <p>Database-backed demo records for ${esc(memberNumber())}.</p></div>
           <div class="nl6441-count"><strong>${records.length}</strong><span>record${records.length===1?'':'s'}</span></div>
         </div>

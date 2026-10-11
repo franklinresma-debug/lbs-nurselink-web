@@ -32,7 +32,7 @@
     const host=document.querySelector('.nl6441-tab-host');
     if(!host||host.hidden)return false;
     const rows=DATA[MAP[label]]||[];
-    host.innerHTML=`<section class="nl6441-inline-panel nl6445-db-panel"><div class="nl6441-inline-head"><div><div class="eyebrow">Member Professional Profile</div><h2>${esc(label)}</h2><p>Database-backed demo records for ${esc(member())}.</p></div><div class="nl6441-count"><strong>${rows.length}</strong><span>record${rows.length===1?'':'s'}</span></div></div><div class="nl6441-record-list">${rows.length?rows.map(render[label]).join(''):`<div class="nl6441-empty"><div>＋</div><h3>No ${esc(label.toLowerCase())} records</h3><p>The database currently has no records for this tab.</p></div>`}</div></section>`;
+    host.innerHTML=`<section class="nl6441-inline-panel nl6445-db-panel"><div class="nl6441-inline-head"><div><div class="eyebrow">Applicant Professional Profile</div><h2>${esc(label)}</h2><p>Database-backed demo records for ${esc(member())}.</p></div><div class="nl6441-count"><strong>${rows.length}</strong><span>record${rows.length===1?'':'s'}</span></div></div><div class="nl6441-record-list">${rows.length?rows.map(render[label]).join(''):`<div class="nl6441-empty"><div>＋</div><h3>No ${esc(label.toLowerCase())} records</h3><p>The database currently has no records for this tab.</p></div>`}</div></section>`;
     return true;
   }
 

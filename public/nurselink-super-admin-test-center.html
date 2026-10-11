@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="/lbs-uniform-brand.css?v=20260930-2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
@@ -22,15 +23,15 @@
       </div>
       <nav>
         <a href="/nurselink-admin-dashboard.html">Dashboard</a>
-        <a href="/nurselink-membership-command-center.html">Membership Command Center</a>
-        <a href="/nurselink-member-registry.html">Member Registry</a>
+        <a href="/nurselink-membership-command-center.html">Applicant registration Command Center</a>
+        <a href="/nurselink-member-registry.html">Applicant Registry</a>
         <a class="active" href="/nurselink-super-admin-test-center.html">Super Admin Test Center</a>
         <a href="/nurselink-admin-dashboard.html#accessManagement">Admin Users & Access</a>
         <a href="/admin">Review Center</a>
         <a href="/nurselink-operations-center.html">Operations Center</a>
         <a href="/nurselink-institutional-analytics.html">Institutional Analytics</a>
         <a href="/nurselink-production-readiness.html">Production Readiness</a>
-        <a href="/dashboard">Member / Applicant Portal</a>
+        <a href="/dashboard">Applicant / Applicant Portal</a>
       </nav>
       <button id="adminSignOut" type="button">Sign out of Admin Portal</button>
     </aside>
@@ -40,7 +41,7 @@
         <div>
           <span class="nl-admin-eyebrow">SUPER ADMINISTRATOR QA</span>
           <h1>Functional Test Center</h1>
-          <p>Exercise applicant, member and administrator functionality while keeping real membership status unchanged.</p>
+          <p>Exercise applicant, applicant and administrator functionality while keeping real applicant registration status unchanged.</p>
         </div>
         <div id="adminIdentity" class="nl-admin-identity">
           Checking Super Administrator session…
@@ -58,8 +59,8 @@
           <span class="nl-admin-eyebrow">TEMPORARY QA ACCESS</span>
           <h2>Super Administrator Test Mode</h2>
           <p>
-            Test Mode temporarily permits the Super Administrator through approved-member
-            server gates. It does not approve your membership, issue a member number,
+            Test Mode temporarily permits the Super Administrator through approved-applicant
+            server gates. It does not approve your applicant registration, issue a applicant number,
             alter public verification, or bypass partner-organization tenancy.
           </p>
         </div>
@@ -85,17 +86,17 @@
 
       <section class="nl-super-test-approval">
         <div>
-          <span class="nl-admin-eyebrow">MEMBERSHIP APPROVAL TEST</span>
+          <span class="nl-admin-eyebrow">APPLICANT REGISTRATION APPROVAL TEST</span>
           <h2>Test the complete approval workflow</h2>
           <p>
-            Open the Membership Command Center to move a test application through
+            Open the Applicant registration Command Center to move a test application through
             Submitted → Under Review → Ready for Approval → Approved. When testing
             your own Super Administrator application, the explicit self-action
             confirmation and audit trail remain mandatory.
           </p>
         </div>
         <a href="/nurselink-membership-command-center.html">
-          Open Membership Command Center
+          Open Applicant registration Command Center
         </a>
       </section>
 
@@ -104,7 +105,7 @@
           <div>
             <span class="nl-admin-eyebrow">SAFE API TESTS</span>
             <h2>Functional API Check</h2>
-            <p>Runs non-destructive GET requests against core applicant, member and administrator services.</p>
+            <p>Runs non-destructive GET requests against core applicant, applicant and administrator services.</p>
           </div>
           <button id="runSafeTests" type="button">Run Safe Tests</button>
         </div>
@@ -132,7 +133,7 @@
         <span>
           This capability is available only to a server-confirmed Super Administrator
           with an active separate Administrator Portal session. Partner tenant access,
-          public membership verification and the real membership record remain authoritative.
+          public applicant registration verification and the real applicant registration record remain authoritative.
         </span>
       </section>
     </main>

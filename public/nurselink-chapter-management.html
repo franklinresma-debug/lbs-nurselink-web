@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="/lbs-uniform-brand.css?v=20260930-2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
@@ -16,8 +17,8 @@
     <div class="nl-admin-sidebar-brand"><div class="nl-admin-brand-mark">NL</div><div><strong>NurseLink</strong><small>Administrator Portal</small></div></div>
     <nav>
       <a href="/nurselink-admin-dashboard.html">Dashboard</a>
-      <a href="/nurselink-membership-command-center.html">Membership Command Center</a>
-      <a href="/nurselink-member-registry.html">Member Registry</a>
+      <a href="/nurselink-membership-command-center.html">Applicant registration Command Center</a>
+      <a href="/nurselink-member-registry.html">Applicant Registry</a>
       <a href="/nurselink-credential-compliance.html">Credential Compliance</a>
       <a href="/nurselink-event-management.html">Events & Programs</a>
       <a class="active" href="/nurselink-chapter-management.html">Chapters & Communities</a>
@@ -26,13 +27,13 @@
       <a href="/admin">Review Center</a>
       <a href="/nurselink-operations-center.html">Operations Center</a>
       <a href="/nurselink-institutional-analytics.html">Institutional Analytics</a>
-      <a href="/dashboard">Member / Applicant Portal</a>
+      <a href="/dashboard">Applicant / Applicant Portal</a>
     </nav>
     <button id="adminSignOut" type="button">Sign out of Admin Portal</button>
   </aside>
   <main class="nl-admin-main cm-main">
     <header class="nl-admin-header">
-      <div><span class="nl-admin-eyebrow">MEMBER COMMUNITY</span><h1>Chapters & Communities Management</h1><p>Create chapters, review join requests, assign chapter roles and maintain a primary chapter relationship.</p></div>
+      <div><span class="nl-admin-eyebrow">APPLICANT COMMUNITY</span><h1>Chapters & Communities Management</h1><p>Create chapters, review join requests, assign chapter roles and maintain a primary chapter relationship.</p></div>
       <div id="adminIdentity" class="nl-admin-identity">Checking administrator session…</div>
     </header>
     <div id="chapterAdminNotice" class="nl-admin-notice" hidden></div>
@@ -50,7 +51,7 @@
           <label><span>City</span><input id="chapterCity" maxlength="120"></label>
           <label><span>Contact email</span><input id="chapterEmail" type="email" maxlength="190"></label>
           <label class="span2"><span>Description</span><textarea id="chapterDescription" rows="4" maxlength="10000"></textarea></label>
-          <label class="cm-check span2"><input id="chapterJoinEnabled" type="checkbox" checked><span>Members may request to join</span></label>
+          <label class="cm-check span2"><input id="chapterJoinEnabled" type="checkbox" checked><span>Applicants may request to join</span></label>
           <div class="cm-actions span2"><button id="resetChapter" type="button">Clear</button><button class="primary" type="submit">Save Chapter</button></div>
         </form>
       </section>
@@ -62,7 +63,7 @@
     </section>
 
     <section id="chapterRosterPanel" class="cm-panel" hidden>
-      <div class="nl-admin-section-head"><div><span class="nl-admin-eyebrow">MEMBERSHIP REQUESTS & ROSTER</span><h2 id="chapterRosterTitle">Chapter roster</h2></div><button id="closeRoster" type="button">Close</button></div>
+      <div class="nl-admin-section-head"><div><span class="nl-admin-eyebrow">APPLICANT REGISTRATION REQUESTS & ROSTER</span><h2 id="chapterRosterTitle">Chapter roster</h2></div><button id="closeRoster" type="button">Close</button></div>
       <div id="chapterRoster" class="cm-roster"></div>
     </section>
 

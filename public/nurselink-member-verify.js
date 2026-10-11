@@ -22,7 +22,7 @@
     result.innerHTML = `
       <div class="verify-loading">
         <div class="spinner"></div>
-        <strong>Checking NurseLink membership…</strong>
+        <strong>Checking NurseLink applicant registration…</strong>
       </div>
     `;
   }
@@ -47,13 +47,13 @@
       <article class="verification-card valid"
         data-standing="${esc(standing)}">
         <div class="verification-icon">${active ? '✓' : '!'}</div>
-        <span>VERIFIED NURSELINK MEMBERSHIP RECORD</span>
-        <h2>${esc(data.member_name || 'NurseLink Member')}</h2>
+        <span>VERIFIED NURSELINK APPLICANT REGISTRATION RECORD</span>
+        <h2>${esc(data.member_name || "NurseLink Applicant")}</h2>
         <strong>${esc(data.member_number || '')}</strong>
 
         <dl>
           <div>
-            <dt>Membership Decision</dt>
+            <dt>Applicant registration Decision</dt>
             <dd>Approved</dd>
           </div>
           <div>
@@ -61,24 +61,24 @@
             <dd>${esc(label)}</dd>
           </div>
           <div>
-            <dt>Member Since</dt>
+            <dt>Applicant Since</dt>
             <dd>${esc(data.approved_at ? String(data.approved_at).slice(0, 10) : '—')}</dd>
           </div>
           <div>
-            <dt>Member Services</dt>
+            <dt>Applicant Services</dt>
             <dd>${active ? 'Active Access' : 'Not Active'}</dd>
           </div>
         </dl>
 
         ${active ? `
           <p>
-            This record confirms an approved NurseLink membership that is
+            This record confirms an approved NurseLink applicant registration that is
             currently in Active professional standing.
           </p>
         ` : `
           <p class="standing-message">
-            This is a valid approved NurseLink membership record, but its current
-            professional standing is ${esc(label)}. Member-only NurseLink services
+            This is a valid approved NurseLink applicant registration record, but its current
+            professional standing is ${esc(label)}. Applicant-only NurseLink services
             are not active at this time.
           </p>
         `}
@@ -90,11 +90,11 @@
     result.innerHTML = `
       <article class="verification-card invalid">
         <div class="verification-icon">!</div>
-        <span>MEMBERSHIP NOT VERIFIED</span>
+        <span>APPLICANT REGISTRATION NOT VERIFIED</span>
         <h2>Unable to verify this code</h2>
         <p>
           The verification code may be invalid, incomplete, expired, or no
-          longer associated with an approved NurseLink membership.
+          longer associated with an approved NurseLink applicant registration.
         </p>
       </article>
     `;

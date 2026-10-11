@@ -9,7 +9,7 @@
     ['Applications','/applications'],['Mentoring','/nurselink-mentoring.html'],
     ['Engagement Hub','/nurselink-engagement.html'],['Learning','/learning'],
     ['Credentials','/credentials'],['Qualifications','/qualifications'],['Documents','/documents'],
-    ['Digital Member ID','/nurselink-digital-id.html'],['Messages','/messages'],['Events','/events'],
+    ["Digital Applicant ID",'/nurselink-digital-id.html'],['Messages','/messages'],['Events','/events'],
     ['Programs & Initiatives','/programs'],['Policies & Advocacy','/policies'],
     ['Welfare & Crisis','/welfare'],['Policy & Privacy','/privacy']
   ];
@@ -104,7 +104,7 @@
 
   function buildTopbar(){
     let bar=document.getElementById('nurselink-stable-topbar'); if(bar)return bar;
-    bar=document.createElement('header');bar.id='nurselink-stable-topbar';bar.setAttribute('aria-label','NurseLink member topbar');
+    bar=document.createElement('header');bar.id='nurselink-stable-topbar';bar.setAttribute('aria-label',"NurseLink applicant topbar");
 
     const menu=document.createElement('button');menu.type='button';menu.className='nls-action nls-menu';
     menu.setAttribute('aria-label','Open navigation');menu.textContent='☰';
@@ -129,7 +129,7 @@
     const src=profileImageSrc(); if(!src)return;
     const existing=host.querySelector('img'); if(existing&&existing.src===src)return;
     host.textContent='';
-    const img=document.createElement('img');img.alt='Member profile photo';img.src=src;img.decoding='async';host.appendChild(img);
+    const img=document.createElement('img');img.alt="Applicant profile photo";img.src=src;img.decoding='async';host.appendChild(img);
   }
 
   function markNativeGeometry(){

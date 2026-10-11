@@ -36,6 +36,17 @@ function resolveBrandAsset(source) {
   return value
 }
 
+function resolveLogoSource(placement, source) {
+  const resolved = resolveBrandAsset(source)
+  if (
+    placement === 'sidebar' &&
+    /sidebar-a0b815a2-5936-4745-a66d-b0eb4e1d9c8d\.png/i.test(resolved)
+  ) {
+    return '/lbs-sidebar-logo-cropped-clean.png'
+  }
+  return resolved
+}
+
 function setVar(name, value) {
   if (value === undefined || value === null || value === '') return
   document.documentElement.style.setProperty(name, String(value))
@@ -72,7 +83,7 @@ function syncBrandLogos() {
   document.querySelectorAll('[data-nurselink-logo-placement]').forEach(node => {
     const placement = node.dataset.nurselinkLogoPlacement
     const logo = lastConfig?.branding?.logos?.[placement] || {}
-    const source = resolveBrandAsset(logo.source)
+    const source = resolveLogoSource(placement, logo.source)
     const visible = logo.enabled !== false && !!source
 
     if (node.hidden !== !visible) node.hidden = !visible
@@ -90,6 +101,66 @@ function syncBrandLogos() {
     }
     if (image.getAttribute('src') !== source) image.src = source
     image.alt = logo.alt || 'NurseLink organization logo'
+    const sizePercentRaw = Number(logo.sizePercent ?? (placement === 'sidebar' ? 220 : 100))
+    const sizePercent = Number.isFinite(sizePercentRaw)
+      ? Math.max(placement === 'sidebar' ? 220 : 50, Math.min(220, Math.round(sizePercentRaw)))
+      : placement === 'sidebar' ? 220 : 100
+    if (placement === 'sidebar') {
+      const baseWidth = 103
+      const baseHeight = 38
+      const width = Math.round(baseWidth * sizePercent / 100)
+      const height = Math.round(baseHeight * sizePercent / 100)
+      const paddingValue = Number(logo.sidePadding ?? 16)
+      const sidePadding = Number.isFinite(paddingValue)
+        ? Math.max(0, Math.min(40, Math.round(paddingValue)))
+        : 0
+      const nodeStyles = {
+        width: `${width}px`,
+        minWidth: `${width}px`,
+        maxWidth: `${width}px`,
+        flex: '0 0 auto',
+        height: `${height}px`,
+        minHeight: `${height}px`,
+        maxHeight: `${height}px`,
+        boxSizing: 'border-box',
+        padding: `0 ${sidePadding}px`,
+        overflow: 'hidden',
+      }
+      for (const [name, value] of Object.entries(nodeStyles)) {
+        if (node.style.getPropertyValue(name) !== value) {
+          node.style.setProperty(name, value, 'important')
+        }
+      }
+      const imageStyles = {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        transform: 'none',
+      }
+      for (const [name, value] of Object.entries(imageStyles)) {
+        if (image.style.getPropertyValue(name) !== value) {
+          image.style.setProperty(name, value, 'important')
+        }
+      }
+    }
+    // LBS_LOGO_BOX_SETTINGS_V2
+    if (placement === 'login') {
+      const fit = logo.fitBox !== false;
+      const value = Number(logo.sidePadding ?? 5);
+      const padding = Number.isFinite(value)
+        ? Math.max(0, Math.min(40, Math.round(value))) : 5;
+      const properties = {
+        '--lbs-logo-width': fit ? 'auto' : 'min(220px, 45%)',
+        '--lbs-logo-width-mobile': fit ? 'auto' : 'min(180px, 45%)',
+        '--lbs-logo-width-tablet': fit ? 'auto' : 'min(140px, 35%)',
+        '--lbs-logo-padding': `${padding}px`,
+      };
+      for (const [name, value] of Object.entries(properties)) {
+        if (image.style.getPropertyValue(name) !== value)
+          image.style.setProperty(name, value);
+      }
+    }
+
   })
 }
 

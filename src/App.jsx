@@ -1,4 +1,6 @@
+import './lbs-document-records.css'
 import './panel-navigation.css'
+import './member-journey-navigation.css'
 import CvMakerWorkspace from './pages/CvMakerWorkspace'
 import MemberDashboard from './pages/MemberDashboard'
 import './nurselink-dark-sidebar-buttons-v5200.css'
@@ -116,15 +118,17 @@ import {
   useLocation,
 } from 'react-router-dom'
 
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import './App.css'
 
 import { useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import ApplicantCredentials from './pages/ApplicantCredentials'
 
 import Profile from './pages/Profile'
 import SmartRegistration from './pages/SmartRegistration'
+import OcrWorkflowReview from './pages/OcrWorkflowReview'
 import ApplicationStatus from './pages/ApplicationStatus'
 import Credentials from './pages/Credentials'
 /* NurseLink Phase 2 Final One Deploy v3.2.0 */
@@ -156,8 +160,11 @@ import './member-iphone-typography-v407.css'
 import './member-iphone-android-typography-parity-v408.css'
 import './qualifications-icon-contrast-v661.css'
 import './member-drawer-brand-white-text-v433.css'
+import './member-sidebar-groups.css'
 import { installNurseLinkIOSFirstTapBridge } from './nurselink-ios-first-tap-v406.js'
 import ResetPassword from './pages/ResetPassword'
+import ManagedWorkspace from './pages/ManagedWorkspace'
+import { LbsAppointments, LbsHelp, LbsWorkspaceContext, LbsDrawerAccessibility } from './pages/LbsWorkspace'
 import {
   getRegistrationStatus,
   getPolicyConsent,
@@ -168,29 +175,40 @@ import {
 
 // NurseLink Members Portal Icon Harmonization v1.0.0
 // NurseLink Members Portal Admin-Style Icons v1.0.3
-const menu = [
-  ['Dashboard', '/dashboard', 'dashboard'],
-  ['My Profile', '/profile', 'profile'],
-  ['Smart Registration', '/smart-registration', 'scan'],
-  ['Application Status', '/application-status', 'status'],
-  ['Jobs', '/jobs', 'jobs'],
-  ['Applications', '/applications', 'applications'],
-  ['Documents', '/documents', 'documents'],
-  ['Credentials', '/credentials', 'credentials'],
-  ['Qualifications', '/qualifications', 'qualifications'],
-  ['Portfolio', '/portfolio', 'portfolio'],
-  ['CV Maker', '/cv-maker', 'portfolio'],
-  ['Learning', '/learning', 'learning'],
-  ['Mentoring', '/mentoring', 'mentoring'],
-  ['Engagement Hub', '/engagement', 'engagement'],
-  ['Events', '/events', 'events'],
-  ['Programs & Initiatives', '/initiatives', 'programs'],
-  ['Messages', '/messages', 'messages'],
-  ['Digital Member ID', '/digital-member-id', 'member-id'],
-  ['Welfare & Crisis', '/welfare', 'welfare'],
-  ['Policies & Advocacy', '/policies', 'advocacy'],
-  ['Policy & Privacy', '/policy-center', 'privacy'],
+const menuGroups = [
+  { id: 'home', label: 'Home', icon: 'dashboard', items: [['Home', '/dashboard', 'dashboard']] },
+  { id: 'applications', label: 'My Applications', icon: 'applications', items: [
+    ['Job applications', '/applications', 'applications'],
+    ["Applicant registration review", '/application-status', 'status'],
+    ['Registration', '/smart-registration', 'scan'],
+  ] },
+  { id: 'jobs', label: 'Job Opportunities', icon: 'jobs', items: [['Job Opportunities', '/jobs', 'jobs']] },
+  { id: 'documents', label: 'Documents & CV', icon: 'documents', items: [
+    ['My documents', '/documents', 'documents'], ['CV maker', '/cv-maker', 'portfolio'],
+    ['Credentials', '/credentials', 'credentials'], ['Qualifications', '/qualifications', 'qualifications'],
+    ['Professional portfolio', '/portfolio', 'portfolio'], ['Credential renewal', '/credential-renewal', 'credentials'],
+  ] },
+  { id: 'appointments', label: 'Appointments', icon: 'events', items: [['Appointments', '/appointments', 'events']] },
+  { id: 'processing', label: 'My Processing', icon: 'documents', items: [['My Processing', '/processing', 'documents']] },
+  { id: 'messages', label: 'Messages', icon: 'messages', items: [['Messages', '/messages', 'messages']] },
+  { id: 'profile', label: 'My Profile', icon: 'profile', items: [['My Profile', '/profile', 'profile']] },
+  { id: 'services', label: 'More Services', icon: 'learning', items: [
+    ['Career intelligence', '/career-intelligence', 'jobs'], ['Learning', '/learning', 'learning'], ['Mentoring', '/mentoring', 'mentoring'],
+    ['Engagement', '/engagement', 'engagement'], ['Events', '/events', 'events'],
+    ['Programs', '/initiatives', 'programs'], ["Digital applicant ID", '/digital-member-id', 'member-id'], ['Notifications', '/notifications', 'messages'],
+    ['Policies & advocacy', '/policies', 'advocacy'],
+  ] },
+  { id: 'help', label: 'Help & Support', icon: 'welfare', items: [
+    ['Help & Support', '/help', 'welfare'], ['Welfare assistance', '/welfare', 'welfare'],
+    ['Policy & privacy', '/policy-center', 'privacy'],
+  ] },
 ]
+
+function memberMenuGroupForPath(pathname) {
+  return menuGroups.find((group) =>
+    group.items.some(([, path]) => pathname === path || pathname.startsWith(`${path}/`))
+  )?.id || 'home'
+}
 
 const memberNavIconPaths = {
   dashboard: ['M3 11.5 12 4l9 7.5', 'M5 10.5V20h14v-9.5', 'M9 20v-6h6v6'],
@@ -236,11 +254,122 @@ const memberOnlyPaths = [
   '/mentoring',
   '/engagement',
   '/learning',
-  '/credentials',
   '/qualifications',
-  '/documents',
   '/digital-member-id',
 ]
+
+const memberJourneyStages = [
+  {
+    label: 'Profile',
+    shortLabel: 'Profile',
+    path: '/profile',
+    icon: 'profile',
+    matches: ['/dashboard', '/profile'],
+    help: 'Confirm your identity, contact details and career preferences.',
+  },
+  {
+    label: 'Documents & CV',
+    shortLabel: 'Documents',
+    path: '/smart-registration?smartstep=1',
+    icon: 'scan',
+    matches: ['/smart-registration', '/cv-maker'],
+    help: 'Upload evidence and review information detected from your files.',
+  },
+  {
+    label: 'Credentials',
+    shortLabel: 'Credentials',
+    path: '/qualifications',
+    icon: 'qualifications',
+    matches: ['/credentials', '/qualifications', '/portfolio'],
+    help: 'Review licenses, qualifications, competencies and readiness.',
+  },
+  {
+    label: 'Job Matches',
+    shortLabel: 'Matches',
+    path: '/jobs',
+    icon: 'jobs',
+    matches: ['/jobs'],
+    help: 'Compare verified opportunities, match reasons and requirements.',
+  },
+  {
+    label: 'Inquiry & Applications',
+    shortLabel: 'Applications',
+    path: '/applications',
+    icon: 'applications',
+    matches: ['/applications'],
+    help: 'Track inquiries, applications, lineup review and employer progress.',
+  },
+  {
+    label: 'Interview & Updates',
+    shortLabel: 'Interview',
+    path: '/messages',
+    icon: 'messages',
+    matches: ['/messages', '/application-status'],
+    help: 'Follow interview actions, staff requests and private updates.',
+  },
+  {
+    label: 'Deployment',
+    shortLabel: 'Deployment',
+    path: '/documents',
+    icon: 'documents',
+    matches: ['/documents'],
+    help: 'Monitor document corrections and deployment requirements.',
+  },
+  {
+    label: 'Flight & Welfare',
+    shortLabel: 'Welfare',
+    path: '/welfare',
+    icon: 'welfare',
+    matches: ['/welfare'],
+    help: 'Keep welfare support, emergency details and travel readiness close.',
+  },
+]
+
+function MemberJourneyNavigator({ pathname }) {
+  const activeIndex = memberJourneyStages.findIndex((stage) =>
+    stage.matches.includes(pathname)
+  )
+
+  if (activeIndex < 0) return null
+
+  const activeStage = memberJourneyStages[activeIndex]
+  const nextStage = memberJourneyStages[activeIndex + 1] || null
+
+  return (
+    <section className="nl-journey-nav-v1" aria-labelledby="nl-journey-nav-title">
+      <div className="nl-journey-nav-v1-head">
+        <div>
+          <span>NurseLink journey</span>
+          <strong id="nl-journey-nav-title">
+            Stage {activeIndex + 1} of {memberJourneyStages.length}: {activeStage.label}
+          </strong>
+          <small>{activeStage.help}</small>
+        </div>
+        {nextStage && (
+          <NavLink className="nl-journey-nav-v1-next" to={nextStage.path}>
+            <span>Preview next</span>
+            <strong>{nextStage.label} →</strong>
+          </NavLink>
+        )}
+      </div>
+
+      <nav className="nl-journey-nav-v1-steps" aria-label="NurseLink journey stages">
+        {memberJourneyStages.map((stage, index) => (
+          <NavLink
+            key={stage.label}
+            to={stage.path}
+            className={index === activeIndex ? 'active' : ''}
+            aria-current={index === activeIndex ? 'step' : undefined}
+          >
+            <span className="nl-journey-nav-v1-number">{index + 1}</span>
+            <MemberNavIcon name={stage.icon} />
+            <span>{stage.shortLabel}</span>
+          </NavLink>
+        ))}
+      </nav>
+    </section>
+  )
+}
 
 function DigitalMemberIdRedirect() {
   useEffect(() => {
@@ -251,8 +380,8 @@ function DigitalMemberIdRedirect() {
 
   return (
     <section className="page-card">
-      <h1>Digital Member ID</h1>
-      <p>Opening your secure NurseLink member ID…</p>
+      <h1>Digital Applicant ID</h1>
+      <p>Opening your secure NurseLink applicant ID…</p>
     </section>
   )
 }
@@ -288,6 +417,14 @@ function getErrorMessage(error) {
     error?.message ||
     'Something went wrong. Please try again.'
   )
+}
+
+function pendingAdminDestination() {
+  try {
+    const token = sessionStorage.getItem('lbs_pending_admin_invite') || ''
+    return /^[A-Za-z0-9]{80}$/.test(token)
+      ? `/dashboard?admin_invite=${encodeURIComponent(token)}` : '/dashboard'
+  } catch (_) { return '/dashboard' }
 }
 
 function Login() {
@@ -416,7 +553,7 @@ function Login() {
   ) {
     return (
       <Navigate
-        to="/dashboard"
+        to={pendingAdminDestination()}
         replace
       />
     )
@@ -442,7 +579,7 @@ function Login() {
 
       const destination =
         location.state?.from ||
-        '/dashboard'
+        pendingAdminDestination()
 
       navigate(
         destination,
@@ -451,6 +588,10 @@ function Login() {
         }
       )
     } catch (err) {
+      if (err.status === 403 && /email.*verif/i.test(err.data?.message || err.message || '')) {
+        navigate('/verify-email', {replace: true, state: {email: email.trim()}})
+        return
+      }
       setError(
         getErrorMessage(err)
       )
@@ -463,7 +604,7 @@ function Login() {
     <main className="nl713-login-shell">
       <section
         className="nl713-login-hero"
-        aria-label="NurseLink member community"
+        aria-label="NurseLink applicant community"
         style={{
           '--nl-login-hero-transition':
             loginHeroConfig.transition === 'none'
@@ -607,94 +748,35 @@ function Login() {
               hidden
             />
             <div className="nl713-login-message">
-              <span className="nl713-login-kicker">
-                MEMBER ACCESS
-              </span>
+              <span className="nl-login-public-brand">NurseLink by LBS</span>
+
 
               <h1>
-                Welcome back to NurseLink
+                Your global nursing career, in one secure portal.
               </h1>
 
               <p>
-                Access your profile, credentials,
-                learning, opportunities, and
-                professional network.
+                One account for your professional file, compliance documents, skills development, and overseas opportunities with LBS principals.
               </p>
             </div>
           </div>
 
-          <div className="nl713-login-benefits">
-            <div className="nl713-login-benefit">
-              <div className="nl713-login-benefit-icon">
-                +
-              </div>
 
-              <div>
-                <strong>Built for Nurses</strong>
-                <span>
-                  A professional community designed
-                  around nurses and their careers.
-                </span>
-              </div>
-            </div>
-
-            <div className="nl713-login-benefit">
-              <div className="nl713-login-benefit-icon">
-                ✓
-              </div>
-
-              <div>
-                <strong>Secure & Trusted</strong>
-                <span>
-                  Your information and professional
-                  records are handled securely.
-                </span>
-              </div>
-            </div>
-
-            <div className="nl713-login-benefit">
-              <div className="nl713-login-benefit-icon">
-                ↗
-              </div>
-
-              <div>
-                <strong>Grow Your Future</strong>
-                <span>
-                  Build credentials, access learning,
-                  and discover opportunities.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="nl713-login-hero-foot">
-            <strong>
-              Connecting Filipino nurses.
-            </strong>
-
-            <span>
-              Together, we elevate care.
-            </span>
-          </div>
         </div>
       </section>
 
       <section className="nl713-login-panel">
         <div className="nl713-login-card">
           <div className="nl713-login-card-kicker">
-            Member Access
+            Applicant portal
           </div>
 
-          <h2>
-            {verificationUrl
-              ? 'Sign in to verify your email'
-              : 'Welcome back'}
-          </h2>
+          {verificationUrl && <h2>Sign in to verify your email</h2>}
 
           <p className="nl713-login-card-intro">
             {verificationUrl
               ? 'Sign in using the NurseLink account associated with this verification email.'
-              : 'Enter your NurseLink account details to continue.'}
+              : 'Sign in to your NurseLink by LBS account.'}
           </p>
 
           {error && (
@@ -761,33 +843,23 @@ function Login() {
             </button>
           </form>
 
+          <p className="nl-login-protected">Protected applicant access for LBS-registered nurses and healthcare professionals.</p>
+
           <p className="nl713-login-register">
-            New to NurseLink?{' '}
+            New to LBS?{' '}
 
             <NavLink to="/register">
-              Create an account
-            </NavLink>
+              Create your NurseLink profile
+            </NavLink>{' '}to start pre-screening.
           </p>
 
-          <div
-            className="nl713-login-trust"
-            aria-label="NurseLink benefits"
-          >
-            <div className="nl713-login-trust-item">
-              <strong>Secure & Private</strong>
-              <span>Your data is protected.</span>
-            </div>
-
-            <div className="nl713-login-trust-item">
-              <strong>Trusted Community</strong>
-              <span>Connect with nurses.</span>
-            </div>
-
-            <div className="nl713-login-trust-item">
-              <strong>Career Growth</strong>
-              <span>Access opportunities.</span>
-            </div>
+          <div className="nl713-login-trust" aria-label="NurseLink career support">
+            <div className="nl713-login-trust-item"><svg className="nl-login-benefit-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><strong>Professional readiness</strong><span>Keep your credentials and supporting documents organized.</span></div>
+            <div className="nl713-login-trust-item"><svg className="nl-login-benefit-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5-10-5Zm4 2v6c4 3 8 3 12 0v-6M22 9v7"/></svg><strong>Skills development</strong><span>Follow learning relevant to your career.</span></div>
+            <div className="nl713-login-trust-item"><svg className="nl-login-benefit-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 22V4h16v18M2 22h20M9 22v-5h6v5M9 8h6M12 5v6M8 14h1M15 14h1"/></svg><strong>Hospital opportunities</strong><span>Explore openings through LBS.</span></div>
+            <div className="nl713-login-trust-item"><svg className="nl-login-benefit-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><strong>Application progress</strong><span>Stay informed about reviews and next steps.</span></div>
           </div>
+          <p className="nl-login-system-name">Applicant portal of the LBS Advance Recruitment Management System (ARMS)</p>
 
           <a
             className="nl713-login-admin"
@@ -996,7 +1068,7 @@ function Register() {
       }
 
       navigate(
-        '/dashboard',
+        '/smart-registration',
         {
           replace: true,
         }
@@ -1021,13 +1093,13 @@ function Register() {
 
         <p>
           Create your account and begin
-          your membership application.
+          your applicant registration application.
         </p>
       </div>
 
       <div className="auth-card">
         <div className="eyebrow">
-          Member Registration
+          Applicant Registration
         </div>
 
         <h2>
@@ -1042,7 +1114,7 @@ function Register() {
 
         {registrationMode === 'closed' && (
           <div className="form-notice form-notice-closed">
-            New member registration is temporarily closed. Existing members may still sign in.
+            New applicant registration is temporarily closed. Existing applicants may still sign in.
           </div>
         )}
 
@@ -1193,20 +1265,20 @@ function PublicPolicy({ type }) {
 
         {isPrivacy ? (
           <>
-            <section><h2>Information we collect</h2><p>NurseLink collects account details, contact information, professional history, credentials, uploaded documents, application records, and service activity needed to administer membership and member services.</p></section>
-            <section><h2>Why we use it</h2><p>We use this information to verify identity and qualifications, process applications, maintain the professional registry, deliver requested services, protect the platform, meet governance obligations, and communicate important membership updates.</p></section>
+            <section><h2>Information we collect</h2><p>NurseLink collects account details, contact information, professional history, credentials, uploaded documents, application records, and service activity needed to administer applicant registration and applicant services.</p></section>
+            <section><h2>Why we use it</h2><p>We use this information to verify identity and qualifications, process applications, maintain the professional registry, deliver requested services, protect the platform, meet governance obligations, and communicate important applicant registration updates.</p></section>
             <section><h2>Document processing and OCR</h2><p>Documents submitted through Smart Registration may be scanned for malware and processed with optical character recognition. Extracted values assist data entry and remain subject to applicant confirmation and authorized reviewer verification.</p></section>
-            <section><h2>Access and disclosure</h2><p>Access is limited by role. Authorized NurseLink reviewers, administrators, and service providers may process information only for approved operational purposes. NurseLink does not publish private evidence documents as part of a member profile.</p></section>
-            <section><h2>Retention and protection</h2><p>Records are retained only as required for membership administration, audit, legal, security, and continuity purposes. NurseLink uses access controls, encryption in transit, monitoring, restricted backups, and audit records to protect information.</p></section>
+            <section><h2>Access and disclosure</h2><p>Access is limited by role. Authorized NurseLink reviewers, administrators, and service providers may process information only for approved operational purposes. NurseLink does not publish private evidence documents as part of a applicant profile.</p></section>
+            <section><h2>Retention and protection</h2><p>Records are retained only as required for applicant registration administration, audit, legal, security, and continuity purposes. NurseLink uses access controls, encryption in transit, monitoring, restricted backups, and audit records to protect information.</p></section>
             <section><h2>Your choices and rights</h2><p>You may request access, correction, a copy, restriction, or deletion where applicable through NurseLink support and privacy-request services. Some records may need to be retained for legal, security, or governance reasons.</p></section>
           </>
         ) : (
           <>
-            <section><h2>Using NurseLink</h2><p>You must provide accurate information, maintain the security of your account, and use NurseLink only for lawful membership and professional purposes. You are responsible for reviewing extracted information before confirming or submitting it.</p></section>
-            <section><h2>Applications and credentials</h2><p>Submitting information does not guarantee membership, credential verification, employment, placement, or access to a particular service. NurseLink reviewers may request additional evidence and make governed decisions under current membership rules.</p></section>
-            <section><h2>Acceptable use</h2><p>Do not impersonate another person, upload malicious or misleading material, attempt unauthorized access, interfere with the service, or misuse member information. Access may be restricted or suspended to protect members and the platform.</p></section>
+            <section><h2>Using NurseLink</h2><p>You must provide accurate information, maintain the security of your account, and use NurseLink only for lawful applicant registration and professional purposes. You are responsible for reviewing extracted information before confirming or submitting it.</p></section>
+            <section><h2>Applications and credentials</h2><p>Submitting information does not guarantee applicant registration, credential verification, employment, placement, or access to a particular service. NurseLink reviewers may request additional evidence and make governed decisions under current applicant registration rules.</p></section>
+            <section><h2>Acceptable use</h2><p>Do not impersonate another person, upload malicious or misleading material, attempt unauthorized access, interfere with the service, or misuse applicant information. Access may be restricted or suspended to protect applicants and the platform.</p></section>
             <section><h2>Service availability</h2><p>NurseLink works to keep services available and records protected, but maintenance, security events, or circumstances outside its control may temporarily interrupt access.</p></section>
-            <section><h2>Changes</h2><p>Material updates will be identified by a new version and effective date. NurseLink may request renewed acceptance when changes affect how the service or member information is governed.</p></section>
+            <section><h2>Changes</h2><p>Material updates will be identified by a new version and effective date. NurseLink may request renewed acceptance when changes affect how the service or applicant information is governed.</p></section>
           </>
         )}
 
@@ -1313,6 +1385,7 @@ function PolicyCenter({ onAccepted }) {
 }
 
 function VerifyEmail() {
+  const {user} = useAuth()
   const location =
     useLocation()
 
@@ -1339,6 +1412,8 @@ function VerifyEmail() {
     }
   }
 
+  if (user?.email_verification_required === false) return <Navigate to="/smart-registration" replace />
+
   return (
     <div className="auth-screen" role="main">
       <div className="auth-brand">
@@ -1364,7 +1439,7 @@ function VerifyEmail() {
         </h2>
 
         <p>
-          We sent a verification message to:
+          Email address awaiting verification:
         </p>
 
         <div className="verification-email">
@@ -1448,8 +1523,8 @@ function EngagementRedirect() {
 
   return (
     <Placeholder
-      title="Member Engagement Hub"
-      description="Opening your NurseLink community, chapters, events and member activities."
+      title="Applicant Engagement Hub"
+      description="Opening your NurseLink community, chapters, events and applicant activities."
       hidePanel
     />
   )
@@ -1517,33 +1592,33 @@ function MemberLocked({
       <div className="page-header">
         <div>
           <div className="eyebrow">
-            Member Feature
+            Applicant Feature
           </div>
 
           <h1>{title}</h1>
 
           <p>
             This feature becomes available
-            after your NurseLink membership
+            after your NurseLink applicant registration
             application is approved.
           </p>
         </div>
       </div>
 
-      <div className="panel member-locked-panel">
+      <div className="panel applicant-locked-panel">
         <div className="member-lock-icon">
           🔒
         </div>
 
         <h2>
-          Available after membership approval
+          Available after applicant registration approval
         </h2>
 
         <p>
-          Complete and submit your membership
+          Complete and submit your applicant registration
           application. Once approved, NurseLink
           will automatically activate this
-          member service.
+          applicant service.
         </p>
 
         <NavLink
@@ -1569,7 +1644,7 @@ function NavigationTour({
     {
       path: '/dashboard',
       title: 'Your NurseLink dashboard',
-      text: 'Start here for membership progress, readiness and the next action NurseLink recommends.',
+      text: "Start here for applicant registration progress, readiness and the next action NurseLink recommends.",
     },
     {
       path: '/profile',
@@ -1626,7 +1701,7 @@ function NavigationTour({
     {
       path: '/smart-registration',
       title: '4. Add credentials and evidence',
-      text: 'Record your PRC license and other credentials, enter dates exactly as issued, and attach the matching evidence. Member confirmation is not reviewer verification.',
+      text: "Record your PRC license and other credentials, enter dates exactly as issued, and attach the matching evidence. Applicant confirmation is not reviewer verification.",
     },
     {
       path: '/application-status',
@@ -1778,6 +1853,10 @@ function AppLayout() {
     setMemberMobileNavOpen,
   ] = useState(false)
 
+  const [expandedMemberNavGroup, setExpandedMemberNavGroup] = useState(() =>
+    memberMenuGroupForPath(memberShellLocation.pathname)
+  )
+
   // NurseLink mobile drawer body scroll lock v3.3.2
   useEffect(() => {
     if (!memberMobileNavOpen) return undefined
@@ -1803,7 +1882,7 @@ function AppLayout() {
 
   const [memberTheme, setMemberTheme] = useState(() => {
     const saved = window.localStorage.getItem('nurselink-member-theme')
-    return ['light', 'dark', 'system'].includes(saved) ? saved : 'system'
+    return ['light', 'dark', 'system'].includes(saved) ? saved : 'light'
   })
 
   useEffect(() => {
@@ -1834,6 +1913,7 @@ function AppLayout() {
   const [policyConsentError, setPolicyConsentError] = useState('')
 
   const isMember =
+    Boolean(user?.applicant_portal_access) ||
     user?.roles?.includes('member') ||
     Boolean(user?.member)
 
@@ -1849,19 +1929,9 @@ function AppLayout() {
 
   useEffect(() => {
     setMemberMobileNavOpen(false)
+    setExpandedMemberNavGroup(memberMenuGroupForPath(memberShellLocation.pathname))
   }, [memberShellLocation.pathname])
 
-  useEffect(() => {
-    if (window.localStorage.getItem(tourStorageKey)) {
-      return undefined
-    }
-
-    const timer = window.setTimeout(() => {
-      setNavigationTourOpen(true)
-    }, 700)
-
-    return () => window.clearTimeout(timer)
-  }, [tourStorageKey])
 
   useEffect(() => {
     let active = true
@@ -1897,13 +1967,9 @@ function AppLayout() {
     /* NURSELINK_INSTANT_SIGNOUT_V404 */
     setSigningOut(true)
 
-    navigate('/login', { replace: true })
-
     try {
-      await Promise.race([
-        logout(),
-        new Promise((resolve) => window.setTimeout(resolve, 2500)),
-      ])
+      await logout()
+      window.location.replace('/')
     } catch (error) {
       console.warn('NurseLink sign-out request completed with a client-side error.', error)
     } finally {
@@ -1930,6 +1996,7 @@ function AppLayout() {
     <div
       className={[
         'app-shell',
+        'lbs-uiux',
         'member-react-safe-shell-v108',
         'member-shell-v636',
         memberMobileNavOpen
@@ -1938,6 +2005,7 @@ function AppLayout() {
       ].filter(Boolean).join(' ')}
     >
 
+      <a href="#lbs-main-content" className="lbs-skip-link">Skip to main content</a>
       <button
         type="button"
         className="mobile-nav-backdrop"
@@ -1946,7 +2014,8 @@ function AppLayout() {
       />
 
 
-      <aside className="sidebar">
+      <LbsDrawerAccessibility open={memberMobileNavOpen} setOpen={setMemberMobileNavOpen} />
+      <aside className="sidebar" id="lbs-member-sidebar">
         <button
           type="button"
           className="mobile-nav-close"
@@ -1959,72 +2028,128 @@ function AppLayout() {
         <div
           className="logo nurselink-sidebar-brand"
           aria-label="NurseLink Medical Services Division"
+          style={{
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            justifyContent: 'center',
+            minHeight: 162,
+            padding: '6px 8px 20px',
+            textAlign: 'center',
+          }}
         >
           <div
             className="nurselink-runtime-logo nurselink-sidebar-logo"
             data-nurselink-logo-placement="sidebar"
-            hidden
-          />
-          <div className="nurselink-sidebar-brand-copy">
+            style={{
+              background: '#fff',
+              borderRadius: 10,
+              boxShadow: '0 10px 22px rgba(2,30,56,.24)',
+              flex: '0 0 auto',
+              height: 84,
+              maxHeight: 84,
+              maxWidth: 226,
+              minHeight: 84,
+              minWidth: 226,
+              overflow: 'hidden',
+              padding: 0,
+              width: 226,
+            }}
+          >
+            <img
+              src="/lbs-sidebar-logo-cropped-clean.png"
+              alt="LBS Recruitment Solutions"
+              style={{
+                display: 'block',
+                height: '100%',
+                objectFit: 'contain',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div
+            className="nurselink-sidebar-brand-copy"
+            style={{
+              alignItems: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              minWidth: 0,
+              textAlign: 'center',
+              width: '100%',
+            }}
+          >
             <strong>NurseLink</strong>
             <small>Medical Services Division</small>
           </div>
         </div>
 
-        <nav>
-          {menu.map(
-            ([label, path, icon]) => {
-              if (path.endsWith('.html')) return (
-                <a key={path} href={path} onClick={() => setMemberMobileNavOpen(false)}>
-                  <MemberNavIcon name={icon} />
-                  <span className="member-admin-nav-label">{label}</span>
-                </a>
-              )
-              const locked =
-                memberOnlyPaths.includes(
-                  path
-                ) &&
-                !isMember
+        <div className="lbs-workspace-label">APPLICANT PORTAL</div>
+        <nav className="nl-member-accordion-nav" aria-label="Applicant navigation">
+          {menuGroups.map((group) => {
+            const expanded = expandedMemberNavGroup === group.id
+            const containsCurrentPage = memberMenuGroupForPath(memberShellLocation.pathname) === group.id
 
-              return (
-                <Fragment key={path}>
-                {({'/dashboard':'My NurseLink','/portfolio':'Grow & Connect','/messages':'Support & Account'})[path] && <div className="nl-member-nav-group">{({'/dashboard':'My NurseLink','/portfolio':'Grow & Connect','/messages':'Support & Account'})[path]}</div>}
-                <NavLink
-                  onClick={() => setMemberMobileNavOpen(false)}
-                  key={path}
-                  to={path}
-                  data-tour-path={path}
-                  className={({
-                    isActive,
-                  }) =>
-                    [
-                      isActive
-                        ? 'active'
-                        : '',
-                      locked
-                        ? 'locked-nav'
-                        : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')
-                  }
-                >
-                  <MemberNavIcon name={icon} />
-
-                  <span className="member-admin-nav-label">
-                    {label}
-                  </span>
-
-                  {locked && (
-                    <small>
-                      🔒
-                    </small>
-                  )}
-                </NavLink>
-                </Fragment>
-              )
+            if (group.items.length === 1) {
+              const [label, path, icon] = group.items[0]
+              const locked = memberOnlyPaths.includes(path) && !isMember
+              return <NavLink key={group.id} to={path} data-tour-path={path}
+                onClick={() => setMemberMobileNavOpen(false)}
+                className={({ isActive }) => `lbs-direct-nav${isActive ? ' active' : ''}${locked ? ' locked-nav' : ''}`}>
+                <MemberNavIcon name={icon} /><span>{label}</span>{locked && <small aria-label="Applicant registration access required">🔒</small>}
+              </NavLink>
             }
-          )}
+            return (
+              <section className={`nl-member-nav-section${expanded ? ' is-expanded' : ''}`} key={group.id}>
+                <button
+                  type="button"
+                  className="nl-member-nav-toggle"
+                  aria-expanded={expanded}
+                  aria-controls={`nl-member-nav-${group.id}`}
+                  onClick={() => setExpandedMemberNavGroup((current) => current === group.id ? null : group.id)}
+                >
+                  <MemberNavIcon name={group.icon} />
+                  <span className="nl-member-nav-toggle-label">{group.label}</span>
+                  {containsCurrentPage && !expanded && <span className="nl-member-nav-current-dot" aria-label="Contains current page" />}
+                  <svg className="nl-member-nav-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </button>
+
+                <div
+                  id={`nl-member-nav-${group.id}`}
+                  className="nl-member-nav-items"
+                  hidden={!expanded}
+                >
+                  {group.items.map(([label, path, icon]) => {
+                    if (path.endsWith('.html')) return (
+                      <a key={path} href={path} onClick={() => setMemberMobileNavOpen(false)}>
+                        <MemberNavIcon name={icon} />
+                        <span className="member-admin-nav-label">{label}</span>
+                      </a>
+                    )
+
+                    const locked = memberOnlyPaths.includes(path) && !isMember
+
+                    return (
+                      <NavLink
+                        onClick={() => setMemberMobileNavOpen(false)}
+                        key={path}
+                        to={path}
+                        data-tour-path={path}
+                        className={({ isActive }) => [isActive ? 'active' : '', locked ? 'locked-nav' : ''].filter(Boolean).join(' ')}
+                      >
+                        <MemberNavIcon name={icon} />
+                        <span className="member-admin-nav-label">{label}</span>
+                        {locked && <small>🔒</small>}
+                      </NavLink>
+                    )
+                  })}
+                </div>
+              </section>
+            )
+          })}
         </nav>
 
         <div className="sidebar-bottom">
@@ -2053,7 +2178,10 @@ function AppLayout() {
         </div>
       </aside>
 
-      <main className="main-area">
+      <main className="main-area" id="lbs-main-content" tabIndex={-1}>
+        {user && !user.email_verified && user.email_verification_required!==false && <div role="status" style={{padding:'12px 20px',background:'#fff7df',color:'#332800'}}>
+          You can enter your profile and credentials now. Your email is still unverified. <a href="/verify-email">Confirm email</a>
+        </div>}
         <header className="topbar">
           <button
             type="button"
@@ -2067,18 +2195,15 @@ function AppLayout() {
             <span></span>
           </button>
 
-          <div
-            className="topbar-spacer"
-            aria-hidden="true"
-          />
+          <div className="lbs-topbar-title"><strong>Applicant Portal</strong><span>NurseLink applicant workspace</span></div>
 
           <div className="topbar-member-actions">
-            {memberShellLocation.pathname === '/dashboard' && <NavLink to="/notifications" className="nld-notification-link" aria-label="Open notifications"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></NavLink>}
+            {<NavLink to="/notifications" className="nld-notification-link" aria-label="Open notifications"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></NavLink>}
             <button
               type="button"
               className="navigation-help-button"
               onClick={() => setNavigationTourOpen(true)}
-              aria-label="Open member navigation guide"
+              aria-label="Open applicant navigation guide"
               title="Help"
             >
               ? <span>Help</span>
@@ -2138,13 +2263,13 @@ function AppLayout() {
             <div>
               <strong>
                 {user?.name ||
-                  'Member'}
+                  "Applicant"}
               </strong>
 
               <small>
                 {user?.member
                   ? user.member.member_no
-                  : 'Membership pending'}
+                  : "Applicant registration pending"}
               </small>
             </div>
           </div>
@@ -2175,6 +2300,8 @@ function AppLayout() {
           <div className="policy-consent-advisory">{policyConsentError}</div>
         )}
 
+        <LbsWorkspaceContext pathname={memberShellLocation.pathname} />
+
         <NavigationTour
           open={navigationTourOpen}
           isMember={isMember}
@@ -2187,6 +2314,10 @@ function AppLayout() {
         />
 
         <Routes>
+          <Route path="/ocr-review" element={<OcrWorkflowReview />} />
+          <Route path="/appointments" element={<LbsAppointments />} />
+          <Route path="/processing" element={<div className="lbs-page"><lbs-processing /></div>} />
+          <Route path="/help" element={<LbsHelp />} />
           <Route path="/cv-maker" element={<CvMakerWorkspace />} />
           <Route
             path="/dashboard"
@@ -2195,7 +2326,7 @@ function AppLayout() {
 
           <Route
             path="/profile"
-            element={<Profile />}
+            element={isMember ? <Profile /> : <SmartRegistration />}
           />
 
           <Route
@@ -2238,7 +2369,7 @@ function AppLayout() {
             path="/credential-renewal"
             element={routeForMemberFeature(
               'Credential Renewal',
-              <CredentialRenewalRedirect />
+              <ManagedWorkspace key="credential-renewal" name="credential-renewal" />
             )}
           />
 
@@ -2246,28 +2377,28 @@ function AppLayout() {
             path="/career-intelligence"
             element={routeForMemberFeature(
               'Career Intelligence',
-              <CareerIntelligenceRedirect />
+              <ManagedWorkspace key="career-intelligence" name="career-intelligence" />
             )}
           />
 
           <Route
             path="/notifications"
-            element={<NotificationsRedirect />}
+            element={<ManagedWorkspace key="notifications" name="notifications" />}
           />
 
           <Route
             path="/mentoring"
             element={routeForMemberFeature(
               'Mentoring & Peer Support',
-              <MentoringRedirect />
+              <ManagedWorkspace key="mentoring" name="mentoring" />
             )}
           />
 
           <Route
             path="/engagement"
             element={routeForMemberFeature(
-              'Member Engagement Hub',
-              <EngagementRedirect />
+              "Applicant Engagement Hub",
+              <ManagedWorkspace key="engagement" name="engagement" />
             )}
           />
 
@@ -2281,10 +2412,7 @@ function AppLayout() {
 
           <Route
             path="/credentials"
-            element={routeForMemberFeature(
-              'Credentials',
-              <Phase2CredentialsReconciledPage><Credentials /></Phase2CredentialsReconciledPage>
-            )}
+            element={isMember ? <Phase2CredentialsReconciledPage><Credentials /></Phase2CredentialsReconciledPage> : <ApplicantCredentials />}
           />
 
           <Route
@@ -2297,17 +2425,14 @@ function AppLayout() {
 
           <Route
             path="/documents"
-            element={routeForMemberFeature(
-              'Documents',
-              <Phase2DocumentsPage />
-            )}
+            element={<Phase2DocumentsPage />}
           />
 
           <Route
             path="/digital-member-id"
             element={routeForMemberFeature(
-              'Digital Member ID',
-              <DigitalMemberIdRedirect />
+              "Digital Applicant ID",
+              <ManagedWorkspace key="digital-member-id" name="digital-member-id" />
             )}
           />
 

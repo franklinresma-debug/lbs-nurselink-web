@@ -492,7 +492,7 @@
       if ([401, 403, 419].includes(error.status)) {
         notice(
           error.status === 403
-            ? 'Active approved NurseLink membership is required to use the Credential Renewal Center.'
+            ? "Active approved NurseLink applicant registration is required to use the Credential Renewal Center."
             : 'Please sign in again to use the Credential Renewal Center.',
           'error'
         );

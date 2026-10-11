@@ -739,7 +739,7 @@
             ].filter(Boolean).join(' · '),
             x.review_status
           ),
-          'Private third-party reference information. Not part of the public member profile.'
+          "Private third-party reference information. Not part of the public applicant profile."
         )}
 
 
@@ -754,7 +754,7 @@
             <p>
               This will eventually create an unverified
               applicant account and draft application only.
-              Membership approval and credential verification
+              Applicant registration approval and credential verification
               remain separate governed workflows.
             </p>
 
@@ -839,7 +839,7 @@
         window.confirm(
           'Import this reviewed nurse as a NurseLink Applicant?\n\n'
           + 'This creates an applicant account and DRAFT application only.\n\n'
-          + 'It does NOT approve membership and does NOT verify credentials.'
+          + "It does NOT approve applicant registration and does NOT verify credentials."
         );
 
       if (!confirmed) {
@@ -884,7 +884,7 @@
           <div class="bnai-empty">
             <strong>Applicant import completed.</strong>
             <br>
-            Membership approval and credential verification
+            Applicant registration approval and credential verification
             remain pending governed workflows.
           </div>
         `;

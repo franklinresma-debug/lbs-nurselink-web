@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="/lbs-uniform-brand.css?v=20260930-2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
@@ -16,8 +17,8 @@
     <div class="nl-admin-sidebar-brand"><div class="nl-admin-brand-mark">NL</div><div><strong>NurseLink</strong><small>Administrator Portal</small></div></div>
     <nav>
       <a href="/nurselink-admin-dashboard.html">Dashboard</a>
-      <a href="/nurselink-membership-command-center.html">Membership Command Center</a>
-      <a href="/nurselink-member-registry.html">Member Registry</a>
+      <a href="/nurselink-membership-command-center.html">Applicant registration Command Center</a>
+      <a href="/nurselink-member-registry.html">Applicant Registry</a>
       <a href="/nurselink-credential-compliance.html">Credential Compliance</a>
       <a class="active" href="/nurselink-event-management.html">Events & Programs</a>
       <a href="/nurselink-engagement-command-center.html">Engagement Command Center</a>
@@ -25,13 +26,13 @@
       <a href="/admin">Review Center</a>
       <a href="/nurselink-operations-center.html">Operations Center</a>
       <a href="/nurselink-institutional-analytics.html">Institutional Analytics</a>
-      <a href="/dashboard">Member / Applicant Portal</a>
+      <a href="/dashboard">Applicant / Applicant Portal</a>
     </nav>
     <button id="adminSignOut" type="button">Sign out of Admin Portal</button>
   </aside>
   <main class="nl-admin-main em-main">
     <header class="nl-admin-header">
-      <div><span class="nl-admin-eyebrow">MEMBER ENGAGEMENT</span><h1>Events & Programs Management</h1><p>Create, publish and manage NurseLink member activities and registrations.</p></div>
+      <div><span class="nl-admin-eyebrow">APPLICANT ENGAGEMENT</span><h1>Events & Programs Management</h1><p>Create, publish and manage NurseLink applicant activities and registrations.</p></div>
       <div id="adminIdentity" class="nl-admin-identity">Checking administrator session…</div>
     </header>
     <div id="eventAdminNotice" class="nl-admin-notice" hidden></div>
@@ -42,7 +43,7 @@
         <form id="eventForm" class="em-form">
           <input id="eventId" type="hidden">
           <label class="span2"><span>Title</span><input id="eventTitle" maxlength="190" required></label>
-          <label><span>Chapter / Community</span><select id="eventChapter"><option value="">All NurseLink members</option></select></label>
+          <label><span>Chapter / Community</span><select id="eventChapter"><option value="">All NurseLink applicants</option></select></label>
           <label><span>Type</span><select id="eventType" required><option value="webinar">Webinar</option><option value="workshop">Workshop</option><option value="conference">Conference</option><option value="orientation">Orientation</option><option value="networking">Networking</option><option value="mentoring">Mentoring</option><option value="community_service">Community Service</option><option value="program">Program</option><option value="other">Other</option></select></label>
           <label><span>Format</span><select id="eventMode" required><option value="online">Online</option><option value="onsite">Onsite</option><option value="hybrid">Hybrid</option></select></label>
           <label class="span2"><span>Description</span><textarea id="eventDescription" rows="4" maxlength="10000"></textarea></label>

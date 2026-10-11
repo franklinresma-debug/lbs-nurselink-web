@@ -193,7 +193,7 @@
         Number(overview.overdue_reviews || 0) ? 'danger' : 'good'
       ),
       stat(
-        'Approved Members',
+        "Approved Applicants",
         counts.approved ?? 0,
         `${standing.active ?? 0} active`
       ),
@@ -239,7 +239,7 @@
     return `
       <button type="button"
         class="nma-queue-card ${Number(row.membership_id) === selectedMembershipId ? 'selected' : ''}"
-        data-membership="${esc(row.membership_id)}">
+        data-applicant registration="${esc(row.membership_id)}">
         <div>
           <span class="nma-priority" data-tone="${esc(priorityTone(row.review_priority))}">
             ${esc(label(row.review_priority))}
@@ -283,7 +283,7 @@
 
       queueEl.innerHTML = rows.length
         ? rows.map(queueCard).join('')
-        : '<div class="nma-empty">No membership applications match the selected filters.</div>';
+        : "<div class=\"nma-empty\">No applicant registration applications match the selected filters.</div>";
 
       queueEl.querySelectorAll('[data-membership]').forEach(button => {
         button.addEventListener('click', () => {
@@ -400,7 +400,7 @@
           ${signal('Profile Photo', profile.profile_photo_uploaded ? 'Uploaded' : 'Missing', profile.profile_photo_uploaded ? 'good' : 'attention')}
           ${signal('Employment', profile.employment_records === null ? 'Unavailable' : String(profile.employment_records), Number(profile.employment_records || 0) > 0 ? 'good' : 'attention')}
           ${signal('Credentials', credentials.total === undefined ? 'Unavailable' : `${credentials.verified || 0}/${credentials.total || 0} verified`, Number(credentials.pending || 0) || Number(credentials.expired || 0) ? 'attention' : 'good')}
-          ${signal('Member Number', membership.member_number || 'Pending')}
+          ${signal("Applicant Number", membership.member_number || 'Pending')}
         </div>
 
         ${overview?.permissions?.can_assign_reviews ? `
@@ -424,7 +424,7 @@
         <section class="nma-subpanel">
           <div class="nma-subhead">
             <div>
-              <strong>Membership Decision Workflow</strong>
+              <strong>Applicant registration Decision Workflow</strong>
               <small>Final approval or decline requires Administrator access. Approval requires Ready for Approval status.</small>
             </div>
           </div>
@@ -433,15 +433,15 @@
             <label><span>Next status</span><select id="membershipNextStatus" required><option value="">Choose action</option>${allowed.map(value => `<option value="${esc(value)}">${esc(label(value))}</option>`).join('')}</select></label>
             <label class="wide"><span>Reviewer notes</span><textarea id="membershipReviewerNotes" rows="4" maxlength="6000">${esc(membership.reviewer_notes || '')}</textarea></label>
             <label class="wide"><span>Decision / information-request reason</span><textarea id="membershipDecisionReason" rows="3" maxlength="3000" placeholder="Required for Needs Information or Declined"></textarea></label>
-            ${review.is_self ? '<label class="nma-checkbox wide"><input id="membershipSelfConfirm" type="checkbox"><span>I explicitly confirm this Super Administrator action on my own membership.</span></label>' : ''}
-            <button type="submit">Apply Membership Action</button>
-          </form>` : '<div class="nma-empty">No membership review transitions are available for this application and role.</div>'}
+            ${review.is_self ? "<label class=\"nma-checkbox wide\"><input id=\"membershipSelfConfirm\" type=\"checkbox\"><span>I explicitly confirm this Super Administrator action on my own applicant registration.</span></label>" : ''}
+            <button type="submit">Apply Applicant registration Action</button>
+          </form>` : "<div class=\"nma-empty\">No applicant registration review transitions are available for this application and role.</div>"}
         </section>
 
         <section class="nma-subpanel">
           <strong>Review History</strong>
           <div class="nma-history">
-            ${history.length ? history.map(historyItem).join('') : '<div class="nma-empty">No membership review history recorded.</div>'}
+            ${history.length ? history.map(historyItem).join('') : "<div class=\"nma-empty\">No applicant registration review history recorded.</div>"}
           </div>
         </section>
       `;
@@ -496,7 +496,7 @@
           if (
             finalAction
             && !window.confirm(
-              `${label(status)} this NurseLink membership application?`
+              `${label(status)} this NurseLink applicant registration application?`
             )
           ) {
             return;
@@ -519,7 +519,7 @@
             );
 
             notice(
-              result?.message || 'Membership action saved.',
+              result?.message || "Applicant registration action saved.",
               'success'
             );
 
@@ -546,7 +546,7 @@
     })[standing] || [];
 
     return `
-      <article class="nma-member-row" data-membership="${esc(row.membership_id)}">
+      <article class="nma-applicant-row" data-applicant registration="${esc(row.membership_id)}">
         <div>
           <span>${esc(row.member_number || '')}</span>
           <strong>${esc(row.name)}</strong>
@@ -565,7 +565,7 @@
 
   async function changeStanding(membershipId, standing) {
     const reason = window.prompt(
-      `Reason for changing membership standing to ${label(standing)}:`
+      `Reason for changing applicant registration standing to ${label(standing)}:`
     );
 
     if (!reason || reason.trim().length < 3) return;
@@ -592,7 +592,7 @@
         if (
           error.payload?.confirmation_required
           && window.confirm(
-            'This is your own membership. Confirm this explicit Super Administrator self-action?'
+            "This is your own applicant registration. Confirm this explicit Super Administrator self-action?"
           )
         ) {
           result = await send(true);
@@ -602,7 +602,7 @@
       }
 
       notice(
-        result?.message || 'Membership standing updated.',
+        result?.message || "Applicant registration standing updated.",
         'success'
       );
       await Promise.all([loadOverview(), loadMembers()]);
@@ -613,11 +613,11 @@
 
   async function loadMembers() {
     if (!overview?.permissions?.can_manage_standing) {
-      membersEl.innerHTML = '<div class="nma-empty">Administrator access is required to manage membership standing.</div>';
+      membersEl.innerHTML = "<div class=\"nma-empty\">Administrator access is required to manage applicant registration standing.</div>";
       return;
     }
 
-    membersEl.innerHTML = '<div class="nl-admin-loading">Loading approved members…</div>';
+    membersEl.innerHTML = "<div class=\"nl-admin-loading\">Loading approved applicants…</div>";
 
     const params = new URLSearchParams();
     const search = $('memberSearch').value.trim();
@@ -633,7 +633,7 @@
       const rows = Array.isArray(payload?.data) ? payload.data : [];
       membersEl.innerHTML = rows.length
         ? `<div class="nma-member-list">${rows.map(memberRow).join('')}</div>`
-        : '<div class="nma-empty">No approved members match the selected filters.</div>';
+        : "<div class=\"nma-empty\">No approved applicants match the selected filters.</div>";
 
       membersEl.querySelectorAll('[data-standing-action]').forEach(button => {
         button.addEventListener('click', () => {
@@ -783,7 +783,7 @@
 
       activityEl.innerHTML = rows.length
         ? `<div class="nma-activity-list">${rows.map(activityRow).join('')}</div>`
-        : '<div class="nma-empty">No membership or staff-access audit activity found.</div>';
+        : "<div class=\"nma-empty\">No applicant registration or staff-access audit activity found.</div>";
     } catch (error) {
       activityEl.innerHTML = `<div class="nma-empty">${esc(error.message)}</div>`;
     }

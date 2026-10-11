@@ -137,7 +137,7 @@ export function Phase3MessagesPage() {
     <MemberConversationWorkspace />
     <div className="nl410-grid">
       <section className="nl410-panel">
-        <div className="nl410-panel-head"><div><span>INBOX</span><h2>Member messages</h2></div><button type="button" className="secondary-button" onClick={load}>Refresh</button></div>
+        <div className="nl410-panel-head"><div><span>INBOX</span><h2>Applicant messages</h2></div><button type="button" className="secondary-button" onClick={load}>Refresh</button></div>
         <CardState loading={loading} error={error} empty={!items.length} emptyTitle="Your inbox is clear" emptyText="New NurseLink messages will appear here.">
           <div className="nl410-list">{items.map(m=><article className={`nl410-message ${!m.read_at?'is-unread':''}`} key={m.id}>
             <button type="button" className="nl410-message-main" onClick={()=>openMessage(m)} disabled={busy===m.id}>

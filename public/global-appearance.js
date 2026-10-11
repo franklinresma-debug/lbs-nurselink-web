@@ -10,7 +10,7 @@ const surface=name=>`background:var(--nlg-${name})!important;color:var(--nlg-${n
 const styles=[
 rule(':is(.main-area,.nl530-main,main) :is(p,label,td,li)','color:var(--nlg-text)!important'),
 rule(':is(.card,.page-card,.policy-center-card,.nurselink-smart557-card,.nurselink-smart557-upload-card,.nl530-card,.nl-panel-workspaces,[data-theme-surface="card"]) :is(p,label,td,li)','color:var(--nlg-cardText)!important'),
-rule(':is(.panel,.member-locked-panel,.nurselink-interview-panel,.nurselink-message-panel,.nl530-panel,[data-theme-surface="panel"]) :is(p,label,td,li)','color:var(--nlg-panelText)!important'),
+rule(":is(.panel,.applicant-locked-panel,.nurselink-interview-panel,.nurselink-message-panel,.nl530-panel,[data-theme-surface=\"panel\"]) :is(p,label,td,li)",'color:var(--nlg-panelText)!important'),
 rule(':is(.section-card,.nurselink-step-context,.nl530-quick-actions,[data-theme-surface="section"]) :is(p,label,td,li)','color:var(--nlg-sectionText)!important'),
 rule(':is(.main-area,.nl530-main,main)','background:var(--nlg-page)!important;color:var(--nlg-text)!important'),
 rule(':is(.card,.page-card,.policy-center-card,.nurselink-smart557-card,.nurselink-smart557-upload-card,.nl530-card,.nl-panel-workspaces,[data-theme-surface="card"])',surface('card')),
@@ -23,7 +23,7 @@ rule(':is(.main-area,.nl530-main,main) :is(button,.btn,.button,.primary-button)'
 rule(':is(.main-area,.nl530-main,main) :is(.secondary,.secondary-button,.btn-secondary,.button-secondary,button[type="reset"])','background:var(--nlg-secondary)!important;color:var(--nlg-secondaryText)!important'),
 rule(':is(.sidebar,#operationsSidebar)','background:var(--nlg-sidebar)!important;color:var(--nlg-sidebarText)!important'),
 rule(':is(.sidebar,#operationsSidebar) :is(nav a,.nl530-brand strong,.nl530-brand small)','color:var(--nlg-sidebarText)!important'),
-rule(':is(.sidebar .nl-member-nav-group,#operationsMenu>:not(a))','color:var(--nlg-category)!important'),
+rule(":is(.sidebar .nl-applicant-nav-group,#operationsMenu>:not(a))",'color:var(--nlg-category)!important'),
 rule(':is(.topbar,.nl530-topbar)','background:var(--nlg-topbar)!important;color:var(--nlg-topbarText)!important')].join('\n');
 let style;let originalIcons;
 function apply(data){

@@ -68,17 +68,20 @@
       "login": {
         "enabled": false,
         "source": "",
-        "alt": "NurseLink organization logo"
+        "alt": "NurseLink organization logo",
+        "sizePercent": 100
       },
       "admin": {
         "enabled": false,
         "source": "",
-        "alt": "NurseLink administration logo"
+        "alt": "NurseLink administration logo",
+        "sizePercent": 100
       },
       "sidebar": {
-        "enabled": false,
-        "source": "",
-        "alt": "NurseLink organization logo"
+        "enabled": true,
+        "source": "/lbs-sidebar-logo-cropped-clean.png",
+        "alt": "LBS Recruitment Solutions",
+        "sizePercent": 220
       }
     }
   },

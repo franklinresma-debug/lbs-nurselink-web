@@ -1,0 +1,208 @@
+/* NurseLink member journey navigation v1.0.0 */
+.member-react-safe-shell-v108 .nl-journey-nav-v1 {
+  margin: 18px 24px 0;
+  padding: 16px;
+  border: 1px solid var(--nl-border);
+  border-radius: 16px;
+  background: var(--nl-surface);
+  color: var(--nl-text);
+  box-shadow: 0 10px 28px rgba(15, 39, 66, 0.08);
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head > div {
+  min-width: 0;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head span,
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head strong,
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head small {
+  display: block;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head > div > span {
+  color: var(--lbs-blue-dark, var(--nl-primary));
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head > div > strong {
+  margin-top: 4px;
+  color: var(--nl-text);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-head > div > small {
+  margin-top: 4px;
+  color: var(--nl-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-next {
+  flex: 0 0 auto;
+  min-width: 170px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--lbs-blue, var(--nl-primary)) 30%, var(--nl-border));
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--lbs-blue, var(--nl-primary)) 9%, var(--nl-surface));
+  color: var(--nl-text);
+  text-decoration: none;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-next span {
+  color: var(--nl-muted);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-next strong {
+  margin-top: 3px;
+  color: var(--lbs-blue-dark, var(--nl-primary));
+  font-size: 13px;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-next:hover {
+  border-color: var(--lbs-blue, var(--nl-primary));
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(92px, 1fr));
+  gap: 7px;
+  overflow-x: auto;
+  padding: 2px 1px 5px;
+  scrollbar-width: thin;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps a {
+  min-width: 92px;
+  min-height: 72px;
+  padding: 9px 7px;
+  border: 1px solid var(--nl-border);
+  border-radius: 11px;
+  background: var(--nl-surface-2);
+  color: var(--nl-muted);
+  text-align: center;
+  text-decoration: none;
+  display: grid;
+  grid-template-columns: 24px 24px;
+  grid-template-rows: 26px auto;
+  align-items: center;
+  justify-content: center;
+  column-gap: 5px;
+  row-gap: 5px;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps a:hover {
+  border-color: color-mix(in srgb, var(--lbs-blue, var(--nl-primary)) 42%, var(--nl-border));
+  color: var(--nl-text);
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps a.active {
+  border-color: var(--lbs-orange, var(--nl-highlight));
+  background: color-mix(in srgb, var(--lbs-orange, var(--nl-highlight)) 12%, var(--nl-surface));
+  color: var(--nl-text);
+  box-shadow: inset 0 -3px 0 var(--lbs-orange, var(--nl-highlight));
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: var(--nl-surface);
+  color: var(--nl-muted);
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps a.active .nl-journey-nav-v1-number {
+  background: var(--lbs-orange, var(--nl-highlight));
+  color: #fff;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps .member-admin-nav-icon {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  color: var(--lbs-blue-dark, var(--nl-primary));
+  display: grid;
+  place-items: center;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps .member-admin-nav-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.member-react-safe-shell-v108 .nl-journey-nav-v1-steps a > span:last-child {
+  grid-column: 1 / -1;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .member-react-safe-shell-v108 .nl-journey-nav-v1 {
+    margin: 14px 14px 0;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-head {
+    align-items: stretch;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-next {
+    min-width: 150px;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-steps {
+    grid-template-columns: repeat(8, 112px);
+  }
+}
+
+@media (max-width: 620px) {
+  .member-react-safe-shell-v108 .nl-journey-nav-v1 {
+    padding: 13px;
+    border-radius: 13px;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-head {
+    display: block;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-next {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 11px;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-next strong {
+    margin-top: 0;
+  }
+
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-steps a {
+    min-height: 66px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-react-safe-shell-v108 .nl-journey-nav-v1-steps {
+    scroll-behavior: auto;
+  }
+}

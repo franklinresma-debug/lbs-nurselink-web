@@ -350,7 +350,7 @@ export default function PoliciesAdvocacyIntelligencePage() {
       </section>
 
       <section className="npa-stats">
-        <StatCard icon="policy" value={policies.length} label="Active Policy Watch" note={sourceMode === 'live' ? 'Live member policy records' : 'Seeded demo records'} />
+        <StatCard icon="policy" value={policies.length} label="Active Policy Watch" note={sourceMode === 'live' ? "Live applicant policy records" : 'Seeded demo records'} />
         <StatCard icon="globe" value={countries.length - 1} label="Countries Monitored" note="Destination and local markets" />
         <StatCard icon="bell" value={counts.positive + counts.monitor + counts.risk + counts.action} label="Updates Affecting Your Profile" note="Profile-relevant policy signals" />
       </section>
@@ -467,7 +467,7 @@ export default function PoliciesAdvocacyIntelligencePage() {
             <div><span>EXPLAINERS</span><h2>Policy Explainers</h2></div>
             <button type="button">View all</button>
           </div>
-          <p>Simplified summaries help members understand what changed and what to do next.</p>
+          <p>Simplified summaries help applicants understand what changed and what to do next.</p>
           <div className="npa-explainer-list">
             {explainers.map((item) => <button type="button" key={item}><Icon name="policy" />{item}</button>)}
           </div>

@@ -171,7 +171,7 @@
           <button id="gateRefresh" type="button">Check Access Again</button>
         </div>
         <small>
-          Partner access is granted separately from applicant/member access.
+          Partner access is granted separately from applicant/applicant access.
         </small>
       </section>
     `;
@@ -423,7 +423,7 @@
                 <span>${esc(row.job.reference_code)}</span>
                 <strong>${esc(row.candidate.name)}</strong>
                 <small>
-                  ${esc(row.candidate.member_number || 'NurseLink member')}
+                  ${esc(row.candidate.member_number || "NurseLink applicant")}
                   · ${esc(row.job.title)}
                 </small>
               </div>

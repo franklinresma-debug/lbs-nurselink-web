@@ -136,7 +136,7 @@
       if (!response.ok) return;
       const result = await response.json();
       if (result?.data?.user && result?.data?.access && Number(result.data.expires_at) > Date.now() / 1000) {
-        window.location.replace(`${CFG?.entryPoints?.adminPortal || '/admin/'}#${requestedTab()}`);
+        window.location.replace(`${CFG?.entryPoints?.adminPortal || '/admin/'}#${result.data.access.role === 'reviewer' ? 'applications' : requestedTab()}`);
       }
     } catch (_) { /* Normal sign-in remains available when a session cannot be confirmed. */ }
   }
@@ -156,11 +156,16 @@
         password: password.value
       });
 
+      if (result?.account_type === 'temporary_encoder') {
+        window.location.assign('/admin/encoder.html');
+        return;
+      }
+
       status.textContent =
         `${result?.data?.label || 'Administrator'} access confirmed.`;
       status.dataset.tone = 'success';
 
-      const tab = requestedTab();
+      const tab = result?.data?.role === 'reviewer' ? 'applications' : requestedTab();
 
       try {
         sessionStorage.removeItem(
@@ -179,7 +184,7 @@
       status.dataset.tone = 'error';
     } finally {
       button.disabled = false;
-      button.textContent = 'Sign in to Administrator Portal';
+      button.textContent = 'Sign in to Staff Workspace';
     }
   });
 })();

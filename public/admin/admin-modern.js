@@ -85,7 +85,7 @@
     if (!menu || menu.dataset.nl631Grouped === '1') return;
     const groups = [
       ['dashboard', 'Overview'],
-      ['members', 'Membership'],
+      ['members', "Applicant registration"],
       ['programs', 'Programs'],
       ['communications', 'Operations'],
       ['audit', 'System']
@@ -181,13 +181,13 @@
       if (grid && !communications.querySelector('.nl670-section-intro')) {
         const intro = document.createElement('div');
         intro.className = 'nl670-section-intro';
-        intro.innerHTML = '<span>Member Communications</span><h2>Controlled Notification Workspace</h2><p>Send a targeted in-app notification to one resolved NurseLink member through the existing governed communication workflow.</p>';
+        intro.innerHTML = "<span>Applicant Communications</span><h2>Controlled Notification Workspace</h2><p>Send a targeted in-app notification to one resolved NurseLink applicant through the existing governed communication workflow.</p>";
         grid.before(intro);
 
         const capabilities = document.createElement('div');
         capabilities.className = 'nl670-capability-grid';
         capabilities.innerHTML = [
-          ['Audience','1 member','Resolved NurseLink identity'],
+          ['Audience',"1 applicant",'Resolved NurseLink identity'],
           ['Channel','In-app','Notification Center delivery'],
           ['Severity','4 levels','Information to Important'],
           ['Audit','Metadata','Sender, target and message metadata']

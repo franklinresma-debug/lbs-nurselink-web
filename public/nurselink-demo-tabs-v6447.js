@@ -30,7 +30,7 @@
     const rows=DATA[MAP[label]]||[];
     host.innerHTML=`<section class="nl6441-inline-panel nl6447-snapshot-panel">
       <div class="nl6441-inline-head">
-        <div><div class="eyebrow">Member Professional Profile</div><h2>${esc(label)}</h2>
+        <div><div class="eyebrow">Applicant Professional Profile</div><h2>${esc(label)}</h2>
         <p>Database-backed demo records for ${esc(DATA.member_number||'NL-2026-000001')}.</p></div>
         <div class="nl6441-count"><strong>${rows.length}</strong><span>record${rows.length===1?'':'s'}</span></div>
       </div>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LBS NurseLink · Now serving</title>
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color:#173247;background:#f3f6f8;color-scheme:light}
+    *{box-sizing:border-box}body{margin:0} .display-shell{max-width:1920px;min-height:100dvh;margin:auto;display:flex;flex-direction:column}
+    .brand-header{display:flex;align-items:center;gap:32px;padding:28px clamp(20px,4vw,64px);background:#fff;border-bottom:8px solid #84b728}
+    .brand-logo{width:220px;max-width:32%;height:88px;object-fit:contain}
+    .brand-copy{min-width:0}.brand-copy strong{display:block;font-size:clamp(26px,3vw,42px);letter-spacing:-1px;color:#075da6}.brand-copy span{display:block;margin-top:5px;font-size:clamp(14px,1.4vw,20px);color:#34536b}
+    .display-label{margin-left:auto;padding:12px 18px;border:1px solid #cddde8;border-radius:30px;font-size:14px;font-weight:700;color:#075da6;letter-spacing:1px;text-transform:uppercase}
+    main{flex:1;padding:clamp(24px,4vw,56px) clamp(20px,4vw,64px)}
+    lbs-service-queue{display:block;min-width:0}.lbs-card>h1,.lbs-card>h2{margin:0;color:#092d42;font-size:clamp(32px,4vw,56px);letter-spacing:-1px;line-height:1.15}
+    .lbs-card>p{margin:14px 0 32px;color:#526678;font-size:clamp(17px,1.6vw,24px);line-height:1.5}
+    .lbs-appointment-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,350px),1fr));gap:24px}
+    .lbs-appointment{min-width:0;padding:32px;background:#fff;border:1px solid #dbe3e9;border-top:6px solid #075da6;border-radius:16px;box-shadow:0 8px 24px #123c6209;overflow-wrap:anywhere}
+    .lbs-appointment h2{margin:0 0 18px;color:#075da6;font-size:clamp(38px,5vw,72px);line-height:1.1;letter-spacing:-1px}
+    .lbs-appointment p{margin:0;font-size:clamp(20px,2vw,30px);line-height:1.4;font-weight:700;color:#173247}
+    .lbs-appointment-list>p{margin:0;min-height:260px;padding:48px 24px;display:grid;place-items:center;text-align:center;border:1px solid #dbe3e9;border-top:5px solid #84b728;border-radius:16px;background:#fff;font-size:clamp(22px,2.5vw,34px);color:#526678}
+    .lbs-card>.lbs-information{margin:26px 0 0;font-size:14px;color:#526678}
+    .lbs-card>[role=alert]{padding:20px;border-left:5px solid #f7931e;background:#fff7eb;color:#713f12;border-radius:8px}
+    button{font:inherit;font-weight:700;min-height:44px;padding:12px 22px;background:#075da6;color:white;border:0;border-radius:8px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #f7931e;outline-offset:4px}
+    .brand-footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px clamp(20px,4vw,64px);background:#075da6;border-top:5px solid #f7931e;color:#fff;font-size:15px;line-height:1.5}.brand-footer strong{font-weight:700}.brand-footer span{color:#e3eef7}
+    @media(max-width:600px){.brand-header{gap:16px;flex-wrap:wrap;padding:20px}.brand-logo{width:140px;max-width:40%;height:65px}.brand-copy{flex:1 0 calc(60% - 16px)}.brand-copy strong{font-size:27px}.display-label{margin:0;padding:7px 12px;font-size:11px}.lbs-appointment{padding:24px}.lbs-appointment-list{gap:16px}.lbs-appointment-list>p{min-height:200px}.brand-footer{font-size:13px}}
+  </style>
+  <script defer src="/lbs-queue.js?v=20260929-walkin"></script>
+<link rel="stylesheet" href="/lbs-walk-in.css?v=20260929-walkin">
+</head>
+<body>
+  <div class="display-shell">
+    <header class="brand-header">
+      <img class="brand-logo" src="/backend/api/nurselink/appearance-assets/sidebar-a0b815a2-5936-4745-a66d-b0eb4e1d9c8d.png" alt="LBS Recruitment Solutions">
+      <div class="brand-copy"><strong>NurseLink</strong><span>Medical Services Division</span></div>
+      <div class="display-label">Service queue</div>
+    </header>
+    <main><lbs-service-queue mode="display"></lbs-service-queue></main>
+    <footer class="brand-footer"><strong>LBS Recruitment Solutions Corp.</strong><span>www.lbsrecruitment.com.ph</span></footer>
+  </div>
+</body>
+</html>
+

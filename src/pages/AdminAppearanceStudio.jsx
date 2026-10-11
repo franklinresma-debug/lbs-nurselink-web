@@ -7,9 +7,9 @@ const API_ROOT = (import.meta.env.VITE_API_URL || 'https://lbs.amsertech.com/bac
 const API_BASE = `${API_ROOT}/api/nurselink/admin/operations-center/appearance-settings`
 const LOCAL_KEY = 'nurselink-admin-appearance-draft-v1'
 const LOGO_PLACEMENTS = [
-  ['login', 'Member Login', 'Displayed above the welcome message on the member sign-in page.'],
+  ['login', "Applicant Login", "Displayed above the welcome message on the applicant sign-in page."],
   ['admin', 'Admin Panel', 'Displayed in the Administration Operations Center brand area.'],
-  ['sidebar', 'Member Sidebar', 'Displayed above the NurseLink name in the signed-in member sidebar.'],
+  ['sidebar', "Applicant Sidebar", "Displayed above the NurseLink name in the signed-in applicant sidebar."],
 ]
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
@@ -25,8 +25,13 @@ function normalizeConfig(input) {
       enabled: false,
       source: '',
       alt: 'NurseLink organization logo',
+      sizePercent: 100,
       ...(cfg.branding.logos[placement] || {}),
     }
+    const size = Number(cfg.branding.logos[placement].sizePercent)
+    cfg.branding.logos[placement].sizePercent = Number.isFinite(size)
+      ? Math.max(50, Math.min(220, Math.round(size)))
+      : 100
   }
   cfg.heroSliders ||= {}
   for (const scope of ['login', 'registration']) {
@@ -486,6 +491,16 @@ function BrandingLogos({ config, setConfig, onError }) {
               </Field>
               <Field label="Accessible description">
                 <input value={logo.alt || ''} onChange={event => updateLogo(placement, 'alt', event.target.value)} placeholder={`${title} logo`} />
+              </Field>
+              <Field label={`Logo size ${logo.sizePercent || 100}%`}>
+                <input
+                  type="range"
+                  min="50"
+                  max="220"
+                  step="5"
+                  value={logo.sizePercent || 100}
+                  onChange={event => updateLogo(placement, 'sizePercent', Number(event.target.value || 100))}
+                />
               </Field>
               <div className="nl-ap-logo-actions">
                 <small>{uploading === placement ? 'Uploading…' : logo.source ? 'Ready to save' : 'Upload a file or enter a URL'}</small>

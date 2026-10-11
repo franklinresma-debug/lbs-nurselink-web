@@ -44,19 +44,24 @@
   let applicationActiveQuickView = 'all';
 
   const subtitles = {
-    dashboard: 'Your team’s next actions across membership, recruitment and member support.',
-    members: 'Manage approved NurseLink members through governed membership lifecycle workflows.',
-    applications: 'Review membership applications without working directly against raw membership records.',
+    processing: 'Manage accepted offers, placement requirements, readiness and arrival follow-up.',
+    queue: 'Manage checked-in service visits, counters and visit history.',
+    'bulk-import': 'Import through the existing protected workflow without leaving administration.',
+    dashboard: "Your team’s next actions across applicant registration, recruitment and applicant support.",
+    members: "Manage approved NurseLink applicants through governed applicant registration lifecycle workflows.",
+    applications: "Review applicant registration applications without working directly against raw applicant registration records.",
     verification: 'Review professional credential records through the NurseLink verification workflow.',
     organizations: 'Manage hospitals, health systems, recruiters and institutional partners.',
     programs: 'Operate communities, benefits, engagement and enterprise programs.',
-    employment: 'Manage workforce opportunities and member job-application workflows.',
+    employment: "Manage workforce opportunities and applicant job-application workflows.",
     training: 'Operate NurseLink events and professional-development programs.',
-    communications: 'Send controlled, auditable in-app communications to resolved NurseLink members.',
+    communications: "Send controlled, auditable in-app communications to resolved NurseLink applicants.",
     reports: 'Use platform-level analytics rather than querying production tables directly.',
     support: 'Track operational cases with ownership, status, priority and resolution workflow.',
     audit: 'Review normalized administrative actions without exposing raw before/after database state.',
     health: 'Monitor platform readiness and required operational data services.',
+    messenger: 'Connect your LBS Facebook Page with Meta Messenger.',
+    whatsapp: 'Connect your LBS WhatsApp Business account directly with Meta.',
     settings: 'Invite administrators, manage multi-role permissions, record governance reasons and review immutable access history.'
   };
 
@@ -248,6 +253,7 @@
     if (!valid.includes(tab)) tab = 'dashboard';
     const tabLink = document.querySelector(`[data-tab="${tab}"]`);
     if (tabLink?.hidden) tab = 'dashboard';
+    if (roleKey() === 'reviewer' && !['applications', 'verification'].includes(tab)) tab = 'applications';
 
     document.querySelectorAll('[data-panel]').forEach(panel => {
       panel.hidden = panel.dataset.panel !== tab;
@@ -255,6 +261,8 @@
 
     document.querySelectorAll('[data-tab]').forEach(link => {
       link.classList.toggle('active', link.dataset.tab === tab);
+      if (link.dataset.tab === tab) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
     });
 
     const tabLabel = (CFG.adminTabs || [])
@@ -269,6 +277,7 @@
     }
 
     const loaders = {
+      processing: () => window.LbsUIUX?.loadProcessing(),
       dashboard: loadDashboard,
       members: loadMembers,
       applications: loadApplications,
@@ -284,6 +293,7 @@
       settings: loadSettings
     };
 
+    window.dispatchEvent(new CustomEvent('lbs:tabchange', { detail: { tab } }));
     loaders[tab]?.();
   }
 
@@ -292,12 +302,30 @@
   }
 
   function applyGranularNavigation() {
+    if (roleKey() === 'reviewer') {
+      document.body.classList.add('reviewer-workspace');
+      document.querySelectorAll('[data-tab]').forEach(link => {
+        const allowed = ['applications','verification'].includes(link.dataset.tab);
+        link.hidden = !allowed;
+        if (!allowed) link.style.setProperty('display','none','important');
+      });
+      document.querySelectorAll('#operationsMenu details').forEach(group => {
+        if (!group.querySelector('[data-tab="applications"], [data-tab="verification"]')) group.style.setProperty('display','none','important');
+        else group.open = true;
+      });
+      const label = document.querySelector('.lbs-workspace-label');
+      if (label) label.textContent = 'REVIEWER WORKSPACE';
+      return;
+    }
     if (!adminPermissionProfile) return;
     const scopes = new Set(adminPermissionProfile.scopes || []);
     const unrestricted = scopes.has('*') || scopes.has('legacy');
     const readOnly = !!adminPermissionProfile.read_only;
     const tabScopes = {
       dashboard: 'portal',
+      processing: 'employment',
+      queue: 'portal',
+      'bulk-import': 'membership',
       members: 'membership',
       applications: 'membership',
       verification: 'verification',
@@ -310,6 +338,8 @@
       support: 'support',
       audit: 'reports',
       health: 'health',
+      messenger: 'admin_management',
+      whatsapp: 'admin_management',
       settings: 'admin_management'
     };
 
@@ -336,13 +366,13 @@
       || 'Administrator';
 
     let actions = [
-      ['#applications', 'Review applications', 'Membership review queue'],
+      ['#applications', 'Review applications', "Applicant registration review queue"],
       ['#verification', 'Verify credentials', 'Credential workflow']
     ];
 
     if (['administrator', 'admin', 'super_administrator', 'super_admin'].includes(role)) {
       actions = actions.concat([
-        ['#members', 'Add / manage member', 'Standing and onboarding'],
+        ['#members', "Add / manage applicant", 'Standing and onboarding'],
         ['#support', 'Open support cases', 'Assigned operational cases']
       ]);
     }
@@ -465,9 +495,9 @@
       globalResultButton(
         'members',
         row.email || row.member_number || row.name || q,
-        row.name || row.email || 'Member',
-        `${row.member_number || 'Member'} · ${label(row.standing || 'active')}`,
-        'Member'
+        row.name || row.email || "Applicant",
+        `${row.member_number || "Applicant"} · ${label(row.standing || 'active')}`,
+        "Applicant"
       )
     ).join('');
 
@@ -492,8 +522,8 @@
     ).join('');
 
     const body = [
-      renderGlobalSearchGroup('Members', memberHtml),
-      renderGlobalSearchGroup('Membership Applications', applicationHtml),
+      renderGlobalSearchGroup("Applicants", memberHtml),
+      renderGlobalSearchGroup("Applicant registration Applications", applicationHtml),
       renderGlobalSearchGroup('Support Cases', supportHtml)
     ].join('');
 
@@ -642,7 +672,7 @@
         : [];
 
       $('dashboardMetrics').innerHTML = [
-        metric('Members', m.approved_members ?? 0, 'Approved NurseLink members'),
+        metric("Applicants", m.approved_members ?? 0, "Approved NurseLink applicants"),
         metric('Applications', m.pending_membership_applications ?? 0, `${counts.ready_for_approval ?? 0} ready for approval`, Number(m.pending_membership_applications || 0) ? 'attention' : 'good', ''),
         metric('Verification', m.pending_verifications ?? 0, 'Credentials awaiting review', Number(m.pending_verifications || 0) ? 'attention' : ''),
         metric('Support Cases', m.open_support_cases ?? 0, 'Open operational cases', Number(m.open_support_cases || 0) ? 'danger' : 'good')
@@ -658,8 +688,8 @@
 
       $('dashboardQueues').innerHTML = [
         ['Applications ready for approval', counts.ready_for_approval ?? 0, '#applications'],
-        ['Overdue membership reviews', membership.overdue_reviews ?? 0, '#applications'],
-        ['Unassigned membership reviews', membership.unassigned_reviews ?? 0, '#applications'],
+        ["Overdue applicant registration reviews", membership.overdue_reviews ?? 0, '#applications'],
+        ["Unassigned applicant registration reviews", membership.unassigned_reviews ?? 0, '#applications'],
         ['Open support cases', m.open_support_cases ?? 0, '#support'],
         ['Pending credential verification', m.pending_verifications ?? 0, '#verification'],
         ['Pending organizations', m.pending_organizations ?? 0, '#organizations']
@@ -679,31 +709,31 @@
 
       $('dashboardReminders').innerHTML = [
         reminderRow(
-          'Final membership decisions',
+          "Final applicant registration decisions",
           counts.ready_for_approval ?? 0,
           '#applications',
           'Applications already cleared for Administrator approval.',
           Number(counts.ready_for_approval || 0) ? 'good' : ''
         ),
         reminderRow(
-          'Overdue membership reviews',
+          "Overdue applicant registration reviews",
           membership.overdue_reviews ?? 0,
           '#applications',
           'Review due date has passed.',
           Number(membership.overdue_reviews || 0) ? 'danger' : ''
         ),
         reminderRow(
-          'Unassigned membership reviews',
+          "Unassigned applicant registration reviews",
           membership.unassigned_reviews ?? 0,
           '#applications',
           'Assign a Reviewer or Administrator owner.',
           Number(membership.unassigned_reviews || 0) ? 'attention' : ''
         ),
         reminderRow(
-          'Overdue member onboarding',
+          "Overdue applicant onboarding",
           onboarding.overdue ?? 0,
           '#members',
-          'Approved members requiring activation follow-up.',
+          "Approved applicants requiring activation follow-up.",
           Number(onboarding.overdue || 0) ? 'attention' : ''
         ),
         reminderRow(
@@ -733,14 +763,181 @@
 
       if ($('membershipProgress')) {
         $('membershipProgress').innerHTML =
-          '<div class="nl530-empty">Membership progress is temporarily unavailable.</div>';
+          "<div class=\"nl530-empty\">Applicant registration progress is temporarily unavailable.</div>";
       }
+    }
+  }
+
+  async function openDocumentEditor(url, name) {
+    const editor = document.createElement('dialog');
+    editor.setAttribute('aria-label', 'Straighten document');
+    editor.style.cssText = 'width:min(1200px,96vw);height:94vh;padding:16px;border:1px solid #cbd5e1;border-radius:12px;';
+    const toolbar = document.createElement('div');
+    toolbar.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;align-items:center;position:sticky;top:0;background:white;padding:10px;z-index:1;';
+    const heading = document.createElement('strong'); heading.textContent = 'Straighten: ' + name; toolbar.appendChild(heading);
+    const status = document.createElement('p'); status.setAttribute('role','status');
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'display:block;max-width:100%;max-height:calc(94vh - 180px);width:auto;height:auto;margin:auto;cursor:crosshair;touch-action:none;';
+    const context = canvas.getContext('2d');
+    let source = null, original = null, points = [], selecting = false, busy = false, imageUrl = null;
+    const buttons = [];
+    function button(text, handler) { const b = document.createElement('button'); b.type='button';b.textContent=text;b.addEventListener('click',handler);toolbar.appendChild(b);buttons.push(b);return b; }
+    function draw() {
+      canvas.width=source.width;canvas.height=source.height;context.drawImage(source,0,0);
+      const radius=Math.max(8,canvas.width/90);
+      context.lineWidth=Math.max(3,canvas.width/250);context.strokeStyle='#0284c7';context.fillStyle='#0284c7';
+      points.forEach((p,i)=>{context.beginPath();context.arc(p.x,p.y,radius,0,Math.PI*2);context.fill();context.fillStyle='white';context.font=`bold ${radius*1.5}px sans-serif`;context.fillText(String(i+1),p.x-radius/2,p.y+radius/2);context.fillStyle='#0284c7';});
+      if(points.length>1){context.beginPath();points.forEach((p,i)=>i?context.lineTo(p.x,p.y):context.moveTo(p.x,p.y));if(points.length===4)context.closePath();context.stroke();}
+      apply.disabled=points.length!==4 || busy;save.disabled=!source || selecting || busy;persist.disabled=!source || selecting || busy;
+    }
+    function start(){if(!source)return;points=[];selecting=true;draw();status.textContent='Click the paper corners in order: 1 top-left, 2 top-right, 3 bottom-right, 4 bottom-left. Use Reset corners to try again.';}
+    const mark=button('Mark / reset corners',start);
+    const undo=button('Undo corner',()=>{if(!source)return;points.pop();selecting=true;draw();status.textContent='Select corner '+(points.length+1)+' of 4.';});
+    const apply=button('Straighten',async()=>{
+      if(points.length!==4||busy)return;
+      const cross=(a,b,c)=>(b.x-a.x)*(c.y-b.y)-(b.y-a.y)*(c.x-b.x);
+      if(points.some((p,i)=>cross(p,points[(i+1)%4],points[(i+2)%4])<=1)){status.textContent='Corners must follow the paper clockwise without crossing. Reset corners and try again.';return;}
+      busy=true;buttons.forEach(b=>b.disabled=true);status.textContent='Straightening…';
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      try {
+        const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+        const width=Math.round(Math.max(distance(points[0],points[1]),distance(points[3],points[2])));
+        const height=Math.round(Math.max(distance(points[0],points[3]),distance(points[1],points[2])));
+        if(width<30||height<30)throw new Error('Select a larger document area.');
+        const matrix=[],rhs=[];[[0,0],[1,0],[1,1],[0,1]].forEach(([u,v],i)=>{const {x,y}=points[i];matrix.push([u,v,1,0,0,0,-u*x,-v*x]);rhs.push(x);matrix.push([0,0,0,u,v,1,-u*y,-v*y]);rhs.push(y);});
+        for(let col=0;col<8;col++){let pivot=col;for(let r=col+1;r<8;r++)if(Math.abs(matrix[r][col])>Math.abs(matrix[pivot][col]))pivot=r;[matrix[col],matrix[pivot]]=[matrix[pivot],matrix[col]];[rhs[col],rhs[pivot]]=[rhs[pivot],rhs[col]];const d=matrix[col][col];if(Math.abs(d)<1e-9)throw new Error('Corners are too close together.');for(let j=col;j<8;j++)matrix[col][j]/=d;rhs[col]/=d;for(let r=0;r<8;r++)if(r!==col){const f=matrix[r][col];for(let j=col;j<8;j++)matrix[r][j]-=f*matrix[col][j];rhs[r]-=f*rhs[col];}}
+        const output=document.createElement('canvas');output.width=width;output.height=height;const out=output.getContext('2d');const input=source.getContext('2d').getImageData(0,0,source.width,source.height),result=out.createImageData(width,height);
+        for(let y=0;y<height;y++)for(let x=0;x<width;x++){const u=x/(width-1),v=y/(height-1),den=rhs[6]*u+rhs[7]*v+1;const sx=Math.max(0,Math.min(source.width-1,(rhs[0]*u+rhs[1]*v+rhs[2])/den)),sy=Math.max(0,Math.min(source.height-1,(rhs[3]*u+rhs[4]*v+rhs[5])/den));const x0=Math.floor(sx),y0=Math.floor(sy),x1=Math.min(x0+1,source.width-1),y1=Math.min(y0+1,source.height-1),fx=sx-x0,fy=sy-y0;for(let c=0;c<4;c++)result.data[(y*width+x)*4+c]=input.data[(y0*source.width+x0)*4+c]*(1-fx)*(1-fy)+input.data[(y0*source.width+x1)*4+c]*fx*(1-fy)+input.data[(y1*source.width+x0)*4+c]*(1-fx)*fy+input.data[(y1*source.width+x1)*4+c]*fx*fy;}
+        out.putImageData(result,0,0);source=output;points=[];selecting=false;status.textContent='Straightened. Download the corrected copy, or reset to start again. The stored original is unchanged.';
+      }catch(error){status.textContent=error.message;}finally{busy=false;buttons.forEach(b=>b.disabled=false);draw();}
+    });
+    function rotate(){if(!source||busy)return;const rotated=document.createElement('canvas');rotated.width=source.height;rotated.height=source.width;const c=rotated.getContext('2d');c.translate(rotated.width,0);c.rotate(Math.PI/2);c.drawImage(source,0,0);source=rotated;points=[];selecting=false;draw();status.textContent='Rotated 90°. Mark corners to straighten the page.';}
+    button('Rotate 90°',rotate);
+    button('Auto-fit A4',()=>{
+      if(!source||busy)return;
+      if(selecting){status.textContent='Click Straighten to apply your selected corners before fitting to A4, or reset the original.';return;}
+      // Exact ISO A4 proportions, with uniform scaling and white margins.
+      const landscape=source.width>source.height;
+      const output=document.createElement('canvas');
+      output.width=landscape?2970:2100;output.height=landscape?2100:2970;
+      const ctx=output.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,output.width,output.height);
+      const scale=Math.min(output.width/source.width,output.height/source.height);
+      const width=source.width*scale,height=source.height*scale;
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      ctx.drawImage(source,(output.width-width)/2,(output.height-height)/2,width,height);
+      source=output;points=[];selecting=false;draw();
+      status.textContent='Fitted to A4 '+(landscape?'landscape':'portrait')+' proportions. Content is preserved with white margins; nothing was stretched or cropped. Save or download the corrected copy.';
+    });
+    button('Reset original',()=>{if(!original)return;source=original;points=[];selecting=false;draw();status.textContent='Original restored. Mark the paper corners to straighten.';});
+    const save=button('Download corrected copy',()=>{if(!source||selecting)return;source.toBlob(blob=>{if(!blob)return;const href=URL.createObjectURL(blob);const a=document.createElement('a');a.href=href;a.download=name.replace(/\.[^.]+$/,'')+'-straightened.png';a.click();setTimeout(()=>URL.revokeObjectURL(href),30000);},'image/png');});
+    const persist=button('Save corrected copy',async()=>{
+      if(!source||selecting||busy)return;
+      busy=true;buttons.forEach(b=>b.disabled=true);status.textContent='Saving corrected copy…';
+      try {
+        const result=await request(url.replace(API,'').split('?')[0]+'/corrected', {method:'POST',body:JSON.stringify({image:source.toDataURL('image/png').split(',')[1]})});
+        status.textContent=result.message;
+        await openMemberRecord(url.split('/member-registry/')[1].split('/')[0]);
+      }catch(error){status.textContent=error.message || 'Unable to save corrected copy.';}
+      finally{busy=false;buttons.forEach(b=>b.disabled=false);draw();}
+    });
+    button('Close editor',()=>editor.close());
+    canvas.addEventListener('pointerdown',event=>{if(!selecting||points.length>=4||busy)return;const r=canvas.getBoundingClientRect();points.push({x:Math.min(source.width-1,Math.max(0,(event.clientX-r.left)*source.width/r.width)),y:Math.min(source.height-1,Math.max(0,(event.clientY-r.top)*source.height/r.height))});draw();status.textContent=points.length===4?'All four corners selected. Click Straighten.':'Select corner '+(points.length+1)+' of 4.';});
+    editor.append(toolbar,status,canvas);document.body.appendChild(editor);editor.showModal();buttons.forEach(b=>b.disabled=true);buttons[buttons.length-1].disabled=false;status.textContent='Loading image…';
+    editor.addEventListener('close',()=>{if(imageUrl)URL.revokeObjectURL(imageUrl);editor.remove();},{once:true});
+    try {const response=await fetch(url,{credentials:'include'});if(!response.ok)throw new Error('Unable to load image. Refresh your administrator session and try again.');imageUrl=URL.createObjectURL(await response.blob());const image=new Image();image.src=imageUrl;await image.decode();original=document.createElement('canvas');const scale=Math.min(1,2400/Math.max(image.naturalWidth,image.naturalHeight));original.width=Math.round(image.naturalWidth*scale);original.height=Math.round(image.naturalHeight*scale);original.getContext('2d').drawImage(image,0,0,original.width,original.height);source=original;buttons.forEach(b=>b.disabled=false);draw();status.textContent='Mark the four paper corners to correct perspective. The original stays unchanged. Corrected copies are limited to 2400 pixels on the longest source edge.';}catch(error){status.textContent=error.message;}
+  }
+
+  function previewMemberDocument(path, name) {
+    const dialog = document.createElement('dialog');
+    dialog.setAttribute('aria-label', 'Document preview: ' + name);
+    dialog.style.cssText = 'width:min(1100px,94vw);height:90vh;padding:0;border:1px solid #cbd5e1;border-radius:12px;';
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:16px;padding:14px;border-bottom:1px solid #cbd5e1;';
+    const title = document.createElement('strong');
+    title.textContent = name;
+    title.style.flex = '1';
+    const download = document.createElement('a');
+    download.href = API + path;
+    download.textContent = 'Download';
+    const close = document.createElement('button');
+    close.type = 'button'; close.textContent = 'Close';
+    close.addEventListener('click', () => dialog.close());
+    header.append(title, download, close);
+    dialog.appendChild(header);
+    const url = API + path + '?preview=1';
+    if (/\.(jpe?g|png|gif|webp)$/i.test(name)) {
+      const edit = document.createElement('button');
+      edit.type = 'button'; edit.textContent = 'Straighten image';
+      edit.addEventListener('click', () => openDocumentEditor(url, name));
+      header.insertBefore(edit, download);
+      const image = document.createElement('img');
+      image.alt = name; image.src = url;
+      image.style.cssText = 'display:block;width:100%;height:calc(100% - 65px);object-fit:contain;background:#f1f5f9;';
+      image.addEventListener('error', () => {
+        image.remove();
+        const message = document.createElement('p');
+        message.textContent = 'Preview could not load. Use Download to open the original document.';
+        dialog.appendChild(message);
+      });
+      dialog.appendChild(image);
+    } else if (/\.pdf$/i.test(name)) {
+      const frame = document.createElement('iframe');
+      frame.title = name; frame.src = url;
+      frame.style.cssText = 'width:100%;height:calc(100% - 65px);border:0;';
+      dialog.appendChild(frame);
+    } else {
+      const message = document.createElement('p');
+      message.textContent = 'Preview is not available for this file type. Use Download to open the original.';
+      dialog.appendChild(message);
+    }
+    dialog.addEventListener('close', () => dialog.remove(), {once:true});
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  }
+
+  async function openMemberRecord(id) {
+    const drawer = $('applicationDetailDrawer');
+    const el = $('applicationDetail');
+    drawer.hidden = false;
+    document.body.classList.add('nl550-detail-open');
+    $('applicationDetailTitle').textContent = "Approved Applicant Record";
+    el.innerHTML = "<p role=\"status\">Loading applicant record…</p>";
+    try {
+      const [registry, command] = await Promise.all([
+        request(`/api/nurselink/admin/member-registry/${encodeURIComponent(id)}`),
+        request(`/api/nurselink/admin/membership-command/${encodeURIComponent(id)}`)
+      ]);
+      if (!el.dataset.previewBound) {
+        el.dataset.previewBound = 'true';
+        el.addEventListener('click', event => {
+          const link = event.target.closest('[data-member-preview]');
+          if (!link) return;
+          event.preventDefault();
+          previewMemberDocument(link.dataset.memberPreview, link.dataset.documentName);
+        });
+      }
+      if (drawer.hidden) return;
+      const data = registry.data || {};
+      const sections = (title, rows) => `<section class="nl530-subpanel"><h3>${esc(title)} (${rows.length})</h3>${rows.length ? rows.map(row => `<dl>${Object.entries(row).filter(([key, value]) => key !== 'id' && value !== null && value !== '').map(([key, value]) => `<dt>${esc(label(key))}</dt><dd>${esc(typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value)}</dd>`).join('')}</dl>`).join('<hr>') : '<p>No records recorded.</p>'}</section>`;
+      el.innerHTML = `
+        <div class="nl530-detail-head"><div><h2>${esc(data.member?.name || '')}</h2><p>${esc(data.member?.email || '')}</p><strong>${esc(data.membership?.member_number || '')} · ${esc(label(data.membership?.standing))}</strong><p>Approved: ${esc(data.membership?.approved_at || '')}</p></div></div>
+        ${smartApplicationReviewHtml(command.data?.smart_application)}
+        <section class="nl530-subpanel"><h3>Imported source documents (${(data.imported_documents || []).length})</h3>${(data.imported_documents || []).map(doc => `<p>${doc.download_url ? `<a href="${esc(API + doc.download_url)}" data-applicant-preview="${esc(doc.download_url)}" data-document-name="${esc(doc.name)}">${esc(doc.name)}</a>` : esc(doc.name) + ' — unavailable for download'}</p>`).join('')}</section>
+        ${sections('Employment registry', data.employment || [])}
+        ${sections('Credential registry', data.credentials || [])}
+        ${sections('Learning records', data.learning || [])}
+        <h3>Reviewed import records</h3><p>Preserved from the imported application. Import review does not verify credentials.</p>
+        ${Object.entries(data.imported_records || {}).map(([type, rows]) => sections(label(type), rows)).join('')}
+        ${sections("Approval and applicant registration history", data.membership_audit || [])}
+      `;
+    } catch (error) {
+      el.innerHTML = `<p role="alert">${esc(error.message || "Unable to load applicant record.")}</p>`;
     }
   }
 
   async function loadMembers() {
     const el = $('membersArea');
-    el.innerHTML = '<div class="nl-admin-loading">Loading members…</div>';
+    el.innerHTML = "<div class=\"nl-admin-loading\">Loading applicants…</div>";
 
     const params = new URLSearchParams();
     const search = $('memberSearch')?.value.trim();
@@ -762,19 +959,30 @@
         })[current] || [];
 
         return `
-          <article class="nl530-row" data-member="${esc(row.membership_id)}">
-            <div class="nl530-row-main">
-              ${badges([row.member_number || 'Member', 'good'], [label(current), current === 'active' ? 'good' : 'attention'])}
+          <article class="nl530-row" data-applicant="${esc(row.membership_id)}">
+            <div style="display:flex;gap:16px;align-items:flex-start;min-width:0">
+              <div style="width:64px;height:64px;flex:0 0 64px;border-radius:50%;overflow:hidden;background:#e0f2fe;position:relative;display:grid;place-items:center;color:#075985;font-weight:700;font-size:22px" aria-label="${esc(row.name || "Applicant")} profile photo">
+                <span>${esc(String(row.name || row.email || '?').trim().split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]).join('').toUpperCase())}</span>
+                ${row.profile_photo_uploaded ? `<img data-member-photo src="${esc(API + '/api/nurselink/admin/member-registry/' + row.membership_id + '/photo')}" alt="${esc(row.name || "Applicant")}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ''}
+              </div>
+            <div class="nl530-row-main" style="min-width:0;flex:1">
+              ${badges([row.member_number || "Applicant", 'good'], [label(current), current === 'active' ? 'good' : 'attention'])}
               <strong>${esc(row.name || row.email)}</strong>
-              <small>${esc(row.email || '')} · ${esc(row.credentials?.verified ?? 0)} verified credential(s) · ${esc(row.employment_records ?? 0)} employment record(s)</small>
+              ${registrationOriginHtml(row.registration_origin)}
+              <small>Registration date: ${row.registered_at && !Number.isNaN(Date.parse(row.registered_at)) ? esc(new Intl.DateTimeFormat('en-PH', {year:'numeric',month:'short',day:'numeric',timeZone:'Asia/Manila'}).format(new Date(row.registered_at))) : 'Not recorded'}</small>
+              <small>${esc(row.email || '')} · ${esc(row.credentials?.verified ?? 0)} verified credential(s) · ${esc(row.employment_records ?? 0)} employment record(s)${row.imported_employment_records ? ` · ${esc(row.imported_employment_records)} imported employment record(s)` : ''}</small>
+            </div>
             </div>
             <div class="nl530-row-actions">
+              <button type="button" data-view-applicant="${esc(row.membership_id)}">View Full Record</button>
               ${actions.map(action => `<button type="button" data-standing="${esc(action)}" class="${action === 'suspended' ? 'danger' : ''}">${action === 'active' ? 'Reactivate' : action === 'suspended' ? 'Suspend' : 'Set Inactive'}</button>`).join('')}
             </div>
           </article>
         `;
-      }).join('') : '<div class="nl530-empty">No members match these filters.</div>';
+      }).join('') : "<div class=\"nl530-empty\">No applicants match these filters.</div>";
 
+      el.querySelectorAll('[data-member-photo]').forEach(image => image.addEventListener('error', () => image.remove(), {once:true}));
+      el.querySelectorAll('[data-view-member]').forEach(button => button.addEventListener('click', () => openMemberRecord(button.dataset.viewMember)));
       loadMemberOnboarding();
 
       el.querySelectorAll('[data-standing]').forEach(button => {
@@ -793,12 +1001,12 @@
                 confirm_self_action: false
               })
             });
-            notice('Membership standing updated.', 'success');
+            notice("Applicant registration standing updated.", 'success');
             await Promise.all([loadMembers(), loadDashboard()]);
           } catch (error) {
             if (
               error.payload?.confirmation_required
-              && confirm('This is your own membership. Confirm this Super Administrator self-action?')
+              && confirm("This is your own applicant registration. Confirm this Super Administrator self-action?")
             ) {
               try {
                 await request(`/api/nurselink/admin/membership-lifecycle/${row.dataset.member}/standing`, {
@@ -809,7 +1017,7 @@
                     confirm_self_action: true
                   })
                 });
-                notice('Membership standing updated.', 'success');
+                notice("Applicant registration standing updated.", 'success');
                 await Promise.all([loadMembers(), loadDashboard()]);
               } catch (second) {
                 notice(second.message, 'error');
@@ -828,7 +1036,7 @@
 
   function exportMembersCsv() {
     if (!memberRows.length) {
-      notice('There are no members in the current result set to export.', 'error');
+      notice("There are no applicants in the current result set to export.", 'error');
       return;
     }
 
@@ -839,9 +1047,9 @@
 
     const lines = [
       [
-        'Member',
+        "Applicant",
         'Email',
-        'Member Number',
+        "Applicant Number",
         'Standing',
         'Approved',
         'Verified Credentials',
@@ -877,7 +1085,7 @@
     URL.revokeObjectURL(url);
 
     notice(
-      `Exported ${memberRows.length} member${memberRows.length === 1 ? '' : 's'}.`,
+      `Exported ${memberRows.length} applicant${memberRows.length === 1 ? '' : 's'}.`,
       'success'
     );
   }
@@ -1053,7 +1261,7 @@
     const agingEightPlus = Number(aging['8_14_days'] || 0) + Number(aging['15_plus_days'] || 0);
 
     $('applicationCommandMetrics').innerHTML = [
-      applicationMetricCard('applications', 'Pending Review', pendingReview, 'Membership applications requiring review', pendingReview ? 'amber' : 'blue', 'applications'),
+      applicationMetricCard('applications', 'Pending Review', pendingReview, "Applicant registration applications requiring review", pendingReview ? 'amber' : 'blue', 'applications'),
       applicationMetricCard('approval', 'Ready for Approval', counts.ready_for_approval ?? 0, 'Administrator decision queue', Number(counts.ready_for_approval || 0) ? 'green' : 'blue', 'applications'),
       applicationMetricCard('question', 'Needs Information', counts.needs_information ?? 0, 'Applicant follow-up required', Number(counts.needs_information || 0) ? 'amber' : 'blue', 'applications'),
       applicationMetricCard('clock', 'Review Aging 8+ Days', agingEightPlus, `${aging['15_plus_days'] ?? 0} at 15+ days`, agingEightPlus ? 'red' : 'blue', 'applications')
@@ -1064,8 +1272,12 @@
       applicationProgressCard('clock', 'Under Review', counts.under_review ?? 0, `${membership.unassigned_reviews ?? 0} unassigned`, 'amber', 'under_review'),
       applicationProgressCard('question', 'Needs Information', counts.needs_information ?? 0, 'Applicant follow-up', 'orange', 'needs_information'),
       applicationProgressCard('approval', 'Ready for Approval', counts.ready_for_approval ?? 0, 'Admin decision queue', 'purple', 'ready_for_approval'),
-      applicationProgressCard('check', 'Approved', counts.approved ?? 0, `${standing.active ?? 0} active members`, 'green', 'approved')
+      applicationProgressCard('check', 'Approved', counts.approved ?? 0, `${standing.active ?? 0} active applicants`, 'green', 'approved')
     ].join('');
+  }
+
+  function registrationOriginHtml(origin = {}) {
+    return `<small class="nl-registration-origin">Registration: ${esc(origin.label || 'Not recorded')}${origin.encoded_by ? ` · ${esc(origin.encoded_by)}` : ''}</small>`;
   }
 
   function applicationTableRow(row) {
@@ -1088,6 +1300,7 @@
             <span>
               <strong>${esc(row.name || 'Applicant')}</strong>
               <small>${esc(row.email || '')}</small>
+              ${registrationOriginHtml(row.registration_origin)}
             </span>
           </button>
         </td>
@@ -1219,7 +1432,7 @@
 
     if (!rows.length) {
       el.innerHTML =
-        '<div class="nl530-empty nl550-empty-table">No membership applications match these filters.</div>';
+        "<div class=\"nl530-empty nl550-empty-table\">No applicant registration applications match these filters.</div>";
       renderApplicationPagination(0);
       return;
     }
@@ -1752,7 +1965,7 @@
     if (button) {
       button.textContent =
         applicationViewMode === 'all'
-          ? 'Back to Membership Queue'
+          ? "Back to Applicant registration Queue"
           : 'View All Applications';
     }
 
@@ -1760,14 +1973,14 @@
       heading.textContent =
         applicationViewMode === 'all'
           ? 'All Applications'
-          : 'Membership Applications';
+          : "Applicant registration Applications";
     }
 
     if (description) {
       description.textContent =
         applicationViewMode === 'all'
           ? 'View every NurseLink application, including draft and imported Temporary Encoder applications.'
-          : 'Review, assign and progress membership applications through governed NurseLink workflows.';
+          : "Review, assign and progress applicant registration applications through governed NurseLink workflows.";
     }
 
     const status = $('applicationStatus');
@@ -1863,6 +2076,7 @@
               <small>${esc(user.email || '')}</small>
             </span>
           </button>
+          <button type="button" class="primary nl-review-open" data-review-application="${esc(row.id)}">Review application</button>
         </td>
 
         <td data-label="Application ID">
@@ -1908,10 +2122,42 @@
             class="nl550-row-menu"
             data-all-application="${esc(row.id)}"
             aria-label="Open ${esc(row.application_no || row.id)}"
-          >•••</button>
+          >Details</button>
         </td>
       </tr>
     `;
+  }
+
+  async function openApplicantReview(applicationId) {
+    try {
+      const payload = await request(`/api/nurselink/admin/membership-command/application/${encodeURIComponent(applicationId)}/review-link`);
+      const link = payload?.data || {};
+      if (!link.membership_id) {
+        await openAllApplication(applicationId);
+        const detail = $('applicationDetail');
+        const info = document.createElement('section');
+        info.className = 'nl530-subpanel';
+        const title = document.createElement('strong'); title.textContent = 'Review and approval';
+        const message = document.createElement('p'); message.textContent = link.message || 'Complete and submit registration before approval.';
+        const approval = document.createElement('button'); approval.type = 'button'; approval.textContent = 'Approve applicant'; approval.disabled = true;
+        title.textContent='Applicant document review'; message.textContent='Applicant features are accessible without approval. Registration and document discrepancies can be reviewed separately.'; info.append(title,message); detail.prepend(info);
+        return;
+      }
+      await openApplication(link.membership_id,link.application_reference);
+      if (link.message) applicationDrawerFeedback(link.message,'working');
+    } catch (error) {
+      notice(error.message || 'Unable to open applicant review.','error');
+    }
+  }
+
+  function bindApplicantReviewActions(container) {
+    container?.querySelectorAll('[data-review-application]').forEach(button => {
+      button.addEventListener('click',async () => {
+        button.disabled=true;
+        try { await openApplicantReview(button.dataset.reviewApplication); }
+        finally { if(button.isConnected) button.disabled=false; }
+      });
+    });
   }
 
   function renderAllApplicationTable() {
@@ -1981,6 +2227,7 @@
     renderApplicationPagination(
       rows.length
     );
+    bindApplicantReviewActions(el);
   }
 
   async function openAllApplication(id) {
@@ -2175,13 +2422,14 @@
 
         <section class="nl530-subpanel">
           <strong>Workflow position</strong>
+          <p><button type="button" class="primary" data-review-application="${esc(id)}">Review application</button></p>
 
           ${
             data.status === 'draft'
               ? `
                 <div class="nl530-empty">
                   Draft application. It has not yet been submitted
-                  into the membership review queue.
+                  into the applicant registration review queue.
                 </div>
 
                 ${
@@ -2217,13 +2465,15 @@
               : `
                 <div class="nl530-empty">
                   This application is in ${esc(label(data.status))}
-                  status. Membership review controls remain in the
-                  governed Membership Applications queue.
+                  status. Applicant registration review controls remain in the
+                  governed Applicant registration Applications queue.
                 </div>
               `
           }
         </section>
       `;
+
+      bindApplicantReviewActions(el);
 
       const temporaryEncoderHandoffButton =
         $('sendImportedToTemporaryEncoder');
@@ -2610,6 +2860,8 @@
               <div>
                 <strong>${esc(doc.name || 'Document')}</strong>
                 <small>${esc(label(doc.document_type || 'document'))} · ${esc(label(doc.extraction_status || 'uploaded'))}${doc.file_size ? ` · ${Math.max(1, Math.round(Number(doc.file_size) / 1024))} KB` : ''}</small>
+                <small>OCR text confidence: <strong>${typeof doc.ocr_confidence?.percent === 'number' ? esc(doc.ocr_confidence.percent)+'%' : 'Confidence unavailable'}</strong>${doc.ocr_confidence?.scored_pages ? ' · '+esc(doc.ocr_confidence.scored_pages)+' scored page(s)' : ''}</small>
+                <small>Estimated recognition confidence; review the original document to confirm accuracy.</small>
               </div>
               <a href="${esc(doc.download_url ? `${API}${doc.download_url}` : '#')}" target="_blank" rel="noopener">Open evidence</a>
             </div>
@@ -2638,7 +2890,7 @@
     feedback.textContent = message;
   }
 
-  async function openApplication(id) {
+  async function openApplication(id, applicationReference = null) {
     selectedApplicationId = id;
     const drawer = $('applicationDetailDrawer');
     const el = $('applicationDetail');
@@ -2654,7 +2906,7 @@
 
     if ($('applicationDetailTitle')) {
       $('applicationDetailTitle').textContent =
-        selectedRow?.application_reference
+        applicationReference || selectedRow?.application_reference
         || `Application #${id}`;
     }
     el.innerHTML = '<div class="nl-admin-loading">Loading application…</div>';
@@ -2674,6 +2926,7 @@
       const review = data.review || {};
       const smartApplication = data.smart_application || null;
       const allowed = Array.isArray(review.allowed_actions) ? review.allowed_actions : [];
+      const actionLabels = {under_review:'Start / resume review',needs_information:'Request information',ready_for_approval:'Mark ready for approval',approved:'Approve applicant',declined:'Decline application'};
       const history = Array.isArray(historyPayload?.data) ? historyPayload.data : [];
       const cycleHealth = healthPayload?.data || {};
       const cycleChecks = cycleHealth.checks || {};
@@ -2683,9 +2936,10 @@
 
       el.innerHTML = `
         <div class="nl530-detail-head">
-          <div><span class="nl-admin-eyebrow">${esc(queueRow.application_reference || `APPLICATION #${id}`)}</span><h2>${esc(applicant.name || applicant.email || 'Applicant')}</h2><p>${esc(applicant.email || '')}</p></div>
+          <div><span class="nl-admin-eyebrow">${esc(applicationReference || queueRow.application_reference || `APPLICATION #${id}`)}</span><h2>${esc(applicant.name || applicant.email || 'Applicant')}</h2><p>${esc(applicant.email || '')}</p></div>
           <span class="nl530-badge">${esc(label(membership.status))}</span>
         </div>
+        <div class="nl530-principles">${registrationOriginHtml(data.registration_origin)}</div>
         <div id="applicationActionFeedback" class="nl558-drawer-feedback" role="status" aria-live="polite" hidden></div>
         <div class="nl530-principles" style="margin-top:10px">
           <div><strong>Profile readiness</strong><span>Photo ${profile.profile_photo_uploaded ? 'uploaded' : 'missing'} · Employment ${esc(profile.employment_records ?? 0)} · Credentials ${esc(profile.credentials?.verified ?? 0)}/${esc(profile.credentials?.total ?? 0)} verified</span></div>
@@ -2694,7 +2948,7 @@
         <section class="nl530-subpanel nl559-cycle-health" data-status="${esc(cycleHealth.status || 'unknown')}">
           <div class="nl559-cycle-health-head">
             <div>
-              <span class="nl-admin-eyebrow">MEMBERSHIP CYCLE HEALTH</span>
+              <span class="nl-admin-eyebrow">APPLICANT REGISTRATION CYCLE HEALTH</span>
               <strong>${esc(label(cycleHealth.status || 'unknown'))}</strong>
             </div>
             <span class="nl530-badge ${cycleHealth.status === 'healthy' ? 'good' : cycleHealth.repairable ? 'attention' : 'danger'}">${esc(label(cycleHealth.status || 'unknown'))}</span>
@@ -2717,7 +2971,16 @@
         </section>` : ''}
 
         <section class="nl530-subpanel">
-          <strong>Review decision</strong>
+          <strong>Applicant document review</strong>
+          <p>Check the application and its supporting documents, record your findings, then choose an available action.</p>
+          ${review.approval_required === false ? '<p>Applicant feature access is active. Staff can continue reviewing document discrepancies.</p>' : membership.status==='draft' ? '<p class="nl530-empty">This application has not been submitted. Approval is unavailable until submission and completed checks.</p>' : ''}
+          <div class="nl530-row-actions nl-review-action-buttons">
+            ${allowed.map(status=>`<button type="button" data-membership-review-action="${esc(status)}" class="${status==='approved'?'primary':''}">${esc(actionLabels[status] || label(status))}</button>`).join('')}
+            ${review.approval_required !== false && !allowed.includes('approved') && membership.status!=='approved'?'<button type="button" disabled title="Approval requires Ready for Approval status and Administrator permission.">Approve applicant</button>':''}
+            ${review.approval_required !== false && membership.status==='approved' && !allowed.length?'<p>This application is already approved.</p>':''}
+          </div>
+          ${review.approval_required !== false && !allowed.includes('approved') && membership.status!=='approved' ? '<p><small>Approval becomes available at Ready for Approval for an authorized administrator. Unresolved document or OCR issues must be addressed first.</small></p>' : ''}
+          <p><a href="/ocr-review?membership=${encodeURIComponent(id)}">Review OCR discrepancies and original documents</a></p>
           ${allowed.length ? `
             <form id="applicationDecisionForm" class="nl530-row-form">
               <label><span>Next status</span><select id="applicationNextStatus"><option value="">Choose action</option>${allowed.map(value => `<option value="${esc(value)}">${esc(label(value))}</option>`).join('')}</select></label>
@@ -2738,7 +3001,7 @@
       const assignmentForm = $('applicationAssignmentForm');
 
       $('reconcileMembershipCycle')?.addEventListener('click', async event => {
-        const reason = prompt('Enter the audited reason for reconciling this approved membership (minimum 8 characters):');
+        const reason = prompt("Enter the audited reason for reconciling this approved applicant registration (minimum 8 characters):");
         if (reason === null) return;
         if (reason.trim().length < 8) {
           applicationDrawerFeedback('Enter a reconciliation reason of at least 8 characters.', 'error');
@@ -2748,17 +3011,17 @@
         const button = event.currentTarget;
         button.disabled = true;
         button.textContent = 'Reconciling…';
-        applicationDrawerFeedback('Reconciling approved membership derived state…', 'working');
+        applicationDrawerFeedback("Reconciling approved applicant registration derived state…", 'working');
 
         try {
           const result = await request(
             `/api/nurselink/admin/membership-cycle-health/${id}/reconcile`,
             {method: 'POST', body: JSON.stringify({reason: reason.trim()})}
           );
-          applicationDrawerFeedback(result?.message || 'Membership cycle reconciled.', 'success');
+          applicationDrawerFeedback(result?.message || "Applicant registration cycle reconciled.", 'success');
           await openApplication(id);
         } catch (error) {
-          applicationDrawerFeedback(error.message || 'Unable to reconcile membership cycle.', 'error');
+          applicationDrawerFeedback(error.message || "Unable to reconcile applicant registration cycle.", 'error');
           button.disabled = false;
           button.textContent = 'Reconcile derived state';
         }
@@ -2816,6 +3079,13 @@
         });
       }
 
+      el.querySelectorAll('[data-membership-review-action]').forEach(button=>button.addEventListener('click',()=>{
+        const select=$('applicationNextStatus'),form=$('applicationDecisionForm');
+        if(!select || !form || !allowed.includes(button.dataset.membershipReviewAction)) return;
+        select.value=button.dataset.membershipReviewAction;
+        form.requestSubmit(form.querySelector('button[type="submit"]'));
+      }));
+
       $('applicationDecisionForm')?.addEventListener('submit', async event => {
         event.preventDefault();
         const status = $('applicationNextStatus').value;
@@ -2825,8 +3095,10 @@
           return;
         }
 
-        if (['approved', 'declined'].includes(status) && !confirm(`${label(status)} this membership application?`)) return;
+        if (['approved', 'declined'].includes(status) && !confirm(`${label(status)} this applicant registration application?`)) return;
 
+        const quickActions=[...el.querySelectorAll('[data-membership-review-action]')];
+        quickActions.forEach(action=>action.disabled=true);
         const button = event.submitter;
         if (button) {
           button.disabled = true;
@@ -2855,7 +3127,7 @@
           } catch (error) {
             if (
               error.payload?.confirmation_required
-              && confirm('This is your own membership application. Confirm this audited Super Administrator action?')
+              && confirm("This is your own applicant registration application. Confirm this audited Super Administrator action?")
             ) {
               result = await transition(true);
             } else {
@@ -2865,7 +3137,7 @@
 
           notice(result?.message || 'Application updated.', 'success');
           await Promise.all([loadApplications(), loadDashboard()]);
-          await openApplication(id);
+          await openApplication(id,applicationReference);
           applicationDrawerFeedback(result?.message || 'Application updated.', 'success');
         } catch (error) {
           notice(error.message, 'error');
@@ -2875,6 +3147,7 @@
             button.disabled = false;
             button.textContent = 'Apply Action';
           }
+          quickActions.forEach(action=>{if(action.isConnected) action.disabled=false;});
         }
       });
 
@@ -2891,7 +3164,7 @@
     return `
       <form class="nl530-row" data-onboarding="${esc(row.membership_id)}">
         <div class="nl530-row-main">
-          ${badges([label(row.status), row.status === 'completed' ? 'good' : 'attention'], [row.member_number || 'Member', ''])}
+          ${badges([label(row.status), row.status === 'completed' ? 'good' : 'attention'], [row.member_number || "Applicant", ''])}
           <strong>${esc(row.name || row.email)}</strong>
           <small>${esc(row.email || '')} · Activation ${esc(signals.activation_score ?? 0)}% · ${row.welcome_viewed_at ? 'Welcome viewed' : 'Welcome pending'} · ${row.orientation_completed_at ? 'Orientation complete' : 'Orientation pending'}</small>
         </div>
@@ -2953,7 +3226,7 @@
             );
 
             notice(
-              result?.message || 'Member onboarding updated.',
+              result?.message || "Applicant onboarding updated.",
               'success'
             );
 
@@ -3142,7 +3415,56 @@
     );
   }
 
+  let armsLoadSequence = 0;
+  async function loadArmsLineup() {
+    const host = $('armsApplicantLineup');
+    if (!host) return;
+    const sequence = ++armsLoadSequence;
+    host.innerHTML = '<div class="nl-admin-loading" role="status">Loading demo applicants…</div>';
+    try {
+      const payload = await request('/api/reviewer/job-applications?demo_lineup=1');
+      if (sequence !== armsLoadSequence) return;
+      if (payload?.meta?.demo_only !== true || !Array.isArray(payload.data)) throw new Error('Demo lineup response unavailable.');
+      const rows = payload.data;
+      host.innerHTML = `<p class="arms-warning">${esc(payload.meta.notice)}</p>
+        <div class="arms-controls"><label>Find applicant<input type="search" data-arms-search placeholder="Name or NL-DEMO number"></label>
+        <label>Specialty<select data-arms-specialty><option value="">All specialties</option>${[...new Set(rows.map(r => r.specialty).filter(Boolean))].sort().map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select></label>
+        <button type="button" data-arms-refresh>Refresh demo lineup</button></div>
+        <p data-arms-count role="status"></p><div class="arms-table-scroll" tabindex="0" role="region" aria-label="Demo applicant lineup, scroll horizontally for all columns"><table class="arms-table">
+        <caption>ARMS Applicant Lineup — demo records only</caption><thead><tr>${['Applicant', 'Specialty / experience', 'Credentials', 'Competencies', 'PQF / readiness', 'Job application / specialty suggestion', 'Interview', 'Preferred employer', 'Recommended next action'].map(h => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody></tbody></table></div>`;
+      const render = () => {
+        const query = host.querySelector('[data-arms-search]').value.trim().toLowerCase();
+        const specialty = host.querySelector('[data-arms-specialty]').value;
+        const filtered = rows.filter(r => `${r.name} ${r.member_no}`.toLowerCase().includes(query) && (!specialty || r.specialty === specialty));
+        host.querySelector('[data-arms-count]').textContent = `${filtered.length} of ${rows.length} demo applicants · Read-only`;
+        host.querySelector('tbody').innerHTML = filtered.length ? filtered.map(r => {
+          const applications = r.applications || [];
+          const suggestions = r.specialty_suggestions || [];
+          const jobs = applications.length ? applications.map(a => `<strong>${esc(a.title)}</strong><small>${esc(a.employer)} · ${esc(label(a.status))}</small>`).join('<br>')
+            : suggestions.length ? suggestions.map(j => `<strong>${esc(j.title)}</strong><small>Specialty suggestion only · ${esc(j.employer)}</small>`).join('<br>') : 'No demo specialty match';
+          const interview = r.interview ? `${esc(label(r.interview.status))}<small>${r.interview.demo_note_rating == null ? 'No rating recorded' : `${esc(r.interview.demo_note_rating)}/5 · Demo note rating`}</small>` : 'Not scheduled';
+          return `<tr><th scope="row">${esc(r.name)}<small>${esc(r.member_no)}</small></th>
+            <td>${esc(r.specialty || 'Not recorded')}<small>${r.years_experience == null ? 'Experience not recorded' : `${esc(r.years_experience)} years`}</small></td>
+            <td>${esc(r.credentials.verified_current)} / ${esc(r.credentials.total)}<small>Verified and current</small></td>
+            <td>${esc(r.competencies.verified)} / ${esc(r.competencies.total)}<small>Verified evidence</small></td>
+            <td>Not recorded<small>No PQF assessment supplied</small></td><td>${jobs}</td><td>${interview}</td>
+            <td>Not recorded<small>${esc((r.target_countries || []).join(', '))}</small></td><td>${esc(r.recommended_action)}<small>Advisory only</small></td></tr>`;
+        }).join('') : '<tr><td colspan="9">No demo applicants match these filters.</td></tr>';
+      };
+      host.querySelector('[data-arms-search]').addEventListener('input', render);
+      host.querySelector('[data-arms-specialty]').addEventListener('change', render);
+      host.querySelector('[data-arms-refresh]').addEventListener('click', loadArmsLineup);
+      render();
+    } catch (error) {
+      if (sequence !== armsLoadSequence) return;
+      if (needsLogin(error)) return redirectToLogin();
+      host.innerHTML = `<p role="alert">Demo lineup could not load: ${esc(error.message)}</p><button type="button">Retry demo lineup</button>`;
+      host.querySelector('button').addEventListener('click', loadArmsLineup);
+    }
+  }
+
   async function loadEmployment() {
+    void loadArmsLineup();
     const opportunities = $('opportunitiesArea');
     const applications = $('jobApplicationsArea');
 
@@ -3303,10 +3625,10 @@
         ${badges([row.case_number, ''], [label(row.status), ['resolved','closed'].includes(row.status) ? 'good' : 'attention'], [label(row.priority), row.priority === 'urgent' ? 'danger' : row.priority === 'high' ? 'attention' : ''])}
         <div class="nl530-row-main">
           <strong>${esc(row.subject)}</strong>
-          <small>${esc(label(row.category))} · ${esc(row.member?.name || row.member?.email || 'No member linked')} · ${esc(row.organization?.name || 'No organization')}</small>
+          <small>${esc(label(row.category))} · ${esc(row.member?.name || row.member?.email || "No applicant linked")} · ${esc(row.organization?.name || 'No organization')}</small>
         </div>
         <div class="nl530-row-form">
-          <label><span>Status</span><select name="status"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_member">Waiting Member</option><option value="waiting_internal">Waiting Internal</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
+          <label><span>Status</span><select name="status"><option value="open">Open</option><option value="in_progress">In Progress</option><option value="waiting_member">Waiting Applicant</option><option value="waiting_internal">Waiting Internal</option><option value="resolved">Resolved</option><option value="closed">Closed</option></select></label>
           <label><span>Priority</span><select name="priority"><option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select></label>
           <label><span>Owner</span><select name="assigned_admin_user_id">${adminOptions(row.assigned_admin_user_id)}</select></label>
           <label class="wide"><span>Subject</span><input name="subject" value="${esc(row.subject)}"></label>
@@ -3592,6 +3914,218 @@
     return {reason: reason.trim(), approval_notes: approval.trim() || null};
   }
 
+  function renderMemberAssignmentRoles(roles) {
+    const area = $('adminMemberRoles');
+    if (!area) return;
+
+    area.innerHTML = roles.map(role => `
+      <label>
+        <input type="checkbox" value="${esc(role.key)}">
+        <span>
+          <strong>${esc(role.label)}</strong>
+          <small>${esc(role.description || '')}</small>
+        </span>
+      </label>
+    `).join('');
+  }
+
+  let adminMemberCandidates = [];
+
+  async function loadAdminMemberCandidates() {
+    const select = $('adminMemberCandidate');
+    if (!select) return;
+
+    const q = $('adminMemberSearch')?.value.trim() || '';
+    const params = new URLSearchParams({limit: '50'});
+
+    if (q) params.set('q', q);
+
+    select.innerHTML = '<option value="">Loading verified users…</option>';
+
+    try {
+      const payload = await request(
+        `/api/nurselink/admin/management/member-candidates?${params}`
+      );
+
+      const data = payload?.data || {};
+      const members = Array.isArray(data.members)
+        ? data.members
+        : Array.isArray(data.candidates)
+          ? data.candidates
+          : [];
+
+      adminMemberCandidates = members;
+
+      if (!members.length) {
+        select.innerHTML =
+          '<option value="">No active verified users found</option>';
+        return;
+      }
+
+      select.innerHTML = `
+        <option value="">Select a verified user</option>
+        ${members.map(member => {
+          const name = member.name || member.email || 'NurseLink user';
+          const memberNo = member.member_no ? ` · ${member.member_no}` : '';
+          const status = member.already_administrator
+            ? ' · Already Administrator'
+            : '';
+
+          return `
+            <option
+              value="${esc(member.user_id)}"
+              ${member.already_administrator ? 'disabled' : ''}
+            >
+              ${esc(name)} · ${esc(member.email || '')}${esc(memberNo)}${esc(status)}
+            </option>
+          `;
+        }).join('')}
+      `;
+    } catch (error) {
+      select.innerHTML = `<option value="">${esc(error.message)}</option>`;
+    }
+  }
+
+
+  function renderAdminMemberStatus() {
+    const select = $('adminMemberCandidate');
+    const area = $('adminMemberStatus');
+
+    if (!select || !area) return;
+
+    const memberId = select.value;
+
+    if (!memberId) {
+      area.hidden = true;
+      area.innerHTML = '';
+      return;
+    }
+
+    const member = adminMemberCandidates.find(
+      row => String(row.user_id) === String(memberId)
+    );
+
+    if (!member) {
+      area.hidden = true;
+      area.innerHTML = '';
+      return;
+    }
+
+    const roles = Array.isArray(member.roles)
+      ? member.roles
+      : Array.isArray(member.admin_roles)
+        ? member.admin_roles
+        : [];
+
+    const roleText = roles.length
+      ? roles.map(role => {
+          if (typeof role === 'string') return role;
+          return role.label || role.role_key || role.key || '';
+        }).filter(Boolean).join(', ')
+      : 'None';
+
+    area.hidden = false;
+
+    area.innerHTML = `
+      <strong>${esc(member.name || member.email || 'NurseLink user')}</strong>
+      <span>
+        Verified email
+        · ${esc(member.email || '')}
+      </span>
+      <span>
+        Account: ${esc(member.status || 'active')}
+      </span>
+      <span>
+        Administrator access:
+        ${member.already_administrator ? 'Active' : 'Not currently assigned'}
+      </span>
+      <span>
+        Current roles: ${esc(roleText)}
+      </span>
+      ${member.already_administrator
+        ? '<span><strong>This user already has Administrator access. Use Manage Roles in the Administrator roster for changes.</strong></span>'
+        : ''}
+    `;
+  }
+
+  async function assignAdministratorFromMember(event) {
+    event.preventDefault();
+
+    const form = $('adminMemberAssignForm');
+    const memberId = $('adminMemberCandidate')?.value || '';
+    const roles = form ? checkedRoles(form) : [];
+    const department =
+      $('adminMemberDepartment')?.value.trim() || null;
+    const reason =
+      $('adminMemberReason')?.value.trim() || '';
+    const approvalNotes =
+      $('adminMemberApprovalNotes')?.value.trim() || null;
+
+    if (!memberId) {
+      return notice('Select an active verified NurseLink user.', 'error');
+    }
+
+    if (!roles.length) {
+      return notice('Select at least one Administrator role.', 'error');
+    }
+
+    if (reason.length < 10) {
+      return notice(
+        'Enter an access reason of at least 10 characters.',
+        'error'
+      );
+    }
+
+    try {
+      const result = await request(
+        '/api/nurselink/admin/management/assign-member',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            user_id: memberId,
+            department_unit: department,
+            roles,
+            reason,
+            approval_notes: approvalNotes
+          })
+        }
+      );
+
+      const resultEl = $('adminMemberAssignResult');
+
+      if (resultEl) {
+        resultEl.hidden = false;
+        resultEl.textContent =
+          result?.message || 'Administrator access assigned.';
+      }
+
+      notice(
+        result?.message || 'Administrator access assigned.',
+        'success'
+      );
+
+      form?.reset();
+
+      adminMemberCandidates = [];
+
+      const select = $('adminMemberCandidate');
+      if (select) {
+        select.innerHTML =
+          "<option value=\"\">Search for an active verified applicant first</option>";
+      }
+
+      const statusArea = $('adminMemberStatus');
+      if (statusArea) {
+        statusArea.hidden = true;
+        statusArea.innerHTML = '';
+      }
+
+      await loadSettings();
+    } catch (error) {
+      notice(error.message, 'error');
+    }
+  }
+
   async function loadSettings() {
     const settingsEl = $('settingsArea');
     const accessEl = $('settingsAccessArea');
@@ -3626,6 +4160,9 @@
       `;
 
       renderInvitationRoles(roles);
+      renderMemberAssignmentRoles(roles);
+      $('adminMemberAssignForm').hidden = !canManage;
+      $('adminMemberAssignLocked').hidden = canManage;
       if ($('adminInviteForm')) $('adminInviteForm').hidden = !canManage;
       if ($('adminInviteLocked')) $('adminInviteLocked').hidden = canManage;
       if ($('adminGovernanceCard')) $('adminGovernanceCard').hidden = !canManage;
@@ -3788,7 +4325,7 @@
         })
       });
 
-      notice(result?.message || 'Member communication sent.', 'success');
+      notice(result?.message || "Applicant communication sent.", 'success');
       $('communicationTitle').value = '';
       $('communicationMessage').value = '';
       $('communicationAction').value = '';
@@ -3958,6 +4495,9 @@
       searchTimer = setTimeout(loadSupport, 250);
     });
     $('refreshAudit')?.addEventListener('click', loadAudit);
+    $('adminMemberSearchButton')?.addEventListener('click', loadAdminMemberCandidates);
+    $('adminMemberCandidate')?.addEventListener('change', renderAdminMemberStatus);
+    $('adminMemberAssignForm')?.addEventListener('submit', assignAdministratorFromMember);
     $('refreshSettings')?.addEventListener('click', loadSettings);
     $('refreshAdminGovernance')?.addEventListener('click', loadAdminGovernanceHistory);
     $('adminGovernanceAction')?.addEventListener('change', loadAdminGovernanceHistory);
@@ -4025,7 +4565,7 @@
       });
     } catch (_) {}
 
-    location.replace('/admin/login.html');
+    location.replace('/');
   });
 
   window.addEventListener('hashchange', () => {
@@ -4066,6 +4606,12 @@
   });
 
   bindViewAllApplicationsHard();
+
+
+  let registrationSupportLoading=false;
+  async function loadRegistrationSupport(){if(registrationSupportLoading||document.visibilityState==='hidden')return;registrationSupportLoading=true;try{const [payload,notices]=await Promise.all([request('/api/nurselink/admin/registration-support'),request('/api/notifications')]);let panel=$('registrationSupportPanel');if(!panel){panel=document.createElement('section');panel.id='registrationSupportPanel';panel.className='nl530-card';document.querySelector('.nl530-topbar')?.insertAdjacentElement('afterend',panel);}const rows=payload.data||[],needs=rows.filter(row=>row.delayed||row.support_status==='requested'),recent=(notices.data||[]).filter(row=>row.type?.startsWith('application.')&&!row.read_at).slice(0,5);const open=panel.querySelector('details')?.open||location.hash==='#registration-support';panel.innerHTML=`<details ${open?'open':''}><summary><strong>Registration Support</strong> · ${needs.length} need attention · ${rows.filter(r=>r.progress_percent<100).length} in progress</summary><p>Applicants are visible from registration. This panel refreshes every 15 seconds. Inactivity alerts use a ${esc(payload.delay_hours)} hour threshold; saved draft completion is provisional.</p>${recent.map(n=>`<p><strong>${esc(n.title)}</strong> · ${esc(n.message)}</p>`).join('')}<div class="nl550-table-wrap"><table><thead><tr><th>Application</th><th>Draft progress</th><th>Last activity</th><th>Challenge</th><th>Assistance</th></tr></thead><tbody>${rows.slice(0,20).map(row=>`<tr><td><button type="button" data-support-review="${esc(row.application_id)}">${esc(row.application_no)}</button></td><td>${esc(row.progress_percent)}%</td><td>${esc(row.last_activity_at)}${row.delayed?' · Delayed':''}</td><td>${esc(row.issue_label)}</td><td>${esc(row.support_status)}<button type="button" data-support-offer="${row.id}">Offer assistance</button><button type="button" data-support-resolve="${row.id}">Mark resolved</button></td></tr>`).join('')}</tbody></table></div></details>`;
+ panel.querySelectorAll('[data-support-review]').forEach(b=>b.onclick=()=>openApplicantReview(b.dataset.supportReview));panel.querySelectorAll('[data-support-offer],[data-support-resolve]').forEach(b=>b.onclick=async()=>{const offer=!!b.dataset.supportOffer,id=b.dataset.supportOffer||b.dataset.supportResolve;const message=offer?prompt('Message to the applicant','An administrator is available to help with your application. Open your inbox to discuss any difficulty.'):null;if(offer&&message===null)return;try{b.disabled=true;const result=await request('/api/nurselink/admin/registration-support/'+id,{method:'POST',body:JSON.stringify({action:offer?'offer_help':'resolve',...(offer?{message}: {})})});notice(result.message,'success');await loadRegistrationSupport();}catch(error){notice(error.message,'error');}finally{b.disabled=false;}});
+ }catch(error){if(error.status!==403)console.warn('Registration support refresh unavailable');}finally{registrationSupportLoading=false;}}
 
   async function boot() {
     document.body.classList.add('nl-admin-session-pending');
@@ -4117,6 +4663,8 @@
       const valid = (CFG.adminTabs || []).some(row => row[0] === requested);
 
       revealAdministratorPortal();
+      loadRegistrationSupport();
+      setInterval(()=>loadRegistrationSupport(),15000);
       setTab(valid ? requested : 'dashboard');
     } catch (error) {
       if (needsLogin(error) || [401, 403, 419].includes(error.status)) {

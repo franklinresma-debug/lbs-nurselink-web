@@ -131,7 +131,7 @@ export default function Phase6WelfareCrisisPage() {
         method: 'POST',
         credentials: 'include',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'member_welfare_page', message: 'Member requested urgent welfare assistance.' }),
+        body: JSON.stringify({ source: 'member_welfare_page', message: "Applicant requested urgent welfare assistance." }),
       })
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       setPanicResult('Urgent alert sent. Keep your phone available for follow-up.')
@@ -194,7 +194,7 @@ export default function Phase6WelfareCrisisPage() {
       <section className="nwc-overview">
         <h2>Welfare Support Overview</h2>
         <div className="nwc-stats">
-          <div><i><Icon name="people"/></i><strong>{stats.assisted}</strong><span>OFWs / Members Assisted</span><small>{sourceMode === 'live' ? 'Live overview data' : 'Illustrative demo metric'}</small></div>
+          <div><i><Icon name="people"/></i><strong>{stats.assisted}</strong><span>OFWs / Applicants Assisted</span><small>{sourceMode === 'live' ? 'Live overview data' : 'Illustrative demo metric'}</small></div>
           <div><i><Icon name="check"/></i><strong>{stats.resolved}</strong><span>Cases Resolved</span><small>{sourceMode === 'live' ? 'Live overview data' : 'Illustrative demo metric'}</small></div>
           <div><i><Icon name="clock"/></i><strong>{stats.responseTime}</strong><span>Average Response Time</span><small>{sourceMode === 'live' ? 'Live overview data' : 'Illustrative demo metric'}</small></div>
           <div><i><Icon name="heart"/></i><strong>{stats.assistance}</strong><span>Assistance Provided</span><small>{sourceMode === 'live' ? 'Live overview data' : 'Illustrative demo metric'}</small></div>
@@ -239,7 +239,7 @@ export default function Phase6WelfareCrisisPage() {
         </article>
         <article className="nwc-card">
           <div className="nwc-card-title"><div><span>ACTIVE SIGNALS</span><h2>Crisis Alerts</h2></div><b>{alerts.length}</b></div>
-          <p className="nwc-muted">{alerts.length ? 'Active welfare alerts are available for your account.' : 'No live member alerts were returned. Continue to monitor verified official advisories.'}</p>
+          <p className="nwc-muted">{alerts.length ? 'Active welfare alerts are available for your account.' : "No live applicant alerts were returned. Continue to monitor verified official advisories."}</p>
         </article>
       </section>
 

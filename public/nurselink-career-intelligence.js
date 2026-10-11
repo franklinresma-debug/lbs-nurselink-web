@@ -78,10 +78,10 @@
     const pending=error?.status===403;
     root.innerHTML=`
       <div class="access-card">
-        <span class="eyebrow">${pending ? 'APPROVED MEMBERSHIP REQUIRED' : 'AUTHENTICATION REQUIRED'}</span>
-        <h2>${pending ? 'Career Intelligence unlocks after membership approval' : 'Sign in to NurseLink'}</h2>
+        <span class="eyebrow">${pending ? "APPROVED APPLICANT REGISTRATION REQUIRED" : 'AUTHENTICATION REQUIRED'}</span>
+        <h2>${pending ? "Career Intelligence unlocks after applicant registration approval" : 'Sign in to NurseLink'}</h2>
         <p>${pending
-          ? 'Career Intelligence uses member-only career, credential, learning and employment data. Complete the membership process to unlock this feature.'
+          ? "Career Intelligence uses applicant-only career, credential, learning and employment data. Complete the applicant registration process to unlock this feature."
           : 'Sign in to your NurseLink account, then return to Career Intelligence.'}</p>
         <a href="/login?return=/nurselink-career-intelligence.html">Open NurseLink Sign In</a>
       </div>`;

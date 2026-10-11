@@ -7,6 +7,8 @@ import './nurselink-login-v713.css'
 
 import App from './App.jsx'
 import './lbs-corporate-theme.css'
+import './lbs-uiux-20260925.css'
+import './lbs-sidebar-logo-final.css'
 
 import {
   AuthProvider,

@@ -8,12 +8,12 @@
 
   const FOREIGN_MARKERS = [
     'mentoring & peer support',
-    'connect with nurselink members',
+    "connect with nurselink applicants",
     'career intelligence',
     'professional growth & mobility insights',
     'application readiness',
     'review before you submit',
-    'membership review',
+    "applicant registration review",
     'application timeline'
   ];
 

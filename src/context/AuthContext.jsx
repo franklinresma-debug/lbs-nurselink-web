@@ -1,3 +1,4 @@
+import {rememberApplicant,offlineApplicant,clearApplicantOffline} from '../lib/applicantOffline';
 import {
   createContext,
   useContext,
@@ -29,7 +30,8 @@ export function AuthProvider({
       const current =
         await getMe()
 
-      setUser(current)
+      setUser(current);
+      await rememberApplicant(current).catch(()=>{})
 
       return current
     } catch (error) {
@@ -40,11 +42,13 @@ export function AuthProvider({
 
   useEffect(() => {
     getMe()
-      .then((current) => {
-        setUser(current)
+      .then(async (current) => {
+        setUser(current);
+      await rememberApplicant(current).catch(()=>{})
       })
-      .catch(() => {
-        setUser(null)
+      .catch(async (error) => {
+        const cached = error.code === 'network_error' ? await offlineApplicant().catch(()=>null) : null;
+        setUser(cached);
       })
       .finally(() => {
         setLoading(false)
@@ -61,7 +65,8 @@ export function AuthProvider({
         password
       )
 
-    setUser(current)
+    setUser(current);
+      await rememberApplicant(current).catch(()=>{})
 
     return current
   }
@@ -98,6 +103,7 @@ export function AuthProvider({
     try {
       await apiLogout()
     } finally {
+      await clearApplicantOffline().catch(()=>{});
       setUser(null)
     }
   }

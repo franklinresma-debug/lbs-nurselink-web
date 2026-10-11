@@ -1,0 +1,5 @@
+.nl-admin-embedded .nl-encoder-shell{display:block}.nl-admin-embedded .nl-encoder-sidebar{position:static;width:auto;min-height:0;height:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 20px}.nl-admin-embedded .nl-sidebar-brand{display:none}.nl-admin-embedded .nl-encoder-meta{margin:0;padding:8px 12px}.nl-admin-embedded .nl-sidebar-nav{display:flex;gap:10px;align-items:center;margin:0;flex:1}.nl-admin-embedded .nl-sidebar-nav>*{width:auto;margin:0}.nl-admin-embedded .nl-sidebar-nav button[disabled]{display:none}.nl-admin-embedded .nl-sidebar-bottom{margin:0}.nl-admin-embedded .nl-encoder-main{margin:0;padding:20px}.nl-admin-embedded .nl-encoder-auth{min-height:80vh}
+
+.nl-encoder-role-shell .nl-encoder-sidebar{display:none}
+
+.nl-encoder-role-shell .nl-header h1,.nl-encoder-role-shell .nl-header>div>span,.nl-encoder-role-shell .nlbi-head h1{display:none}.nl-encoder-role-shell .nlbi-actions{display:none}

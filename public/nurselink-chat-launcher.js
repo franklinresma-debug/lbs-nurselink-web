@@ -1,4 +1,7 @@
 (function(){'use strict';
+// The administrator shell owns chat for its embedded workspaces.
+try{if(window.parent!==window&&window.parent.location.origin===location.origin&&window.parent.document.getElementById('nlAdminConversations'))return;}catch(_){}
+
 const admin=location.pathname.startsWith('/admin');
 if(admin&&!document.getElementById('nlAdminConversations'))return;
 const base='/backend/api'+(admin?'/nurselink/admin/operations-center/communications/threads':'/nurselink/conversations');
