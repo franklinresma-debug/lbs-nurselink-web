@@ -118,7 +118,8 @@ import {
   useLocation,
 } from 'react-router-dom'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, lazy, Suspense } from 'react'
+const SmartRegistrationOcrReview = lazy(() => import('./pages/SmartRegistrationOcrTest'))
 
 import './App.css'
 
@@ -1890,7 +1891,7 @@ function AppLayout() {
       document.documentElement.setAttribute('data-nurselink-ios-theme-fix', 'v4.0.4')
       document.documentElement.setAttribute('data-nurselink-iphone-tap-fix', 'v4.0.5')
     window.localStorage.setItem('nurselink-member-theme', memberTheme)
-  
+
     /* NurseLink Theme Runtime Repair v4.0.1 */
     const rootTheme = document.documentElement
     rootTheme.setAttribute('data-theme', memberTheme)
@@ -2156,6 +2157,7 @@ function AppLayout() {
           {memberShellLocation.pathname === '/dashboard' && user?.roles?.includes('super_administrator') && (
             <a className="nurselink-admin-center-link" href="/nurselink-super-admin-test-center.html">Test Center</a>
           )}
+          {isAdministrator && <a className="nurselink-admin-center-link" href="/admin/ocr-review">OCR &amp; MSD Review</a>}
           {isAdministrator && (
             <a
               className="nurselink-admin-center-link nurselink-super-admin-center-link"
@@ -2486,6 +2488,7 @@ function AppLayout() {
             <>
               <Route path="/admin" element={<AdminAppearanceStudio />} />
               <Route path="/admin/appearance" element={<AdminAppearanceStudio />} />
+              <Route path="/admin/ocr-review" element={<Suspense fallback={<p>Loading document review…</p>}><SmartRegistrationOcrReview /></Suspense>} />
             </>
           )}
 
